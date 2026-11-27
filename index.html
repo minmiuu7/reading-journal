@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FAF8F3">
-<title>책 · 읽은 책 읽는 책</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="조각서재">
+<meta name="application-name" content="조각서재">
+<meta name="description" content="조각서재 — 읽은 책·읽는 책을 모으는 무료 개인용 독서 기록장">
+<title>조각서재 · 읽은 책 읽는 책</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FAF8F3'/%3E%3Cpath d='M16 18h14a4 4 0 0 1 4 4v26a4 4 0 0 0-4-4H16z' fill='%23C8D88A'/%3E%3Cpath d='M48 18H34a4 4 0 0 0-4 4v26a4 4 0 0 1 4-4h14z' fill='%234F6228'/%3E%3C/svg%3E">
 <style>
 /* ============ tokens ============ */
@@ -216,9 +220,14 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .chip.active .cnt{color:inherit;opacity:.78}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 11px;margin-top:5px}
 .book-card{display:flex;flex-direction:column;gap:7px;text-align:left;justify-content:flex-start}
-.cover{position:relative;border-radius:5px;overflow:hidden;aspect-ratio:2/3;background:#EDE8DC;box-shadow:0 5px 14px rgba(64,55,38,.16),0 1px 2px rgba(64,55,38,.14);transition:transform .18s,box-shadow .18s}
-.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover{position:relative;border-radius:5px;overflow:hidden;aspect-ratio:2/3;background:#EFE9DC;box-shadow:0 5px 14px rgba(64,55,38,.16),0 1px 2px rgba(64,55,38,.14);transition:transform .18s,box-shadow .18s}
+.cover img{width:100%;height:100%;object-fit:contain;display:block;background:#F7F2E8}
 .cover::after{content:"";position:absolute;inset:0;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(60,50,30,.07);pointer-events:none}
+/* 완독 리본(책갈침 띠지) — 표지 오른쪽 위 모서리 */
+.cover-ribbon{position:absolute;top:0;right:9px;z-index:2;padding:3px 7px 8px;background:var(--olive);color:var(--on-accent);
+  font-size:9px;font-weight:900;letter-spacing:.07em;line-height:1;border-radius:0 0 3px 3px;pointer-events:none;
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 70%,0 100%);filter:drop-shadow(0 1px 2px rgba(40,35,20,.28))}
+@media(max-width:430px){ .cover-ribbon{right:7px;font-size:8.5px;padding:2.5px 6px 7px} }
 .book-card:hover .cover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(64,55,38,.22)}
 .no-badge{display:none}
 .book-title{margin:0;font-size:12.5px;line-height:1.38;font-weight:600;letter-spacing:-.02em;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -264,7 +273,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cal-cell.blank{background:transparent;border-color:transparent;pointer-events:none;box-shadow:none}
 .cal-cell .cal-day{position:absolute;top:5px;right:7px;z-index:2;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em;line-height:1}
 .cal-cell.weekend .cal-day{color:#A9908A}
-.cal-cell .cal-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0}
+.cal-cell .cal-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;z-index:0;background:rgba(255,255,255,.55)}
 .cal-cell.has-book{border-color:transparent;box-shadow:0 4px 12px rgba(60,52,36,.16)}
 .cal-cell.has-book .cal-day{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);font-size:11px}
 .cal-cell.has-book:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(60,52,36,.24)}
@@ -282,7 +291,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .day-row{display:flex;align-items:center;gap:12px;text-align:left;background:var(--paper);border:1px solid var(--line-soft);border-radius:14px;padding:9px 12px;box-shadow:var(--shadow-sm);transition:border-color .15s,transform .15s}
 .day-row:hover{border-color:var(--olive-soft);transform:translateY(-1px)}
 .day-row .dr-cover{width:38px;height:54px;border-radius:4px;overflow:hidden;flex:0 0 auto;background:#EDE8DC;box-shadow:0 2px 6px rgba(64,55,38,.16)}
-.day-row .dr-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.day-row .dr-cover img{width:100%;height:100%;object-fit:contain;display:block;background:#F7F2E8}
 .day-row .dr-meta{min-width:0;flex:1 1 auto}
 .day-row .dr-title{display:block;font-size:13px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .day-row .dr-sub{display:block;font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -338,7 +347,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 /* hero */
 .hero{display:grid;grid-template-columns:84px 1fr;gap:16px;padding-top:8px}
 .hero-cover{border-radius:5px;overflow:hidden;aspect-ratio:2/3;background:#EDE8DC;box-shadow:0 6px 16px rgba(64,55,38,.2)}
-.hero-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-cover img{width:100%;height:100%;object-fit:contain;display:block;background:#F7F2E8}
 .hero-meta{min-width:0;padding-top:2px}
 .tag-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
 .tag{display:inline-flex;align-items:center;border-radius:999px;padding:3.5px 10px;font-size:11.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
@@ -385,6 +394,8 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .toolbar .tb-sep{width:1px;background:var(--line-soft);margin:2px 2px}
 .tb-fmt{position:relative;flex:0 0 auto;display:inline-flex}
 .toolbar .tb-a{display:inline-flex;align-items:center;gap:3px;padding:5px 7px 5px 8px;cursor:pointer}
+.toolbar .tb-color{display:inline-flex;align-items:center;gap:4px;padding:5px 8px}
+.toolbar .tb-color svg{opacity:.85}
 .toolbar .tb-a b{font-size:13px;line-height:1;font-weight:800;letter-spacing:0}
 .toolbar .tb-a[aria-expanded="true"]{background:var(--olive-wash);border-color:var(--olive-soft);color:var(--accent-text)}
 .toolbar .tb-a svg{opacity:.7;transition:transform .15s}
@@ -397,7 +408,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .notes-card:has(.editor[data-mode="preview"]) #mdToolbar{display:none}
 #mdToolbar[hidden]{display:none !important}
 .editor{display:block;border-top:1px solid #F0ECE1;padding-top:12px}
-.editor textarea{display:block;width:100%;min-height:320px;border:0;background:transparent;resize:vertical;font-family:var(--font-note);font-size:14px;line-height:1.78;letter-spacing:-.02em;color:#3B382F;padding:0 1px;outline:none}
+.editor textarea{display:block;width:100%;min-height:320px;border:0;background:transparent;resize:vertical;font-family:var(--font-note);font-size:14px;line-height:1.78;letter-spacing:-.02em;color:var(--nc-text,#3B382F);padding:0 1px;outline:none}
 .editor textarea::placeholder{color:#B4AE9F}
 .preview{display:none;min-height:60px}
 .editor[data-mode="preview"] textarea{display:none}
@@ -410,23 +421,25 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .saving{color:#B6AF9F}
 .saving.saved{color:#7E8F4B}
 
-/* markdown */
-.md{font-family:var(--font-note);font-size:14px;line-height:1.8;letter-spacing:-.02em;color:#3B382F}
+/* markdown — 요소별 색은 --nc-* (독서 노트 색상) 로 덮어씁니다 */
+.md{font-family:var(--font-note);font-size:14px;line-height:1.8;letter-spacing:-.02em;color:var(--nc-text,#3B382F)}
 .md>*:first-child{margin-top:0}
-.md h1{font-size:19px;font-weight:800;letter-spacing:-.035em;margin:20px 0 8px;line-height:1.4}
-.md h2{font-size:16.5px;font-weight:800;letter-spacing:-.03em;margin:18px 0 7px;line-height:1.4}
-.md h3{font-size:14.5px;font-weight:700;margin:15px 0 6px}
+.md h1{font-size:19px;font-weight:800;letter-spacing:-.035em;margin:20px 0 8px;line-height:1.4;color:var(--nc-index,currentColor)}
+.md h2{font-size:16.5px;font-weight:800;letter-spacing:-.03em;margin:18px 0 7px;line-height:1.4;color:var(--nc-index,currentColor)}
+.md h3{font-size:14.5px;font-weight:700;margin:15px 0 6px;color:var(--nc-index,currentColor)}
 .md p{margin:0 0 11px}
-.md blockquote{margin:12px 0;padding:11px 14px;background:var(--peach);border:1px solid var(--peach-edge);border-radius:11px;color:var(--peach-ink);font-size:13.5px;line-height:1.72}
+.md blockquote{margin:12px 0;padding:11px 14px;background:var(--nc-quote-bg,var(--peach));border:1px solid var(--nc-quote-edge,var(--peach-edge));border-radius:11px;color:var(--nc-quote-ink,var(--peach-ink));font-size:13.5px;line-height:1.72}
 .md blockquote p:last-child{margin-bottom:0}
 .md ul,.md ol{margin:0 0 12px;padding-left:19px}
+.md ul>li::marker{color:var(--nc-dot,currentColor)}
 .md li{margin:4px 0}
 .md ul.tasklist{list-style:none;padding:12px 15px;margin:10px 0 14px;background:var(--rose);border-radius:11px}
 .md ul.tasklist li{display:flex;gap:8px;align-items:flex-start;margin:5px 0;font-size:13.5px;line-height:1.6}
-.md ul.tasklist input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:15px;height:15px;margin:3px 0 0;border:1.5px solid #CFA9A0;border-radius:4px;background:#fff;flex:0 0 auto;cursor:pointer;display:grid;place-items:center}
-.md ul.tasklist input[type="checkbox"]:checked{background:#B9736A;border-color:#B9736A}
-.md ul.tasklist input[type="checkbox"]:checked::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)}
-.md ul.tasklist li.checked>span{color:#9A8F86;text-decoration:line-through}
+.md ul.tasklist input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:15px;height:15px;margin:3px 0 0;border:1.5px solid var(--nc-check,#CFA9A0);border-radius:4px;background:#fff;flex:0 0 auto;cursor:pointer;display:grid;place-items:center}
+.md ul.tasklist input[type="checkbox"]:checked{background:var(--nc-check,#B9736A);border-color:var(--nc-check,#B9736A)}
+.md ul.tasklist input[type="checkbox"]:checked::after{content:"";width:8px;height:4px;border-left:2px solid var(--nc-check-ink,#fff);border-bottom:2px solid var(--nc-check-ink,#fff);transform:rotate(-45deg) translateY(-1px)}
+.md ul.tasklist li>span{color:var(--nc-check-text,inherit)}
+.md ul.tasklist li.checked>span{color:var(--nc-check-text-done,#9A8F86);text-decoration:line-through}
 .md hr{border:0;border-top:1px dashed #DED8C9;margin:20px 0}
 .md code{background:var(--gray-card);padding:1px 5px;border-radius:4px;font-size:.9em}
 .md a{border-bottom:1px solid var(--olive-soft)}
@@ -479,14 +492,14 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .result{display:flex;gap:10px;align-items:center;width:100%;padding:8px 7px;border-radius:9px;text-align:left}
 .result:hover{background:var(--panel-hover)}
 .result.selected{background:var(--olive-wash)}
-.result-cover{width:34px;height:50px;object-fit:cover;border-radius:3px;background:#EDE8DC;flex:0 0 auto;box-shadow:0 2px 5px rgba(60,52,36,.16)}
+.result-cover{width:34px;height:50px;object-fit:contain;border-radius:3px;background:#F7F2E8;flex:0 0 auto;box-shadow:0 2px 5px rgba(60,52,36,.16)}
 .result-txt{min-width:0;flex:1;display:flex;flex-direction:column;overflow:hidden}
 .result-title{display:block;margin:0;font-size:12.5px;font-weight:700;letter-spacing:-.02em;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .result-sub{display:block;margin:2px 0 0;font-size:11px;color:#9A9486;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .result-pick{font-size:10.5px;font-weight:800;color:var(--accent-text);border:1px solid var(--olive-soft);background:var(--paper);border-radius:999px;padding:3px 8px;flex:0 0 auto}
 .cover-pick-row{display:grid;grid-template-columns:62px 1fr;gap:12px;align-items:start;margin-bottom:12px}
 .cover-pick{width:62px;aspect-ratio:2/3;border-radius:4px;overflow:hidden;background:#EDE8DC;box-shadow:0 4px 10px rgba(64,55,38,.16);cursor:pointer;position:relative}
-.cover-pick img{width:100%;height:100%;object-fit:cover;display:block}
+.cover-pick img{width:100%;height:100%;object-fit:contain;display:block;background:#F7F2E8}
 .cover-pick:hover{box-shadow:0 6px 14px rgba(64,55,38,.24)}
 @keyframes coverPop{0%{box-shadow:0 0 0 4px rgba(200,216,138,.95)}100%{box-shadow:0 4px 10px rgba(64,55,38,.16)}}
 .cover-pick.flash{animation:coverPop .55s ease}
@@ -588,7 +601,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 
 /* quotes */
 .quote-list{display:flex;flex-direction:column;gap:9px}
-.quote-item{background:var(--peach);border:1px solid var(--peach-edge);border-radius:12px;padding:12px 15px;font-family:var(--font-note);font-size:13.5px;line-height:1.7;color:var(--peach-ink);letter-spacing:-.02em}
+.quote-item{background:var(--nc-quote-bg,var(--peach));border:1px solid var(--nc-quote-edge,var(--peach-edge));border-radius:12px;padding:12px 15px;font-family:var(--font-note);font-size:13.5px;line-height:1.7;color:var(--nc-quote-ink,var(--peach-ink));letter-spacing:-.02em}
 .quote-item .src{display:block;margin-top:6px;font-size:10.5px;color:var(--muted)}
 .quote-empty{text-align:center;padding:26px 10px;color:var(--muted);font-size:12.5px;line-height:1.7}
 
@@ -617,6 +630,16 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .chip.has-cat.active .cat-dot{background:var(--cat-ink);opacity:.65;box-shadow:none}
 
 .cat-color-list{display:flex;flex-direction:column;gap:6px}
+.cat-add{display:flex;gap:7px;margin:0 0 9px}
+.cat-add input{flex:1 1 auto;min-width:0;border:1px solid var(--field-line);border-radius:10px;padding:9px 11px;font-size:12.5px;background:var(--field-bg);outline:none}
+.cat-add input:focus{border-color:var(--field-focus);box-shadow:0 0 0 3px var(--field-ring)}
+.cat-add button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:0 14px;font-size:12px;font-weight:800;color:var(--accent-text);white-space:nowrap}
+.cat-add button:hover{background:var(--olive-wash)}
+.cat-row{display:flex;align-items:center;gap:6px}
+.cat-row .cat-color-row{flex:1 1 auto;min-width:0}
+.cat-del{flex:0 0 auto;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--paper);
+  color:var(--muted);font-size:12px;font-weight:800;display:grid;place-items:center}
+.cat-del:hover{background:#FBEFEA;border-color:#EAD7CE;color:#A2635A}
 .cat-color-row{display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;text-align:left;
   border:1px solid var(--line);background:var(--panel);border-radius:11px;font-size:12.5px;font-weight:600;
   transition:border-color .15s,background .15s}
@@ -624,6 +647,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cat-color-row .cdot{width:16px;height:16px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(0,0,0,.10)}
 .cat-color-row .cdot.none{background:transparent;border:1px dashed var(--line)}
 .cat-color-row .cn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-color-row .cn-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:99px;background:var(--olive-wash);color:var(--accent-text);font-size:9.5px;font-weight:800;letter-spacing:0;vertical-align:1.5px}
 .cat-color-row .cval{flex:0 0 auto;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:0}
 .cat-color-row .chv{flex:0 0 auto;color:var(--muted);font-size:13px}
 
@@ -643,8 +667,8 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .color-row .ck{flex:0 0 auto;font-size:14px;font-weight:800;color:var(--accent-text);opacity:0}
 .color-row.on .ck{opacity:1}
 .color-row.custom .cname{color:var(--accent-text);font-weight:700}
-.color-tabs{display:flex;width:max-content;gap:3px;background:var(--seg-bg);border-radius:999px;padding:3px;margin:2px 0 12px}
-.color-tabs button{border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;color:var(--seg-ink)}
+.color-tabs{display:flex;width:100%;gap:2px;background:var(--seg-bg);border-radius:999px;padding:3px;margin:2px 0 12px}
+.color-tabs button{flex:1 1 0;border-radius:999px;padding:7px 4px;font-size:12.5px;font-weight:700;color:var(--seg-ink);text-align:center;white-space:nowrap;transition:background .15s,color .15s}
 .color-tabs button.active{background:var(--seg-active-bg);color:var(--seg-active-ink);box-shadow:var(--seg-shadow)}
 .color-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;border-radius:12px;overflow:hidden;
   box-shadow:0 0 0 1px var(--line-soft)}
@@ -652,16 +676,62 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .color-grid .csw:first-child{border-top-left-radius:12px}
 .color-grid .csw:nth-child(12){border-top-right-radius:12px}
 .color-grid .csw.on{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px;z-index:1}
-.color-preview{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--muted);font-weight:700}
-.color-preview .cp-dot{width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
-#colorInput{width:100%;height:150px;border:1px solid var(--line);border-radius:12px;padding:4px;background:var(--paper);cursor:pointer}
-.color-hex{display:flex;align-items:center;gap:8px;margin-top:10px}
-.color-hex span{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
-.color-hex input{flex:1;border:1px solid var(--field-line);background:var(--field-bg);border-radius:9px;padding:8px 10px;font-size:13px;letter-spacing:.04em;outline:none}
+/* 스펙트럼 — 2D 색상판 + 원형 커서 */
+.spec-wrap{position:relative;border-radius:14px;overflow:hidden;touch-action:none;cursor:crosshair;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 0 0 1px var(--line-soft),inset 0 0 0 1px rgba(255,255,255,.35)}
+#colorSpectrum{display:block;width:100%;height:auto;aspect-ratio:4/3}
+.spec-cursor{position:absolute;left:50%;top:50%;width:27px;height:27px;border-radius:50%;border:2.5px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.22),0 2px 6px rgba(0,0,0,.28);transform:translate(-50%,-50%);
+  pointer-events:none;will-change:left,top}
+/* 슬라이더 */
+.sl-block{margin-bottom:12px}
+.sl-block:last-of-type{margin-bottom:2px}
+.sl-label{display:block;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:-.01em;margin-bottom:5px}
+.sl-row{display:flex;align-items:center;gap:9px}
+.sl-range{-webkit-appearance:none;appearance:none;display:block;flex:1 1 auto;min-width:0;width:100%;height:29px;border-radius:999px;outline:none;margin:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.07)}
+.sl-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.30);border:2.5px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.26);cursor:pointer}
+.sl-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.30);border:2.5px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.26);cursor:pointer}
+.sl-num{flex:0 0 auto;width:66px;border:1px solid var(--field-line);background:var(--field-bg);border-radius:10px;padding:7px 6px;font-size:13px;
+  font-weight:700;text-align:center;letter-spacing:.02em;outline:none;font-variant-numeric:tabular-nums}
+.sl-num:focus{border-color:var(--field-focus);box-shadow:0 0 0 3px var(--field-ring)}
+/* 16진수 */
+.hex-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+.hex-row span{font-size:12px;font-weight:700;color:var(--accent-text);letter-spacing:-.01em}
+.hex-row input{width:122px;border:1px solid var(--field-line);background:var(--field-bg);border-radius:10px;padding:8px 10px;font-size:13px;
+  font-weight:700;text-align:center;letter-spacing:.07em;text-transform:uppercase;outline:none}
+.hex-row input:focus{border-color:var(--field-focus);box-shadow:0 0 0 3px var(--field-ring)}
+/* 하단 선택 색 미리보기 */
+.color-selbar{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.cp-swatch{flex:0 0 auto;width:56px;height:38px;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.cp-hex{font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cp-name{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:-.01em}
+
+/* ============ 독서 노트 색상 ============ */
+.nc-list{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.nc-row{display:flex;align-items:center;gap:11px;width:100%;padding:9px 13px;text-align:left;background:var(--paper);
+  border-bottom:1px solid var(--line-soft);font-size:13px;color:var(--ink);transition:background .15s}
+.nc-row:last-child{border-bottom:0}
+.nc-row:hover{background:var(--panel)}
+.nc-demo{flex:0 0 auto;display:grid;place-items:center;min-width:46px;height:30px;padding:0 7px;border-radius:8px;
+  font-size:12.5px;font-weight:800;letter-spacing:-.02em;background:var(--panel-hover);color:var(--ink)}
+.nc-meta{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.nc-name{font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nc-val{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.nc-dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.nc-dot.none{background:transparent !important;border:1.5px dashed var(--line);box-shadow:none}
+.nc-chev{flex:0 0 auto;color:var(--muted);font-size:14px}
+.nc-reset{display:block;width:100%;margin-top:12px;padding:11px;border:1px solid var(--line);border-radius:12px;
+  background:var(--panel);font-size:12.5px;font-weight:700;color:var(--ink-2);transition:background .15s}
+.nc-reset:hover{background:var(--panel-hover)}
 @media(max-width:520px){
   .color-grid{gap:1.5px}
   .color-row{padding:11px 12px;font-size:13px}
-  #colorInput{height:120px}
+  .nc-row{padding:9px 11px}
+  .nc-demo{min-width:42px;height:28px}
 }
 </style>
 </head>
@@ -671,7 +741,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   <div class="topbar-inner">
     <div class="brand">
       <p class="eyebrow">읽은 책 · 읽는 책</p>
-      <h1 class="app-title">책</h1>
+      <h1 class="app-title">조각서재</h1>
     </div>
     <div class="top-actions">
       <p class="summary" id="summary">0권 · 조각 0장</p>
@@ -705,7 +775,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
     <span id="emptyDesc">읽고 있는 책을 한 권 담아 보세요.</span><br>
     <button class="btn-add" id="btnAddEmpty">+ 책 추가</button>
   </div>
-  <p class="foot"><b>무료 개인용 독서 기록장</b> · 책·노트는 이 브라우저(localStorage), 폰트는 IndexedDB에 저장됩니다.<br>⚙️ 설정의 GitHub 동기화를 켜면 폰·맥 서재가 자동으로 맞춰지고, JSON 백업으로도 옮길 수 있어요.</p>
+  <p class="foot"><b>조각서재</b> · 무료 개인용 독서 기록장 · 책·노트는 이 브라우저(localStorage), 폰트는 IndexedDB에 저장됩니다.<br>⚙️ 설정의 GitHub 동기화를 켜면 폰·맥 서재가 자동으로 맞춰지고, JSON 백업으로도 옮길 수 있어요.</p>
 </main>
 
 <main class="shell" id="calendarView" hidden>
@@ -811,6 +881,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
           <button type="button" data-md="task">체크</button>
           <span class="tb-sep"></span>
           <button type="button" data-md="hr">구분선</button>
+          <button type="button" id="btnNoteColors" class="tb-color" aria-label="노트 색상" title="노트 색상"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-3.6-4-7.5-9-7.5Z"/><circle cx="7.6" cy="11.6" r="1.05" fill="currentColor" stroke="none"/><circle cx="10.1" cy="7.7" r="1.05" fill="currentColor" stroke="none"/><circle cx="14.6" cy="7.7" r="1.05" fill="currentColor" stroke="none"/></svg><span>색상</span></button>
         </div>
         <div class="editor" id="editorWrap" data-mode="edit">
           <textarea id="noteInput" placeholder="# 오늘 읽은 부분&#10;&#10;> 기억하고 싶은 문장을 그대로 옮겨 적어 보세요.&#10;&#10;- [ ] 해 볼 것 하나&#10;- 핵심만 한 줄로"></textarea>
@@ -975,7 +1046,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 
       <div class="set-block">
         <h3>분야 색상</h3>
-        <p class="hint">분야마다 색을 정하면 분야 칩·책 배지·자동 표지·캘린더에 그 색이 함께 쓰여요. 분야를 누르면 색상 팔레트가 열립니다.</p>
+        <p class="hint">분야를 직접 추가하거나 색을 정할 수 있어요. 분야 칩·책 배지·자동 표지·캘린더에 그 색이 함께 쓰입니다.</p>
+        <div class="cat-add">
+          <input id="newCatInput" type="text" placeholder="새 분야 이름 (예: 에세이, 가드닝)" maxlength="20" autocomplete="off" enterkeyhint="done" aria-label="새 분야 이름">
+          <button type="button" id="btnAddCat">+ 추가</button>
+        </div>
         <div class="cat-color-list" id="catColorList"></div>
       </div>
 
@@ -1059,24 +1134,42 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       </button>
     </div>
     <div class="modal-body">
+      <button type="button" class="color-back" id="colorBack" hidden>‹ 색상 목록</button>
       <p class="color-sub" id="colorSub">분야 색상</p>
       <div class="color-list" id="colorPresetList"></div>
       <div class="color-custom" id="colorCustom" hidden>
-        <button type="button" class="color-back" id="colorBack">‹ 색상 목록</button>
         <div class="color-tabs" role="tablist" aria-label="색상 고르기">
           <button type="button" class="active" data-ctab="grid" role="tab" aria-selected="true">격자</button>
           <button type="button" data-ctab="spectrum" role="tab" aria-selected="false">스펙트럼</button>
+          <button type="button" data-ctab="slider" role="tab" aria-selected="false">슬라이더</button>
         </div>
         <div id="colorGridPane">
           <div class="color-grid" id="colorGrid" role="grid" aria-label="색상 격자"></div>
-          <div class="color-preview"><span class="cp-dot" id="colorPreviewDot"></span><span class="cp-hex" id="colorPreviewHex">—</span></div>
         </div>
         <div id="colorSpectrumPane" hidden>
-          <input type="color" id="colorInput" value="#FF3B30" aria-label="색상 선택">
-          <div class="color-hex">
-            <span>HEX</span>
-            <input type="text" id="colorHexInput" value="#FF3B30" maxlength="7" spellcheck="false" autocomplete="off">
+          <div class="spec-wrap" id="specWrap">
+            <canvas id="colorSpectrum" width="480" height="360" aria-label="스펙트럼 색상판"></canvas>
+            <span class="spec-cursor" id="specCursor" aria-hidden="true"></span>
           </div>
+        </div>
+        <div id="colorSliderPane" hidden>
+          <div class="sl-block">
+            <span class="sl-label">빨간색</span>
+            <div class="sl-row"><input type="range" class="sl-range" id="slR" min="0" max="255" step="1" aria-label="빨간색"><input type="text" class="sl-num" id="numR" inputmode="numeric" maxlength="3" spellcheck="false" autocomplete="off" aria-label="빨간색 값"></div>
+          </div>
+          <div class="sl-block">
+            <span class="sl-label">초록색</span>
+            <div class="sl-row"><input type="range" class="sl-range" id="slG" min="0" max="255" step="1" aria-label="초록색"><input type="text" class="sl-num" id="numG" inputmode="numeric" maxlength="3" spellcheck="false" autocomplete="off" aria-label="초록색 값"></div>
+          </div>
+          <div class="sl-block">
+            <span class="sl-label">파란색</span>
+            <div class="sl-row"><input type="range" class="sl-range" id="slB" min="0" max="255" step="1" aria-label="파란색"><input type="text" class="sl-num" id="numB" inputmode="numeric" maxlength="3" spellcheck="false" autocomplete="off" aria-label="파란색 값"></div>
+          </div>
+          <div class="hex-row"><span>16진수 색상 #</span><input type="text" id="colorHexInput" value="#FF3B30" maxlength="7" spellcheck="false" autocomplete="off" aria-label="16진수 색상"></div>
+        </div>
+        <div class="color-selbar">
+          <span class="cp-swatch" id="colorSwatch"></span>
+          <span class="cp-hex" id="colorPreviewHex">—</span>
         </div>
       </div>
     </div>
@@ -1087,8 +1180,28 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   </section>
 </div>
 
-<!-- ===== highlights modal ===== -->
-<div class="modal-wrap" id="quotesModal" hidden>
+<!-- ===== 독서 노트 색상 ===== -->
+<div class="modal-wrap" id="noteColorsModal" hidden>
+  <div class="modal-backdrop" data-close="noteColorsModal"></div>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="ncTitle">
+    <div class="modal-head">
+      <h2 id="ncTitle">독서 노트 색상</h2>
+      <button class="x-btn" data-close="noteColorsModal" aria-label="닫기">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="hint" style="margin:0 0 12px">항목을 눌러 색을 고르세요. 정한 색은 <b>미리보기·하이라이트 모아보기·편집 화면</b>에 함께 적용되고, GitHub 동기화로 다른 기기에도 이어집니다.</p>
+      <div class="nc-list" id="ncList"></div>
+      <button type="button" class="nc-reset" id="btnResetNoteColors">기본값으로 초기화</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-primary" data-close="noteColorsModal">닫기</button>
+    </div>
+  </section>
+</div>
+
+<!-- ===== highlights modal ===== --><div class="modal-wrap" id="quotesModal" hidden>
   <div class="modal-backdrop" data-close="quotesModal"></div>
   <section class="modal" role="dialog" aria-modal="true" aria-labelledby="qTitle">
     <div class="modal-head">
@@ -1221,6 +1334,28 @@ function sanitizeCategoryColors(obj){
     var key=String(k||'').trim().slice(0,40);
     var hex=fixHex(obj[k]);
     if(key&&hex) out[key]=hex;
+  });
+  return out;
+}
+/* 독서 노트 요소별 색 (빈 값 = 테마 기본색) */
+var NOTE_COLOR_KEYS=['index','text','quote','dot','check','checkText'];
+function sanitizeNoteColors(obj){
+  var out={};
+  if(!obj||typeof obj!=='object') return out;
+  NOTE_COLOR_KEYS.forEach(function(k){
+    var hex=fixHex(obj[k]);
+    if(hex) out[k]=hex;
+  });
+  return out;
+}
+/* 내가 추가한 분야 */
+function sanitizeCustomCategories(arr){
+  var out=[],seen={};
+  if(!Array.isArray(arr)) return out;
+  arr.forEach(function(c){
+    var name=String(c||'').trim().replace(/\s+/g,' ').slice(0,20);
+    if(!name || seen[name] || DEFAULT_CATS.indexOf(name)>-1) return;
+    seen[name]=1; out.push(name);
   });
   return out;
 }
@@ -1359,7 +1494,7 @@ function fragmentCount(md){
 /* ---------------- storage ---------------- */
 function seedDB(){
   var now=Date.now(), day=86400000;
-  return {version:2,deleted:{},fontUpdatedAt:0,settings:{aladinKey:'',kakaoKey:'',fontPreset:'gothic',fontScope:'all',customFontName:'',sort:'recent',colorTheme:'default',categoryColors:{},catUpdatedAt:0},books:[
+  return {version:2,deleted:{},fontUpdatedAt:0,settings:{aladinKey:'',kakaoKey:'',fontPreset:'gothic',fontScope:'all',customFontName:'',sort:'recent',colorTheme:'default',categoryColors:{},catUpdatedAt:0,noteColors:{},noteColorsUpdatedAt:0,customCategories:[],customCatsUpdatedAt:0},books:[
     {id:'bk_1',no:1,title:'아주 작은 습관의 힘',author:'제임스 클리어',publisher:'비즈니스북스',category:'마음·습관',status:'done',cover:'',
      startDate:'2026-10-03',finishedAt:'2026-11-02',createdAt:now-56*day,updatedAt:now-3*day,
      reason:'매일 1%씩 쌓이는 게 정말 되는지 내 생활로 확인해 보고 싶어서.',
@@ -1422,41 +1557,115 @@ function renderThemeUI(){
   });
 }
 /* ---- 분야 색상 설정 ---- */
+function customCategories(){ return (db.settings.customCategories||(db.settings.customCategories=[])); }
+function isCustomCategory(c){ return customCategories().indexOf(c)>-1; }
 function categoryListForSettings(){
-  var set={},head=[],tail=[];
+  var set={},head=[],mine=[],tail=[];
   DEFAULT_CATS.forEach(function(c){ if(c&&!set[c]){ set[c]=1; head.push(c); } });
+  customCategories().forEach(function(c){ if(c&&!set[c]){ set[c]=1; mine.push(c); } });
   db.books.forEach(function(b){ if(b.category && !set[b.category]){ set[b.category]=1; tail.push(b.category); } });
   Object.keys(db.settings.categoryColors||{}).forEach(function(c){ if(c && !set[c]){ set[c]=1; tail.push(c); } });
   tail.sort(function(a,b){ return String(a).localeCompare(String(b),'ko'); });
-  return head.concat(tail);
+  return head.concat(mine,tail);
 }
 function renderCatColorList(){
   var box=$('#catColorList');
   if(!box) return;
   box.innerHTML=categoryListForSettings().map(function(c){
     var col=categoryColor(c);
-    return '<button type="button" class="cat-color-row" data-cat="'+esc(c)+'">'
+    var mine=isCustomCategory(c);
+    return '<div class="cat-row">'
+      +'<button type="button" class="cat-color-row" data-cat="'+esc(c)+'">'
       +'<span class="cdot'+(col?'':' none')+'"'+(col?' style="background:'+col+'"':'')+'></span>'
-      +'<span class="cn">'+esc(c)+'</span>'
+      +'<span class="cn">'+esc(c)+(mine?'<span class="cn-tag">내 분야</span>':'')+'</span>'
       +'<span class="cval">'+(col?col:'기본')+'</span>'
-      +'<span class="chv" aria-hidden="true">›</span></button>';
+      +'<span class="chv" aria-hidden="true">›</span></button>'
+      +(mine?'<button type="button" class="cat-del" data-delcat="'+esc(c)+'" aria-label="'+esc(c)+' 분야 빼기" title="분야 빼기">✕</button>':'')
+      +'</div>';
   }).join('');
 }
-var colorUI={cat:'',value:'',custom:false,tab:'grid'};
-function hslToHex(h,s,l){
+function addCustomCategory(name){
+  name=String(name||'').trim().replace(/\s+/g,' ').slice(0,20);
+  if(!name){ toast('분야 이름을 입력해 주세요.'); return false; }
+  if(DEFAULT_CATS.indexOf(name)>-1 || customCategories().indexOf(name)>-1 || db.books.some(function(b){ return b.category===name; })){
+    toast('‘'+name+'’ 분야는 이미 있어요.'); return false;
+  }
+  customCategories().push(name);
+  db.settings.customCatsUpdatedAt=Date.now();
+  saveDB();
+  renderCatColorList();
+  renderShelf();
+  renderCatQuick();
+  toast('‘'+name+'’ 분야를 추가했어요. 색을 정해 보세요.');
+  openColorSheet(name);
+  return true;
+}
+function removeCustomCategory(name){
+  var list=customCategories(), i=list.indexOf(name);
+  if(i<0) return;
+  var used=db.books.some(function(b){ return b.category===name; });
+  var msg='‘'+name+'’ 분야를 목록에서 뻐까요?'+(used?'\n이 분야를 쓰는 책은 그대로 남고, 서재 분야 칩에도 계속 보여요.':'');
+  if(!confirm(msg)) return;
+  list.splice(i,1);
+  /* 이 분야를 쓰는 책이 없으면 색 지정도 함께 지웁니다 */
+  if(!used && db.settings.categoryColors && db.settings.categoryColors[name]){
+    delete db.settings.categoryColors[name];
+    db.settings.catUpdatedAt=Date.now();
+  }
+  db.settings.customCatsUpdatedAt=Date.now();
+  saveDB();
+  renderCatColorList();
+  renderShelf();
+  renderCatQuick();
+  toast('‘'+name+'’ 분야를 목록에서 뻐어요.');
+}
+var colorUI={mode:'cat',cat:'',noteKey:'',value:'',custom:false,tab:'grid',painting:false};
+function hslToRgb(h,s,l){
   s/=100; l/=100;
   var a=s*Math.min(l,1-l);
   function k(n){ return (n+h/30)%12; }
   function f(n){ var c=l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); return Math.round(255*c); }
-  function to2(v){ return ('0'+v.toString(16)).slice(-2); }
-  return ('#'+to2(f(0))+to2(f(8))+to2(f(4))).toUpperCase();
+  return [f(0),f(8),f(4)];
+}
+function rgbToHex(r,g,b){
+  function t(v){ v=Math.max(0,Math.min(255,Math.round(Number(v)||0))); return ('0'+v.toString(16)).slice(-2).toUpperCase(); }
+  return '#'+t(r)+t(g)+t(b);
+}
+function hslToHex(h,s,l){ var c=hslToRgb(h,s,l); return rgbToHex(c[0],c[1],c[2]); }
+function hexToHsl(hex){
+  var c=hexRgb(hex); if(!c) return {h:0,s:100,l:50};
+  var r=c[0]/255,g=c[1]/255,b=c[2]/255;
+  var max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+  var h=0,s=0,l=(max+min)/2;
+  if(d){
+    s=d/(1-Math.abs(2*l-1));
+    if(max===r) h=((g-b)/d)%6;
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60; if(h<0) h+=360;
+  }
+  return {h:h,s:Math.round(s*100),l:Math.round(l*100)};
+}
+function mixHex(a,b,t){                       /* a*(1-t) + b*t */
+  var x=hexRgb(a)||[0,0,0], y=hexRgb(b)||[0,0,0];
+  return rgbToHex(x[0]*(1-t)+y[0]*t,x[1]*(1-t)+y[1]*t,x[2]*(1-t)+y[2]*t);
+}
+function contrastRatio(a,b){
+  var la=hexLum(a), lb=hexLum(b);
+  var hi=Math.max(la,lb), lo=Math.min(la,lb);
+  return (hi+0.05)/(lo+0.05);
+}
+function readableOn(bg,color){
+  var tries=[color,mixHex(color,'#1B1710',0.35),mixHex(color,'#1B1710',0.55),mixHex(color,'#1B1710',0.72)];
+  for(var i=0;i<tries.length;i++){ if(contrastRatio(tries[i],bg)>=4.5) return tries[i]; }
+  return '#241F16';
 }
 function colorGridCells(){
   var out=[],c,r;
   for(c=0;c<12;c++){
     var g=Math.round(255-(c*255/11));
     var h='#'+[g,g,g].map(function(v){return ('0'+v.toString(16)).slice(-2)}).join('');
-    out.push(h);
+    out.push(h.toUpperCase());
   }
   for(r=0;r<9;r++){
     var L=30+r*7.5;
@@ -1467,6 +1676,55 @@ function colorGridCells(){
   }
   return out;
 }
+/* ---- 스펙트럼 캔버스 (세로 = 색상, 가로 = 밝기: 흰색 → 선명 → 검정) ---- */
+var specDrawn=false;
+function drawSpectrum(){
+  var cv=$('#colorSpectrum');
+  if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d');
+  var W=cv.width, H=cv.height;
+  var img=ctx.createImageData(W,H), d=img.data;
+  for(var yy=0;yy<H;yy++){
+    var hue=yy/(H-1)*360;
+    for(var x=0;x<W;x++){
+      var l=100*(1-x/(W-1));
+      var rgb=hslToRgb(hue,100,l);
+      var i=(yy*W+x)*4;
+      d[i]=rgb[0]; d[i+1]=rgb[1]; d[i+2]=rgb[2]; d[i+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+}
+function placeSpectrumCursor(){
+  var cur=$('#specCursor');
+  if(!cur) return;
+  var hsl=hexToHsl(colorUI.value||'#FF3B30');
+  cur.style.left=Math.max(0,Math.min(100,(1-hsl.l/100)*100))+'%';
+  cur.style.top=Math.max(0,Math.min(100,hsl.h/360*100))+'%';
+}
+function sliderTrack(idx,c){
+  var a=c.slice(), b=c.slice();
+  a[idx]=0; b[idx]=255;
+  return 'linear-gradient(90deg,'+rgbToHex(a[0],a[1],a[2])+','+rgbToHex(b[0],b[1],b[2])+')';
+}
+function syncColorUI(){
+  var hex=fixHex(colorUI.value)||'#FF3B30';
+  colorUI.value=hex;
+  var c=hexRgb(hex);
+  var sw=$('#colorSwatch'); if(sw) sw.style.background=hex;
+  var ph=$('#colorPreviewHex'); if(ph) ph.textContent=hex;
+  var hx=$('#colorHexInput'); if(hx && document.activeElement!==hx) hx.value=hex;
+  [['slR','numR',0],['slG','numG',1],['slB','numB',2]].forEach(function(t){
+    var range=$('#'+t[0]), num=$('#'+t[1]), v=c[t[2]];
+    if(range){
+      if(document.activeElement!==range) range.value=v;
+      range.style.background=sliderTrack(t[2],c);
+    }
+    if(num && document.activeElement!==num) num.value=v;
+  });
+  placeSpectrumCursor();
+  $$('#colorGrid .csw').forEach(function(b){ b.classList.toggle('on',b.dataset.hex===hex); });
+}
 function renderColorGrid(){
   var box=$('#colorGrid');
   if(!box) return;
@@ -1475,27 +1733,26 @@ function renderColorGrid(){
       return '<button type="button" class="csw'+(h===colorUI.value?' on':'')+'" data-hex="'+h+'" style="background:'+h+'" aria-label="'+h+'"></button>';
     }).join('');
     box.dataset.built='1';
-  }else{
-    $$('#colorGrid .csw').forEach(function(b){ b.classList.toggle('on',b.dataset.hex===colorUI.value); });
   }
-  var dot=$('#colorPreviewDot'),hex=$('#colorPreviewHex');
-  if(dot) dot.style.background=colorUI.value||'transparent';
-  if(hex) hex.textContent=colorUI.value||'—';
-  var inp=$('#colorInput'),hx=$('#colorHexInput');
-  if(inp && colorUI.value) inp.value=colorUI.value.toLowerCase();
-  if(hx) hx.value=colorUI.value||'';
+  $$('#colorGrid .csw').forEach(function(b){ b.classList.toggle('on',b.dataset.hex===colorUI.value); });
 }
 function setColorTab(tab){
-  colorUI.tab=(tab==='spectrum')?'spectrum':'grid';
+  colorUI.tab=(tab==='spectrum'||tab==='slider')?tab:'grid';
   $$('#colorCustom .color-tabs button').forEach(function(b){
     var on=b.dataset.ctab===colorUI.tab;
     b.classList.toggle('active',on); b.setAttribute('aria-selected',on?'true':'false');
   });
-  var gp=$('#colorGridPane'),sp=$('#colorSpectrumPane');
+  var gp=$('#colorGridPane'),sp=$('#colorSpectrumPane'),sl=$('#colorSliderPane');
   if(gp) gp.hidden=colorUI.tab!=='grid';
   if(sp) sp.hidden=colorUI.tab!=='spectrum';
+  if(sl) sl.hidden=colorUI.tab!=='slider';
+  if(colorUI.tab==='spectrum'){
+    if(!specDrawn){ drawSpectrum(); specDrawn=true; }
+    placeSpectrumCursor();
+  }
 }
 function renderColorPresets(){
+  if(!$('#colorPresetList')) return;
   var list=CAT_COLOR_PRESETS.map(function(p){
     var on=(!colorUI.custom && p.hex===colorUI.value);
     return '<button type="button" class="color-row'+(on?' on':'')+'" data-hex="'+p.hex+'">'
@@ -1504,20 +1761,48 @@ function renderColorPresets(){
   });
   var noneOn=(!colorUI.custom && !colorUI.value);
   list.push('<button type="button" class="color-row'+(noneOn?' on':'')+'" data-hex="">'
-    +'<span class="cdot none"></span><span class="cname">기본 (색 없음)</span><span class="ck" aria-hidden="true">✓</span></button>');
+    +'<span class="cdot none"></span><span class="cname">'+(colorUI.mode==='note'?'기본값 (색 없음)':'기본 (색 없음)')+'</span><span class="ck" aria-hidden="true">✓</span></button>');
   list.push('<button type="button" class="color-row custom'+(colorUI.custom?' on':'')+'" data-custom="1">'
     +'<span class="cdot" style="background:'+(colorUI.value||'#C7C7CC')+'"></span>'
     +'<span class="cname">사용자화…</span><span class="ck" aria-hidden="true">✓</span></button>');
   $('#colorPresetList').innerHTML=list.join('');
 }
+function colorBackLabel(){
+  var b=$('#colorBack');
+  if(!b) return;
+  if(colorUI.custom){ b.hidden=false; b.textContent='‹ 색상 목록'; return; }
+  if(colorUI.mode==='note'){ b.hidden=false; b.textContent='‹ 독서 노트 색상'; return; }
+  b.hidden=true;
+}
 function openColorSheet(cat){
-  colorUI.cat=cat; colorUI.value=categoryColor(cat); colorUI.custom=false; colorUI.tab='grid';
+  colorUI.mode='cat'; colorUI.cat=cat; colorUI.noteKey='';
+  colorUI.value=categoryColor(cat); colorUI.custom=false; colorUI.tab='grid';
+  $('#colorTitle').textContent='색상';
   $('#colorSub').textContent='‘'+cat+'’ 색상';
   $('#colorPresetList').hidden=false;
   $('#colorCustom').hidden=true;
   $('#colorFoot').hidden=true;
+  colorBackLabel();
   setColorTab('grid');
   renderColorPresets();
+  openModal('colorModal');
+}
+function openNoteColorPicker(key){
+  var item=null;
+  NOTE_COLOR_ITEMS.forEach(function(it){ if(it.key===key) item=it; });
+  if(!item) return;
+  colorUI.mode='note'; colorUI.cat=''; colorUI.noteKey=key;
+  colorUI.value=noteSeedHex(key);
+  colorUI.custom=false; colorUI.tab='grid';
+  $('#colorTitle').textContent='노트 색상';
+  $('#colorSub').textContent=item.name+' 색';
+  $('#colorPresetList').hidden=false;
+  $('#colorCustom').hidden=true;
+  $('#colorFoot').hidden=true;
+  colorBackLabel();
+  setColorTab('grid');
+  renderColorPresets();
+  if(!$('#noteColorsModal').hidden) closeModal('noteColorsModal');
   openModal('colorModal');
 }
 function openColorCustom(){
@@ -1526,8 +1811,10 @@ function openColorCustom(){
   $('#colorCustom').hidden=false;
   $('#colorFoot').hidden=false;
   $('#colorGrid').dataset.built='';
+  colorBackLabel();
   setColorTab(colorUI.tab);
   renderColorGrid();
+  syncColorUI();
   renderColorPresets();
 }
 function backToColorPresets(){
@@ -1535,7 +1822,22 @@ function backToColorPresets(){
   $('#colorPresetList').hidden=false;
   $('#colorCustom').hidden=true;
   $('#colorFoot').hidden=true;
+  colorBackLabel();
   renderColorPresets();
+}
+function closeColorSheet(){
+  closeModal('colorModal');
+  if(colorUI.mode==='note'){ renderNoteColorList(); openModal('noteColorsModal'); }
+  else colorUI.mode='cat';
+}
+function applyColorChoice(hex){
+  hex=fixHex(hex);
+  if(colorUI.mode==='note'){
+    setNoteColor(colorUI.noteKey,hex);
+  }else{
+    applyCategoryColor(colorUI.cat,hex);
+    closeModal('colorModal');
+  }
 }
 function applyCategoryColor(cat,hex){
   var m=db.settings.categoryColors||(db.settings.categoryColors={});
@@ -1545,6 +1847,110 @@ function applyCategoryColor(cat,hex){
   renderCatColorList();
   renderShelf();
   toast(hex? '‘'+cat+'’ 색을 지정했어요.' : '‘'+cat+'’ 색을 기본으로 되돌렸어요.');
+}
+
+/* ---------------- 독서 노트 요소별 색 ---------------- */
+var NOTE_COLOR_ITEMS=[
+  {key:'index',name:'인덱스 (# 제목)',demo:'#'},
+  {key:'text',name:'일반 텍스트',demo:'가나'},
+  {key:'quote',name:'인용구 (>)',demo:'“ ”'},
+  {key:'dot',name:'점 (• 목록)',demo:'••'},
+  {key:'check',name:'체크박스 (- [ ])',demo:'☑'},
+  {key:'checkText',name:'체크박스 내 텍스트',demo:'할 일'}
+];
+function noteSeedHex(key){
+  var set=noteColor(key);
+  if(set) return set;
+  if(key==='quote'){
+    var v=getComputedStyle(document.documentElement).getPropertyValue('--peach-ink').trim();
+    return fixHex(v)||'#66513B';
+  }
+  if(key==='check') return '#B9736A';
+  return '#3B382F';
+}
+var NOTE_COLOR_LABEL={index:'인덱스',text:'일반 텍스트',quote:'인용구',dot:'점',check:'체크박스',checkText:'체크박스 내 텍스트'};
+function noteColors(){ return db.settings.noteColors||(db.settings.noteColors={}); }
+function noteColor(k){ return fixHex((db.settings.noteColors||{})[k])||''; }
+function noteColorsEmpty(){
+  var m=db.settings.noteColors||{};
+  for(var i=0;i<NOTE_COLOR_KEYS.length;i++){ if(fixHex(m[NOTE_COLOR_KEYS[i]])) return false; }
+  return true;
+}
+function applyNoteColors(){
+  var root=document.documentElement, c=db.settings.noteColors||{};
+  var idx=fixHex(c.index),txt=fixHex(c.text),q=fixHex(c.quote),dot=fixHex(c.dot),chk=fixHex(c.check),ctxt=fixHex(c.checkText);
+  function setv(n,v){ if(v) root.style.setProperty(n,v); else root.style.removeProperty(n); }
+  setv('--nc-index',idx);
+  setv('--nc-text',txt);
+  setv('--nc-dot',dot);
+  setv('--nc-check',chk);
+  setv('--nc-check-text',ctxt);
+  setv('--nc-check-ink',chk?(inkOn(chk)==='#FFFFFF'?'#FFFFFF':mixHex(chk,'#FFFFFF',0.72)):'');
+  setv('--nc-check-text-done',ctxt?mixHex(ctxt,'#FFFFFF',0.45):'');
+  if(q){
+    var bg=mixHex(q,'#FFFFFF',0.87);
+    setv('--nc-quote-bg',bg);
+    setv('--nc-quote-edge',mixHex(q,'#FFFFFF',0.52));
+    setv('--nc-quote-ink',readableOn(bg,q));
+  }else{
+    root.style.removeProperty('--nc-quote-bg');
+    root.style.removeProperty('--nc-quote-edge');
+    root.style.removeProperty('--nc-quote-ink');
+  }
+}
+function setNoteColor(key,hex){
+  var m=noteColors();
+  hex=fixHex(hex);
+  if(hex) m[key]=hex; else delete m[key];
+  db.settings.noteColorsUpdatedAt=Date.now();
+  saveDB();
+  applyNoteColors();
+  if(!$('#sheetWrap').hidden) renderPreview();
+  if(!$('#noteColorsModal').hidden) renderNoteColorList();
+  closeColorSheet();
+  toast(hex? (NOTE_COLOR_LABEL[key]||'노트')+' 색을 바꿨어요.' : (NOTE_COLOR_LABEL[key]||'노트')+' 색을 기본값으로 되돌렸어요.');
+}
+function resetNoteColors(){
+  db.settings.noteColors={};
+  db.settings.noteColorsUpdatedAt=Date.now();
+  saveDB();
+  applyNoteColors();
+  if(!$('#sheetWrap').hidden) renderPreview();
+  renderNoteColorList();
+  toast('독서 노트 색을 기본값으로 되돌렸어요.');
+}
+function noteDemoStyle(key,c){
+  if(key==='quote'){
+    if(!c) return '';
+    var bg=mixHex(c,'#FFFFFF',0.87);
+    return 'background:'+bg+';color:'+readableOn(bg,c)+';box-shadow:inset 0 0 0 1px '+mixHex(c,'#FFFFFF',0.52);
+  }
+  if(key==='check'){
+    if(!c) return 'background:#fff;color:#B9736A;box-shadow:inset 0 0 0 1.5px #CFA9A0';
+    return 'background:'+c+';color:'+(inkOn(c)==='#FFFFFF'?'#FFFFFF':mixHex(c,'#FFFFFF',0.72))+';box-shadow:inset 0 0 0 1.5px '+c;
+  }
+  if(c) return 'color:'+c;
+  return '';
+}
+function renderNoteColorList(){
+  var box=$('#ncList');
+  if(!box) return;
+  box.innerHTML=NOTE_COLOR_ITEMS.map(function(it){
+    var c=noteColor(it.key);
+    var style=noteDemoStyle(it.key,c);
+    return '<button type="button" class="nc-row" data-nc="'+it.key+'">'
+      +'<span class="nc-demo"'+(style?' style="'+style+'"':'')+'>'+esc(it.demo)+'</span>'
+      +'<span class="nc-meta"><span class="nc-name">'+esc(it.name)+'</span>'
+      +'<span class="nc-val">'+(c?c:'기본값')+'</span></span>'
+      +'<span class="nc-dot'+(c?'':' none')+'"'+(c?' style="background:'+c+'"':'')+' aria-hidden="true"></span>'
+      +'<span class="nc-chev" aria-hidden="true">›</span></button>';
+  }).join('');
+  var rb=$('#btnResetNoteColors');
+  if(rb) rb.disabled=noteColorsEmpty();
+}
+function openNoteColorsModal(){
+  renderNoteColorList();
+  openModal('noteColorsModal');
 }
 
 function loadDB(){
@@ -1565,7 +1971,11 @@ function loadDB(){
           sort:s.sort==='title'?'title':'recent',
           colorTheme:fixTheme(s.colorTheme),
           categoryColors:sanitizeCategoryColors(s.categoryColors),
-          catUpdatedAt:Number(s.catUpdatedAt)||0
+          catUpdatedAt:Number(s.catUpdatedAt)||0,
+          noteColors:sanitizeNoteColors(s.noteColors),
+          noteColorsUpdatedAt:Number(s.noteColorsUpdatedAt)||0,
+          customCategories:sanitizeCustomCategories(s.customCategories),
+          customCatsUpdatedAt:Number(s.customCatsUpdatedAt)||0
         }};
       }
     }
@@ -1729,12 +2139,18 @@ function settingsCanon(p){
           fixTheme(st.colorTheme),
           Number(st.fontUpdatedAt)||0,
           Number(st.catUpdatedAt)||0,
-          JSON.stringify(sanitizeCategoryColors(st.categoryColors))].join('|');
+          JSON.stringify(sanitizeCategoryColors(st.categoryColors)),
+          Number(st.noteColorsUpdatedAt)||0,
+          JSON.stringify(sanitizeNoteColors(st.noteColors)),
+          Number(st.customCatsUpdatedAt)||0,
+          JSON.stringify(sanitizeCustomCategories(st.customCategories))].join('|');
 }
 function localSettingsCanon(){
   var st={fontPreset:db.settings.fontPreset,fontScope:db.settings.fontScope,colorTheme:db.settings.colorTheme,
           fontUpdatedAt:db.fontUpdatedAt,catUpdatedAt:db.settings.catUpdatedAt,
-          categoryColors:db.settings.categoryColors};
+          categoryColors:db.settings.categoryColors,
+          noteColorsUpdatedAt:db.settings.noteColorsUpdatedAt,noteColors:db.settings.noteColors,
+          customCatsUpdatedAt:db.settings.customCatsUpdatedAt,customCategories:db.settings.customCategories};
   return settingsCanon({settings:st});
 }
 function syncPayload(){
@@ -1746,7 +2162,11 @@ function syncPayload(){
       colorTheme:fixTheme(db.settings.colorTheme),
       fontUpdatedAt:Number(db.fontUpdatedAt)||0,
       categoryColors:sanitizeCategoryColors(db.settings.categoryColors),
-      catUpdatedAt:Number(db.settings.catUpdatedAt)||0
+      catUpdatedAt:Number(db.settings.catUpdatedAt)||0,
+      noteColors:sanitizeNoteColors(db.settings.noteColors),
+      noteColorsUpdatedAt:Number(db.settings.noteColorsUpdatedAt)||0,
+      customCategories:sanitizeCustomCategories(db.settings.customCategories),
+      customCatsUpdatedAt:Number(db.settings.customCatsUpdatedAt)||0
     },
     books:db.books.map(function(b){ return b; }),
     deleted:sanitizeDeleted(db.deleted)
@@ -1773,6 +2193,18 @@ function pullRemoteFont(p){
   if(catUpdated>(Number(db.settings.catUpdatedAt)||0)){
     db.settings.categoryColors=sanitizeCategoryColors(st.categoryColors);
     db.settings.catUpdatedAt=catUpdated;
+    changed=true;
+  }
+  var ncUpdated=Number(st.noteColorsUpdatedAt)||0;
+  if(ncUpdated>(Number(db.settings.noteColorsUpdatedAt)||0)){
+    db.settings.noteColors=sanitizeNoteColors(st.noteColors);
+    db.settings.noteColorsUpdatedAt=ncUpdated;
+    changed=true;
+  }
+  var ccUpdated=Number(st.customCatsUpdatedAt)||0;
+  if(ccUpdated>(Number(db.settings.customCatsUpdatedAt)||0)){
+    db.settings.customCategories=sanitizeCustomCategories(st.customCategories);
+    db.settings.customCatsUpdatedAt=ccUpdated;
     changed=true;
   }
   return changed;
@@ -1915,7 +2347,9 @@ async function syncRun(mode,opts){
     if(fontMoved){
       saveDB({silent:true});
       applyFontSettings(); renderFontUI(); applyColorTheme(); renderThemeUI(); loadFullFont(db.settings.fontPreset);
+      applyNoteColors();
       renderShelf(); renderCatColorList();
+      if(!$('#sheetWrap').hidden) renderPreview();
     }
     var localCanon=canonState(db.books,db.deleted||{});
     var rCanon=remote.payload?canonState(rBooks,sanitizeDeleted(rp.deleted)):'';
@@ -1932,7 +2366,7 @@ async function syncRun(mode,opts){
         var rp2=again.payload||{};
         var rBooks2=Array.isArray(rp2.books)?rp2.books.map(fixBook).filter(Boolean):[];
         applySyncState(mergeSync(db.books,db.deleted||{},rBooks2,sanitizeDeleted(rp2.deleted)));
-        if(pullRemoteFont(rp2)){ applyColorTheme(); renderThemeUI(); renderShelf(); renderCatColorList(); }
+        if(pullRemoteFont(rp2)){ applyColorTheme(); renderThemeUI(); applyNoteColors(); renderShelf(); renderCatColorList(); if(!$('#sheetWrap').hidden) renderPreview(); }
         await ghWriteFile(repo,JSON.stringify(syncPayload()),again.sha);
         pushed=true;
       }
@@ -2287,6 +2721,8 @@ function renderShelf(){
 
   var cats={};
   books.forEach(function(b){ if(b.category) cats[b.category]=(cats[b.category]||0)+1; });
+  /* 직접 추가한 분야는 책이 0권이어도 칩에 남깁니다 */
+  customCategories().forEach(function(c){ if(!(c in cats)) cats[c]=0; });
   var catKeys=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a]});
   if(ui.cat!=='all' && catKeys.indexOf(ui.cat)===-1) ui.cat='all';
 
@@ -2313,7 +2749,7 @@ function renderShelf(){
 
   $('#grid').innerHTML=list.map(function(b){
     return '<button class="book-card" data-id="'+esc(b.id)+'" aria-label="'+esc(b.title)+' 상세 보기">'
-      +'<div class="cover"><img src="'+esc(coverSrc(b))+'" alt="'+esc(b.title)+' 표지" loading="lazy" data-fallback="1"></div>'
+      +'<div class="cover">'+(b.status==='done'?'<span class="cover-ribbon" aria-hidden="true">완독</span>':'')+'<img src="'+esc(coverSrc(b))+'" alt="'+esc(b.title)+' 표지" loading="lazy" data-fallback="1"></div>'
       +'<p class="book-title">'+esc(b.title)+'</p>'
       +'</button>';
   }).join('');
@@ -2329,7 +2765,7 @@ function renderShelf(){
 
   var datalist=$('#catList');
   if(datalist){
-    datalist.innerHTML=DEFAULT_CATS.concat(catKeys.filter(function(c){return DEFAULT_CATS.indexOf(c)===-1}))
+    datalist.innerHTML=DEFAULT_CATS.concat(customCategories(),catKeys.filter(function(c){return DEFAULT_CATS.indexOf(c)===-1&&customCategories().indexOf(c)===-1}))
       .map(function(c){return '<option value="'+esc(c)+'"></option>'}).join('');
   }
   if(ui.view==='calendar') renderCalendar();
@@ -2514,7 +2950,7 @@ function closeModal(id){
   var el=$('#'+id);
   if(!el) return;
   el.hidden=true;
-  if($('#addModal').hidden && $('#settingsModal').hidden && $('#quotesModal').hidden && $('#dayModal').hidden && $('#colorModal').hidden && $('#sheetWrap').hidden){
+  if($('#addModal').hidden && $('#settingsModal').hidden && $('#quotesModal').hidden && $('#dayModal').hidden && $('#colorModal').hidden && $('#noteColorsModal').hidden && $('#sheetWrap').hidden){
     document.body.classList.remove('locked');
   }
 }
@@ -2539,7 +2975,7 @@ function setFormStatus(s){
 function renderCatQuick(){
   var cats={};
   db.books.forEach(function(b){ if(b.category) cats[b.category]=1 });
-  var list=DEFAULT_CATS.concat(Object.keys(cats).filter(function(c){return DEFAULT_CATS.indexOf(c)===-1}));
+  var list=DEFAULT_CATS.concat(customCategories(),Object.keys(cats).filter(function(c){return DEFAULT_CATS.indexOf(c)===-1&&customCategories().indexOf(c)===-1}));
   $('#catQuick').innerHTML=list.map(function(c){
     return '<button type="button" data-cat="'+esc(c)+'">'+esc(c)+'</button>';
   }).join('');
@@ -2795,6 +3231,7 @@ function categoryCandidates(){
     if(c && !set[c]){ set[c]=1; list.push(c); }
   }
   DEFAULT_CATS.forEach(add);
+  customCategories().forEach(add);
   (db.books||[]).forEach(function(b){ add(b.category); });
   Object.keys((db.settings&&db.settings.categoryColors)||{}).forEach(add);
   return list;
@@ -3292,45 +3729,126 @@ $('#themeGrid').addEventListener('click',function(e){
 
 /* 분야 색상 */
 $('#catColorList').addEventListener('click',function(e){
+  var del=e.target.closest('[data-delcat]');
+  if(del){ removeCustomCategory(del.dataset.delcat); return; }
   var row=e.target.closest('.cat-color-row');
   if(!row) return;
   openColorSheet(row.dataset.cat);
+});
+function submitNewCategory(input){
+  if(addCustomCategory(input.value)) input.value='';
+}
+$('#btnAddCat').addEventListener('click',function(){ submitNewCategory($('#newCatInput')); });
+$('#newCatInput').addEventListener('keydown',function(e){
+  if(e.key!=='Enter') return;
+  e.preventDefault();
+  submitNewCategory(this);
 });
 $('#colorPresetList').addEventListener('click',function(e){
   var row=e.target.closest('.color-row');
   if(!row) return;
   if(row.dataset.custom){ openColorCustom(); return; }
-  applyCategoryColor(colorUI.cat,row.dataset.hex||'');
-  closeModal('colorModal');
+  applyColorChoice(row.dataset.hex||'');
 });
 $('#colorGrid').addEventListener('click',function(e){
   var sw=e.target.closest('.csw');
   if(!sw) return;
   colorUI.value=sw.dataset.hex;
   renderColorGrid();
+  syncColorUI();
   renderColorPresets();
 });
-$('#colorBack').addEventListener('click',backToColorPresets);
+$('#colorBack').addEventListener('click',function(){
+  if(colorUI.custom){ backToColorPresets(); return; }
+  if(colorUI.mode==='note') closeColorSheet();
+});
 $('#colorCustom').addEventListener('click',function(e){
   var tab=e.target.closest('[data-ctab]');
   if(!tab) return;
   setColorTab(tab.dataset.ctab);
 });
-$('#colorInput').addEventListener('input',function(){
-  colorUI.value=fixHex(this.value);
-  renderColorGrid();
-  renderColorPresets();
+/* 스펙트럼: 터치·마우스 드래그로 바로 색 선택 */
+(function(){
+  var wrap=$('#specWrap');
+  if(!wrap) return;
+  function pick(ev){
+    var cv=$('#colorSpectrum');
+    if(!cv) return;
+    var rect=cv.getBoundingClientRect();
+    if(!rect.width||!rect.height) return;
+    var pt=ev;
+    if(!(pt.clientX!=null) && ev.touches && ev.touches[0]) pt=ev.touches[0];
+    if(!(pt.clientX!=null) && ev.changedTouches && ev.changedTouches[0]) pt=ev.changedTouches[0];
+    var nx=Math.min(1,Math.max(0,(pt.clientX-rect.left)/rect.width));
+    var ny=Math.min(1,Math.max(0,(pt.clientY-rect.top)/rect.height));
+    colorUI.value=hslToHex(ny*360,100,100*(1-nx));
+    syncColorUI();
+  }
+  if(window.PointerEvent){
+    wrap.addEventListener('pointerdown',function(e){ e.preventDefault(); colorUI.painting=true; try{ wrap.setPointerCapture(e.pointerId); }catch(_){} pick(e); });
+    wrap.addEventListener('pointermove',function(e){ if(colorUI.painting){ e.preventDefault(); pick(e); } });
+    wrap.addEventListener('pointerup',function(e){ if(colorUI.painting){ colorUI.painting=false; pick(e); } });
+    wrap.addEventListener('pointercancel',function(){ colorUI.painting=false; });
+  }else{
+    wrap.addEventListener('touchstart',function(e){ e.preventDefault(); colorUI.painting=true; pick(e); },{passive:false});
+    wrap.addEventListener('touchmove',function(e){ if(colorUI.painting){ e.preventDefault(); pick(e); } },{passive:false});
+    wrap.addEventListener('touchend',function(e){ if(colorUI.painting){ colorUI.painting=false; pick(e); } });
+    wrap.addEventListener('mousedown',function(e){ e.preventDefault(); colorUI.painting=true; pick(e); });
+    wrap.addEventListener('mousemove',function(e){ if(colorUI.painting) pick(e); });
+    window.addEventListener('mouseup',function(){ colorUI.painting=false; });
+  }
+})();
+/* R/G/B 슬라이더 + 숫자 입력 + 16진수 */
+[['slR','numR',0],['slG','numG',1],['slB','numB',2]].forEach(function(t){
+  var range=$('#'+t[0]), num=$('#'+t[1]);
+  function setChannel(v){
+    var c=hexRgb(colorUI.value)||[255,255,255];
+    c[t[2]]=v;
+    colorUI.value=rgbToHex(c[0],c[1],c[2]);
+    syncColorUI();
+    renderColorPresets();
+  }
+  if(range) range.addEventListener('input',function(){ setChannel(Number(this.value)); });
+  if(num) num.addEventListener('input',function(){
+    var only=this.value.replace(/[^0-9]/g,'').slice(0,3);
+    if(only!==this.value) this.value=only;
+    if(!only) return;
+    var v=Math.min(255,parseInt(only,10)||0);
+    setChannel(v);
+  });
+  if(num) num.addEventListener('blur',function(){
+    var c=hexRgb(colorUI.value)||[0,0,0];
+    this.value=c[t[2]];
+  });
 });
-$('#colorHexInput').addEventListener('change',function(){
+$('#colorHexInput').addEventListener('input',function(){
+  var raw=String(this.value||'').replace(/[^0-9a-fA-F]/g,'').slice(0,6);
+  if(raw.length===6){
+    colorUI.value=('#'+raw).toUpperCase();
+    syncColorUI();
+    renderColorPresets();
+  }
+});
+$('#colorHexInput').addEventListener('blur',function(){
   var h=fixHex(this.value);
-  if(!h){ this.value=colorUI.value||''; return; }
-  colorUI.value=h;
-  renderColorGrid();
-  renderColorPresets();
+  if(h){ colorUI.value=h; syncColorUI(); }
+  this.value=colorUI.value||'';
 });
 $('#btnColorApply').addEventListener('click',function(){
-  applyCategoryColor(colorUI.cat,colorUI.value||'');
-  closeModal('colorModal');
+  applyColorChoice(colorUI.value||'');
+});
+/* 독서 노트 색상 */
+$('#btnNoteColors').addEventListener('click',function(){
+  openNoteColorsModal();
+});
+$('#ncList').addEventListener('click',function(e){
+  var row=e.target.closest('.nc-row');
+  if(!row) return;
+  openNoteColorPicker(row.dataset.nc);
+});
+$('#btnResetNoteColors').addEventListener('click',function(){
+  if(noteColorsEmpty()){ toast('이미 기본 색을 쓰고 있어요.'); return; }
+  resetNoteColors();
 });
 $('#btnExportAll').addEventListener('click',exportAll);
 
@@ -3472,12 +3990,15 @@ $('#quotesModal').addEventListener('click',function(e){
 $$('[data-close]').forEach(function(el){
   el.addEventListener('click',function(){
     var id=el.dataset.close;
-    if(id) closeModal(id);
+    if(!id) return;
+    if(id==='colorModal') closeColorSheet();
+    else closeModal(id);
   });
 });
 document.addEventListener('keydown',function(e){
   if(e.key!=='Escape') return;
-  if(!$('#colorModal').hidden){ closeModal('colorModal'); return; }
+  if(!$('#colorModal').hidden){ closeColorSheet(); return; }
+  if(!$('#noteColorsModal').hidden){ closeModal('noteColorsModal'); return; }
   if(!$('#quotesModal').hidden){ closeModal('quotesModal'); return; }
   if(!$('#dayModal').hidden){ closeModal('dayModal'); return; }
   if(!$('#settingsModal').hidden){ closeModal('settingsModal'); return; }
@@ -3510,6 +4031,7 @@ applyFontSettings();
 renderFontUI();
 applyColorTheme();
 renderThemeUI();
+applyNoteColors();
 loadFullFont(db.settings.fontPreset);
 restoreCustomFont();
 initSync();
