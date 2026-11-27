@@ -2156,9 +2156,15 @@ var SYNC_BRANCH='main';
 var SYNC_API='https://api.github.com';
 var syncCfg=loadSyncCfg();
 var syncBusy=false,syncQueued=false,syncTimer=null,syncStatus='idle';
+var syncLastAttemptAt=0,syncAutoPending=false;
+/* 자동 동기화가 GitHub API를 너무 자주 부르지 않게 하는 간격들 (ms) */
+var AUTO_PUSH_DEBOUNCE=5000;      /* 저장 후 자동 Push 디바운스: 연속 저장을 5초 모아 한 번만 */
+var AUTO_SYNC_MIN_GAP=30000;      /* 자동 동기화 사이 최소 휴식 30초 */
+var AUTO_PULL_MIN_GAP=60000;      /* 화면 복귀(focus·visibilitychange) 자동 Pull 60초 간격 */
+var RATE_LIMIT_PAUSE=120000;      /* 403 rate limit 뒤 자동 동기화 일시 중지 2분 */
 
 function loadSyncCfg(){
-  var cfg={repo:'',token:'',auto:true,lastSyncAt:0};
+  var cfg={repo:'',token:'',auto:true,lastSyncAt:0,pauseUntil:0};
   try{
     var raw=localStorage.getItem(SYNC_KEY);
     if(raw){
@@ -2167,17 +2173,32 @@ function loadSyncCfg(){
       cfg.token=String(d.token||'');
       cfg.auto=d.auto!==false;
       cfg.lastSyncAt=Number(d.lastSyncAt)||0;
+      cfg.pauseUntil=Number(d.pauseUntil)||0;
     }
   }catch(e){ console.warn('동기화 설정을 읽지 못했어요.',e); }
   return cfg;
 }
 function saveSyncCfg(){
   try{
-    localStorage.setItem(SYNC_KEY,JSON.stringify({repo:syncCfg.repo,token:syncCfg.token,auto:syncCfg.auto!==false,lastSyncAt:syncCfg.lastSyncAt||0}));
+    localStorage.setItem(SYNC_KEY,JSON.stringify({repo:syncCfg.repo,token:syncCfg.token,auto:syncCfg.auto!==false,lastSyncAt:syncCfg.lastSyncAt||0,pauseUntil:Number(syncCfg.pauseUntil)||0}));
   }catch(e){ console.warn('동기화 설정을 저장하지 못했어요.',e); }
 }
 function syncOn(){ return !!(syncCfg.repo && syncCfg.token); }
 function syncActive(){ return syncOn() && syncCfg.auto!==false; }
+function syncPaused(){ return (Number(syncCfg.pauseUntil)||0)>Date.now(); }
+function syncPauseLeft(){ return Math.max(0,(Number(syncCfg.pauseUntil)||0)-Date.now()); }
+/* 403 속도 제한을 한 번 받으면 자동 요청을 잠시 멈춰서 제한 시간이 더 길어지지 않게 해요 (직접 누른 동기화는 허용) */
+function pauseAutoSync(err){
+  var ms=RATE_LIMIT_PAUSE;
+  try{
+    var ra=Number(err&&err.retryAfter); if(ra>0) ms=Math.max(ms,ra*1000);
+    var reset=Number(err&&err.resetAt); if(reset>0) ms=Math.max(ms,reset*1000-Date.now()+5000);
+  }catch(e){}
+  if(ms>30*60000) ms=30*60000;
+  syncCfg.pauseUntil=Date.now()+ms;
+  saveSyncCfg();
+  console.warn('GitHub 속도 제한 · 자동 동기화를 '+Math.round(ms/1000)+'초 멈춥니다.');
+}
 function parseRepo(str){
   var s=String(str||'').trim()
     .replace(/^https?:\/\/(www\.)?github\.com\//i,'')
@@ -2336,9 +2357,17 @@ function pullRemoteFont(p){
   return changed;
 }
 
+var RATE_LIMIT_TEXT='잠시 동기화 요청이 많아 GitHub이 속도 제한을 걸었어요. 몇 분 뒤에 다시 시도해 주세요.';
+/* 403(또는 429)라도 응답 본문에 rate limit / secondary rate limit 이 있으면 권한 문제가 아니라 속도 제한이에요 */
+function isRateLimitResponse(status,data){
+  if(status!==403 && status!==429) return false;
+  var msg=String((data&&(data.message||data.error))||'')+' '+String((data&&data.documentation_url)||'');
+  return /rate[\s_-]*limit/i.test(msg);
+}
 function ghErrText(status,data){
   var msg=(data&&(data.message||data.error))||'';
   if(status===401) return '토큰이 올바르지 않아요. (401) 새 토큰을 만들어 다시 넣어 주세요.';
+  if(isRateLimitResponse(status,data)) return RATE_LIMIT_TEXT;
   if(status===403) return '토큰 권한이 모자라요. Fine-grained 토큰에 Contents: Read and write 가 있는지 확인해 주세요.'+(msg?' (403 · '+msg+')':' (403)');
   if(status===404) return '저장소나 파일을 찾지 못했어요. 저장소 이름과 토큰의 Repository access 를 확인해 주세요. (404)';
   if(status===409) return '다른 기기에서 먼저 올려서 충돌했어요. (409)';
@@ -2347,7 +2376,7 @@ function ghErrText(status,data){
 }
 function ghErr(status,data){
   var e=new Error(ghErrText(status,data));
-  e.status=status; e.data=data; return e;
+  e.status=status; e.data=data; e.rateLimited=isRateLimitResponse(status,data); return e;
 }
 async function ghRequest(path,opts){
   var init=opts||{};
@@ -2357,7 +2386,11 @@ async function ghRequest(path,opts){
   var res=await fetch(SYNC_API+path,init);
   var data=null;
   try{ data=await res.json(); }catch(e){ data=null; }
-  if(!res.ok) throw ghErr(res.status,data);
+  if(!res.ok){
+    var err=ghErr(res.status,data);
+    try{ err.retryAfter=res.headers.get('Retry-After'); err.resetAt=res.headers.get('X-RateLimit-Reset'); }catch(_){}
+    throw err;
+  }
   return data;
 }
 async function ghRepoInfo(repo){
@@ -2420,6 +2453,7 @@ function renderSyncUI(err){
     if(err){ cls+=' err'; txt='오류 · '+esc(err.message||'알 수 없는 오류'); }
     else if(!syncOn()) txt='아직 연결하지 않았어요. 저장소와 토큰을 넣고 <b>연결 확인</b>을 눌러 주세요.';
     else if(syncBusy) txt='동기화 중…';
+    else if(syncPaused()) txt='연결됨 · 속도 제한으로 잠시 자동 동기화를 멈췄어요. <b>지금 동기화</b>는 눌러서 시도할 수 있어요.';
     else if(syncCfg.lastSyncAt){ cls+=' on'; txt='연결됨 · 마지막 동기화 '+esc(fmtSyncTime(syncCfg.lastSyncAt)); }
     else txt='연결됨 · 아직 동기화 전이에요. <b>지금 동기화</b>를 눌러 보세요.';
     st.className=cls;
@@ -2447,14 +2481,33 @@ function applySyncState(res){
   return true;
 }
 function scheduleAutoSync(){
-  if(!syncActive() || syncBusy) return;
-  clearTimeout(syncTimer);
+  if(!syncActive()) return;
+  if(syncBusy){ syncAutoPending=true; return; }
+  clearTimeout(syncTimer); syncTimer=null;
+  if(syncPaused()){
+    /* 속도 제한 중: 자동 요청은 쉬고, 제한 시간이 끝나면 이어서 올려요 */
+    syncTimer=setTimeout(function(){ syncTimer=null; scheduleAutoSync(); },syncPauseLeft()+500);
+    return;
+  }
+  var wait=AUTO_PUSH_DEBOUNCE;
+  var since=Date.now()-(syncLastAttemptAt||0);
+  if(since<AUTO_SYNC_MIN_GAP) wait=Math.max(wait,AUTO_SYNC_MIN_GAP-since);
   syncTimer=setTimeout(function(){
+    syncTimer=null;
+    if(!syncActive()||syncBusy||syncPaused()) return;
     syncRun('push',{quiet:true}).catch(function(err){
       console.warn('자동 동기화 실패',err);
       toast('자동 동기화 실패 · '+(err.message||'알 수 없는 오류'));
     });
-  },1500);
+  },wait);
+}
+/* 화면으로 돌아왔을 때 다른 기기의 변경을 가져와요. 마지막 동기화(시도) 후 60초가 지났을 때만 */
+function maybeAutoPull(){
+  if(!syncActive()||syncBusy||syncPaused()) return;
+  if(Date.now()-(syncLastAttemptAt||0)<AUTO_PULL_MIN_GAP) return;
+  syncRun('pull',{quiet:true}).catch(function(err){
+    console.warn('자동 불러오기 실패',err);
+  });
 }
 async function syncRun(mode,opts){
   opts=opts||{};
@@ -2462,7 +2515,7 @@ async function syncRun(mode,opts){
   if(syncBusy){ syncQueued=true; return {ok:true,queued:true}; }
   var repo=parseRepo(syncCfg.repo);
   if(!repo) throw new Error('저장소를 ‘아이디/저장소이름’ 형식으로 넣어 주세요.');
-  syncBusy=true; setSyncBadge('busy'); renderSyncUI();
+  syncBusy=true; syncLastAttemptAt=Date.now(); setSyncBadge('busy'); renderSyncUI();
   try{
     var remote=await ghReadFile(repo);
     var rp=remote.payload||{};
@@ -2497,19 +2550,26 @@ async function syncRun(mode,opts){
         pushed=true;
       }
     }
-    syncCfg.lastSyncAt=Date.now(); saveSyncCfg();
+    syncCfg.lastSyncAt=Date.now(); syncCfg.pauseUntil=0; saveSyncCfg();
     setSyncBadge('ok'); renderSyncUI();
     return {ok:true,pushed:pushed,merged:res.changed,first:!remote.sha};
   }catch(err){
+    if(err&&err.rateLimited) pauseAutoSync(err);
     setSyncBadge('err'); renderSyncUI(err);
     throw err;
   }finally{
     syncBusy=false;
     if(syncQueued){
       syncQueued=false;
-      setTimeout(function(){
-        syncRun('push',{quiet:true}).catch(function(e){ console.warn('동기화 재시도 실패',e); });
-      },400);
+      if(!syncPaused()){
+        setTimeout(function(){
+          syncRun('push',{quiet:true}).catch(function(e){ console.warn('동기화 재시도 실패',e); });
+        },400);
+      }
+    }
+    if(syncAutoPending){
+      syncAutoPending=false;
+      scheduleAutoSync();
     }
   }
 }
@@ -2570,7 +2630,8 @@ function initSync(){
   if(t) t.value=syncCfg.token||'';
   renderSyncUI();
   if(syncActive()){
-    syncRun('pull',{quiet:true}).catch(function(err){ console.warn('시작 동기화 실패',err); });
+    if(syncPaused()) scheduleAutoSync();
+    else syncRun('pull',{quiet:true}).catch(function(err){ console.warn('시작 동기화 실패',err); });
   }
 }
 
@@ -4045,6 +4106,9 @@ $('#btnSyncAuto').addEventListener('click',function(){
   if(syncCfg.auto) scheduleAutoSync();
 });
 $('#btnSyncOff').addEventListener('click',disconnectSync);
+/* 폰으로 돌아오면 다른 기기의 변경을 조용히 가져오기 (60초 간격·속도 제한 중에는 쉼) */
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') maybeAutoPull(); });
+window.addEventListener('focus',maybeAutoPull);
 ['syncRepo','syncToken'].forEach(function(id){
   $('#'+id).addEventListener('change',function(){
     var repo=parseRepo($('#syncRepo').value);
