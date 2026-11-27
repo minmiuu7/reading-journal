@@ -617,6 +617,16 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
 .date-pill.empty{background:var(--panel);border-color:var(--line-soft);color:var(--muted)}
 .date-pill.sm{padding:2px 7px;font-size:9.5px}
 .dates .date-last{margin-top:4px;font-size:11px;color:#A9A395}
+/* 생각 노트 날짜 · 캘린더 점 켜고 끄기 */
+.note-date-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px}
+.note-date-row .nd-label{flex:0 0 auto;font-size:11px;font-weight:800;color:#8A8577;letter-spacing:-.01em}
+.note-date-row .date-input{width:auto;min-width:130px;height:34px;flex:0 0 auto;padding:0 8px;font-size:12px;background:var(--paper);border:1px solid var(--line);border-radius:9px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.note-date-row .date-input:disabled{opacity:.45;background:var(--panel)}
+.note-date-row .mini-btn{flex:0 0 auto;height:34px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:11.5px;font-weight:800;color:var(--accent-text);letter-spacing:-.02em}
+.note-date-row .mini-btn:hover{background:var(--olive-wash)}
+.note-date-row .mini-btn:disabled{opacity:.45;cursor:default;background:var(--paper)}
+.note-date-row .mini-btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
+.note-date-row .nd-hint{flex:1 1 100%;margin:0;font-size:10.5px;color:#A9A395;line-height:1.55}
 .cal-hit .ch-dates{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .status-switch{display:inline-flex;gap:3px;background:var(--gray-card);border:1px solid var(--line-soft);border-radius:999px;padding:3px;margin-top:12px}
 .status-switch button{border-radius:999px;padding:5.5px 12px;font-size:12px;font-weight:600;color:var(--seg-ink)}
@@ -748,6 +758,10 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
 .field textarea{resize:vertical;min-height:62px;line-height:1.6}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:420px){ .field-row{grid-template-columns:1fr} }
+/* 정보 수정 · 책 추가에서 시작일·완독일은 접지 않고 카테고리 바로 아래에 둡니다 */
+.field-row.dates-row{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px 2px;margin:0 0 4px}
+.dates-hint{margin:0 0 12px}
+@media(max-width:420px){ .field-row.dates-row{grid-template-columns:1fr 1fr;gap:8px} }
 .search-box{background:var(--paper);border:1px solid var(--line-soft);border-radius:14px;padding:12px 13px;margin-bottom:16px}
 .search-row{display:flex;gap:7px}
 .search-row input{flex:1;border:1px solid var(--field-line);border-radius:10px;padding:10px 12px;font-size:13.5px;outline:none;background:var(--panel);letter-spacing:-.02em}
@@ -1100,7 +1114,7 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
   </div>
   <div class="cal-week" aria-hidden="true"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
   <div class="cal-grid" id="calGrid" role="grid" aria-label="독서 캘린더"></div>
-  <p class="cal-hint" id="calHint">책의 <b>시작일</b>에는 그 책의 표지가 보이고, 문장·메모 기록이나 <b>생각 노트</b>를 남긴 날에는 <b>형광 점</b>이 찍힙니다. 점이 있는 날을 누르면 그날 남긴 기록을 모아서 볼 수 있고, 위의 날짜 칸에 날짜를 골라 바로 그날로 이동할 수 있어요.</p>
+  <p class="cal-hint" id="calHint">책의 <b>시작일</b>에는 그 책의 표지가 보이고, 문장·메모 기록이나 <b>생각 노트</b>를 남긴 날에는 <b>형광 점</b>이 찍힙니다. 점이 있는 날을 누르면 그날 남긴 기록을 모아서 볼 수 있고, 위의 날짜 칸에 날짜를 골라 바로 그날로 이동할 수 있어요. 생각 노트의 날짜는 책 상세의 <b>노트 날짜</b>에서 바꾸거나 그 점만 끌 수 있어요.</p>
   <p class="foot">이 달에 시작한 책 <b id="calMonthDays">0일</b> · 달을 옮겨 지난 기록도 볼 수 있어요.</p>
 </main>
 
@@ -1238,6 +1252,13 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
               <button data-mode="split" class="desk-only">나란히</button>
             </div>
           </div>
+          <div class="note-date-row" id="noteDateRow" hidden>
+            <label class="nd-label" for="noteDate">노트 날짜</label>
+            <input id="noteDate" type="date" class="date-input" aria-label="생각 노트 날짜">
+            <button type="button" class="mini-btn" id="noteDateToday">오늘</button>
+            <button type="button" class="mini-btn" id="noteDateHide" aria-pressed="false" aria-label="캘린더에 이 생각 노트 점 끄기" title="캘린더에 이 생각 노트 점 끄기">점 끄기</button>
+            <p class="nd-hint" id="noteDateHint">이 날짜에 캘린더에 형광 점이 찍혀요.</p>
+          </div>
           <div class="toolbar" id="mdToolbar">
             <button type="button" data-md="h">인덱스</button>
             <span class="tb-fmt">
@@ -1280,7 +1301,7 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
       </button>
     </div>
     <div class="modal-body">
-      <div class="search-box">
+      <div class="search-box" id="addSearchBox">
         <div class="search-row">
           <input id="searchInput" type="search" placeholder="책 제목이나 저자를 검색" autocomplete="off" enterkeyhint="search">
           <button class="search-btn" id="btnSearch">검색</button>
@@ -1307,6 +1328,12 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
         <datalist id="catList"></datalist>
         <div class="cat-quick" id="catQuick" role="group" aria-label="추천 카테고리"></div>
       </div>
+
+      <div class="field-row dates-row" id="bookDatesRow">
+        <div class="field"><label for="fStart">시작일</label><input id="fStart" type="date"></div>
+        <div class="field"><label for="fFinished">완독일</label><input id="fFinished" type="date"></div>
+      </div>
+      <p class="hint dates-hint" id="bookDatesHint">날짜를 바꾸면 서재 캘린더의 표지 위치와 상세 날짜에 바로 반영됩니다.</p>
 
       <div class="section-label" id="firstEntryLabel">첫 기록 <span class="opt">선택</span></div>
       <div class="entry-form m-entry-wrap" id="mEntryForm">
@@ -1342,7 +1369,7 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
       </div>
 
       <details class="adv" id="advDetails">
-        <summary>상세 정보<span class="sum-sub">표지 · 출판사 · 별점</span></summary>
+        <summary>상세 정보<span class="sum-sub">표지 · 출판사 · 상태 · 별점</span></summary>
         <div class="adv-body">
       <div class="cover-pick-row">
         <label class="cover-pick" id="coverPick" for="fCoverFile" title="이미지를 복사해 Cmd+V로 붙여넣거나, 눌러서 파일 고르기"><img id="coverPreview" alt="표지 미리보기"></label>
@@ -1370,11 +1397,6 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
           <button type="button" data-status="paused">중단</button>
         </div>
       </div>
-      <div class="field-row">
-        <div class="field"><label for="fStart">시작일</label><input id="fStart" type="date"></div>
-        <div class="field"><label for="fFinished">완독일</label><input id="fFinished" type="date"></div>
-      </div>
-      <p class="hint" style="margin:-4px 0 10px">날짜를 바꾸면 서재 캘린더의 표지 위치와 상세 날짜에 바로 반영됩니다.</p>
       <div class="field">
         <span class="field-label">내 별점 <span style="font-weight:600;color:var(--muted)">선택</span></span>
         <div class="rating-input rating-input-lg" id="fRating" role="slider" tabindex="0" aria-label="내 별점" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="별점 없음">
@@ -2128,6 +2150,8 @@ function isoFromTs(ts){
 }
 function noteDateOf(b){
   if(!hasThoughtNote(b)) return '';
+  /* 사용자가 '캘린더 점 끄기'를 고른 노트는 날짜가 있어도 점을 찍지 않습니다. */
+  if(b && b.notesNoDate) return '';
   var d=String(b.notesDate||'');
   if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
   var ts=Number(b.notesUpdatedAt)||Number(b.lastEdited)||0;
@@ -2138,10 +2162,39 @@ function noteDateOf(b){
   d=isoFromTs(Number(b.updatedAt)||Number(b.createdAt)||0);
   return /^\d{4}-\d{2}-\d{2}$/.test(d)?d:'';
 }
+/* 노트를 고쳐도 사용자가 정한 작성일(notesDate)을 오늘로 덮어쓰지 않습니다. */
 function touchNoteDate(b){
   if(!b) return;
-  b.notesDate=hasThoughtNote(b)?todayISO():'';
+  if(hasThoughtNote(b)){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(b.notesDate||''))) b.notesDate=todayISO();
+  }else{
+    b.notesDate='';
+  }
   b.notesUpdatedAt=Date.now();
+}
+/* 상세 시트의 '노트 날짜' 줄 — 날짜를 바꾸거나 캘린더 점만 끌 수 있게 */
+function renderNoteDateRow(b){
+  var row=$('#noteDateRow');
+  if(!row) return;
+  var on=!!(b && hasThoughtNote(b));
+  row.hidden=!on;
+  if(!on) return;
+  var off=!!b.notesNoDate;
+  var d=String(b.notesDate||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) d=noteDateOf(b);
+  var inp=$('#noteDate');
+  if(inp && document.activeElement!==inp) inp.value=d;
+  if(inp) inp.disabled=off;
+  var todayBtn=$('#noteDateToday');
+  if(todayBtn) todayBtn.disabled=off;
+  var hide=$('#noteDateHide'), hint=$('#noteDateHint');
+  if(hide){
+    hide.textContent=off?'점 켜기':'점 끄기';
+    hide.setAttribute('aria-label',off?'캘린더에 이 생각 노트 점 다시 표시':'캘린더에 이 생각 노트 점 끄기');
+    hide.setAttribute('title',off?'캘린더에 이 생각 노트 점 다시 표시':'캘린더에 이 생각 노트 점 끄기');
+    hide.setAttribute('aria-pressed',off?'true':'false');
+  }
+  if(hint) hint.textContent=off?'이 노트는 캘린더에 점을 찍지 않아요.':'이 날짜에 캘린더에 형광 점이 찍혀요.';
 }
 function notesByDate(){
   var map={};
@@ -2215,6 +2268,7 @@ function fixBook(b){
       if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
       return isoFromTs(Number(b.notesUpdatedAt)||Number(b.lastEdited)||0);
     })(),
+    notesNoDate:!!b.notesNoDate,
     notesUpdatedAt:Number(b.notesUpdatedAt)||Number(b.lastEdited)||0,
     entries:sanitizeEntries(b.entries),
     createdAt:Number(b.createdAt)||Date.now(),
@@ -2896,7 +2950,7 @@ function booksById(list){
 }
 function canonState(books,deleted){
   var bs=(books||[]).slice().sort(function(a,b){ return String(a.id)<String(b.id)?-1:(String(a.id)>String(b.id)?1:0); }).map(function(b){
-    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.review,b.startDate,b.finishedAt,b.rating,b.note,b.notesDate,Number(b.notesUpdatedAt)||0,b.createdAt,b.updatedAt,
+    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.review,b.startDate,b.finishedAt,b.rating,b.note,b.notesDate,Number(b.notesUpdatedAt)||0,b.notesNoDate?1:0,b.createdAt,b.updatedAt,
       JSON.stringify(bookEntries(b).map(function(e){ return [e.id,e.date,e.createdAt,e.updatedAt,e.quote,e.pageStart,e.pageEnd,e.thought]; }))];
   });
   var ds=Object.keys(deleted||{}).sort().map(function(k){ return [k,deleted[k]]; });
@@ -4086,6 +4140,7 @@ function fillDetail(b){
 
   var note=$('#noteInput');
   note.value=b.note||'';
+  renderNoteDateRow(b);
   renderPreview();
   $('#saveState').textContent='자동 저장됨';
   $('#saveState').className='saving saved';
@@ -4284,6 +4339,7 @@ function saveDetailEntry(){
   renderEntryList(b);
   var dl=$('#dDates'); if(dl) dl.innerHTML=datesLine(b);
   renderShelf();
+  renderCalendar();
   toast(wasEdit?'기록을 고쳤어요.':'기록을 저장했어요.');
 }
 function deleteDetailEntry(id){
@@ -4297,6 +4353,7 @@ function deleteDetailEntry(id){
   saveDB();
   renderEntryList(b);
   renderShelf();
+  renderCalendar();
   toast('기록을 삭제했어요.');
 }
 
@@ -4408,6 +4465,7 @@ function resetAddForm(){
   $('#searchInput').value='';
   $('#searchResults').innerHTML='';
   $('#quickAdd').hidden=true;
+  var sb=$('#addSearchBox'); if(sb) sb.hidden=false;
   $('#fTitle').value=''; $('#fAuthor').value=''; $('#fPublisher').value='';
   $('#fCat').value=''; $('#fStart').value=todayISO(); $('#fFinished').value=''; $('#fReason').value=''; $('#fCoverUrl').value='';
   setFormStatus('reading');
@@ -4445,6 +4503,7 @@ function openAddModal(book){
     ui.editingId=book.id; ui.cover=book.cover||'';
     $('#addTitle').textContent='책 정보 수정';
     $('#btnSaveBook').textContent='저장';
+    var sb=$('#addSearchBox'); if(sb) sb.hidden=true;   /* 수정에서는 검색 대신 날짜 칸이 바로 보이게 */
     $('#fTitle').value=book.title||'';
     $('#fAuthor').value=book.author||'';
     $('#fPublisher').value=book.publisher||'';
@@ -4459,11 +4518,11 @@ function openAddModal(book){
     /* 정보 수정에서는 기록은 상세 화면에서 고치고, 상세 정보는 펼쳐 둡니다 */
     var lbl=$('#firstEntryLabel'); if(lbl) lbl.hidden=true;
     var mf=$('#mEntryForm'); if(mf) mf.hidden=true;
-    var adv=$('#advDetails'); if(adv) adv.open=true;
+    var adv=$('#advDetails'); if(adv) adv.open=false;   /* 날짜는 접힘 밖에 있으니 상세 정보는 접어 둡니다 */
     updateCoverPreview();
   }
   openModal('addModal');
-  setTimeout(function(){ $('#searchInput').focus(); },120);
+  if(!book) setTimeout(function(){ $('#searchInput').focus(); },120);
 }
 function saveBookFromForm(){
   var title=$('#fTitle').value.trim();
@@ -4494,6 +4553,7 @@ function saveBookFromForm(){
       toast('책 정보를 저장했어요.');
       if(ui.currentId===b.id) fillDetail(b);
       renderShelf();
+      renderCalendar();
     }
     return;
   }
@@ -5138,7 +5198,9 @@ $('#calGrid').addEventListener('click',function(e){
   var cell=e.target.closest('.cal-cell');
   if(!cell || cell.classList.contains('blank')) return;
   var date=cell.dataset.date||'';
-  if(date && entriesOnDate(date).length){ openDayNotes(date); return; }
+  /* 기록이 없어도 생각 노트만 남은 날도 열어서 왜 점이 있는지 볼 수 있게 합니다 */
+  var dc=date?calDayCounts(date):{entries:0,notes:0};
+  if(date && (dc.entries||dc.notes)){ openDayNotes(date); return; }
   var ids=String(cell.dataset.ids||'').split(',').filter(Boolean);
   if(!ids.length) return;
   if(ids.length===1){ openDetail(ids[0],true); return; }
@@ -5257,9 +5319,38 @@ $('#noteInput').addEventListener('input',function(){
   if(b.note!==this.value){
     b.note=this.value;
     touchNoteDate(b);
+    renderNoteDateRow(b);
   }
   schedulePreview();
   queueSave();
+});
+/* 생각 노트 날짜 — 노트 점을 찍을 날짜 바꾸기 · 점 끄기 */
+function setNoteDate(date){
+  var b=curBook();
+  if(!b) return;
+  if(!hasThoughtNote(b)){ toast('먼저 생각 노트를 적어 주세요.'); return; }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))){ renderNoteDateRow(b); return; }
+  b.notesDate=date;
+  b.notesNoDate=false;
+  b.updatedAt=Date.now();
+  saveDB();
+  renderNoteDateRow(b);
+  renderCalendar();
+  toast('생각 노트 날짜를 '+fmtDate(date)+'(으)로 옮겼어요.');
+}
+$('#noteDate').addEventListener('change',function(){ setNoteDate(this.value); });
+$('#noteDateToday').addEventListener('click',function(){ setNoteDate(todayISO()); });
+$('#noteDateHide').addEventListener('click',function(){
+  var b=curBook();
+  if(!b) return;
+  if(!hasThoughtNote(b)) return;
+  b.notesNoDate=!b.notesNoDate;
+  if(!b.notesNoDate && !/^\d{4}-\d{2}-\d{2}$/.test(String(b.notesDate||''))) b.notesDate=todayISO();
+  b.updatedAt=Date.now();
+  saveDB();
+  renderNoteDateRow(b);
+  renderCalendar();
+  toast(b.notesNoDate?'이 노트는 캘린더에 점을 찍지 않아요.':'생각 노트 점을 다시 표시해요.');
 });
 $('#notePreview').addEventListener('click',function(e){
   var box=e.target.closest('input[type="checkbox"][data-line]');
