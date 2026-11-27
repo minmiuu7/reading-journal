@@ -4967,7 +4967,22 @@ document.addEventListener('keydown',function(e){
   var list=detailFocusables();
   if(!list.length) return;
   var active=document.activeElement, idx=list.indexOf(active);
-  if(idx<0){ e.preventDefault(); (e.shiftKey?list[list.length-1]:list[0]).focus(); return; }
+  if(idx<0){
+    e.preventDefault();
+    var next=null,i;
+    if(!e.shiftKey){
+      for(i=0;i<list.length;i++){
+        if(active && (active.compareDocumentPosition(list[i]) & Node.DOCUMENT_POSITION_FOLLOWING)){ next=list[i]; break; }
+      }
+      (next||list[0]).focus();
+    }else{
+      for(i=list.length-1;i>=0;i--){
+        if(active && (active.compareDocumentPosition(list[i]) & Node.DOCUMENT_POSITION_PRECEDING)){ next=list[i]; break; }
+      }
+      (next||list[list.length-1]).focus();
+    }
+    return;
+  }
   if(e.shiftKey && idx===0){ e.preventDefault(); list[list.length-1].focus(); }
   else if(!e.shiftKey && idx===list.length-1){ e.preventDefault(); list[0].focus(); }
 });
