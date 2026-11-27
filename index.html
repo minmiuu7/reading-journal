@@ -8,6 +8,15 @@
 <meta name="apple-mobile-web-app-title" content="페이지로그">
 <meta name="application-name" content="페이지로그">
 <meta name="description" content="페이지로그 — 읽은 책·읽는 책을 모으는 무료 개인용 독서 기록장">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="페이지로그">
+<meta property="og:title" content="페이지로그">
+<meta property="og:description" content="나만의 독서 기록장 · 페이지로그">
+<meta property="og:url" content="https://minmiuu7.github.io/reading-journal/">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="페이지로그">
+<meta name="twitter:description" content="나만의 독서 기록장 · 페이지로그">
 <title>페이지로그</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FAF8F3'/%3E%3Cpath d='M16 18h14a4 4 0 0 1 4 4v26a4 4 0 0 0-4-4H16z' fill='%23C8D88A'/%3E%3Cpath d='M48 18H34a4 4 0 0 0-4 4v26a4 4 0 0 1 4-4h14z' fill='%234F6228'/%3E%3C/svg%3E">
 <style>
@@ -1136,7 +1145,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 
         <section class="notes-card" aria-labelledby="thoughtNotesTitle">
           <div class="notes-head">
-            <h4 class="nb-sub" id="thoughtNotesTitle">생각 노트 <span id="fragLabel"></span></h4>
+            <h4 class="nb-sub" id="thoughtNotesTitle">생각 노트</h4>
             <div class="mode-switch" id="modeSwitch">
               <button data-mode="edit" class="active">편집</button>
               <button data-mode="preview">미리보기</button>
@@ -1165,7 +1174,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
           </div>
           <div class="notes-foot">
             <span class="saving" id="saveState">자동 저장됨</span>
-            <span id="fragCount"></span>
           </div>
         </section>
       </section>
@@ -3676,7 +3684,7 @@ function datesLine(b){
   var first=[];
   if(b.startDate) first.push('시작 '+fmtDate(b.startDate));
   if(b.finishedAt) first.push('완독 '+fmtDate(b.finishedAt));
-  var second=['마지막 기록 '+(relDate(b.updatedAt)||'—'),'조각 '+fragmentCount(b.note)+'장'];
+  var second=['마지막 기록 '+(relDate(b.updatedAt)||'—')];
   return '<span>'+esc(first.join('  ·  ')||'시작일 없음')+'</span><span>'+esc(second.join('  ·  '))+'</span>';
 }
 function fillDetail(b){
@@ -3934,9 +3942,6 @@ function renderPreview(){
   }else{
     prev.innerHTML=renderMarkdown(md);
   }
-  var n=fragmentCount(md);
-  $('#fragCount').textContent=n+'조각';
-  $('#fragLabel').textContent='· '+n+'조각';
 }
 var previewTimer=null;
 var saveTimer=null;
@@ -4972,8 +4977,7 @@ setMode('edit');
 /* settings */
 function fillSettings(){
   $('#sKakao').value=db.settings.kakaoKey||'';
-  var frags=db.books.reduce(function(n,b){return n+fragmentCount(b.note)},0);
-  $('#setStats').textContent=db.books.length+'권 · 조각 '+frags+'장 · 이 브라우저에 저장됨';
+  $('#setStats').textContent=db.books.length+'권 · 이 브라우저에 저장됨';
   loadPreviewFonts();
   renderFontUI();
   renderThemeUI();
