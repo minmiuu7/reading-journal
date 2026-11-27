@@ -45,6 +45,9 @@
   --accent2-text:#5C6E2A;
   --accent2-soft:#CBDBA0;
   --accent2-wash:#F2F6E4;
+  /* 날짜 배지 — 시작(그린) / 완독(스카이) */
+  --pill-start-bg:#EEF3DA; --pill-start-line:#C8D88A; --pill-start-ink:#3F5220;
+  --pill-done-bg:#E7F1FA; --pill-done-line:#C3DCF1; --pill-done-ink:#2E5C81;
   --peach:#F8EADD;
   --peach-line:#E7CDB6;
   --peach-edge:#EDD9C4;
@@ -111,6 +114,8 @@
   --olive-deep:#548A82; --btn-olive-ink:#1F4A45;
   --accent-text:#3B6B64; --on-accent:#0E2A26;
   --accent2:#B3AA99; --on-accent2:#2E2A22; --accent2-text:#7E7462; --accent2-soft:#D9D1C3; --accent2-wash:#F4EFE5;
+  --pill-start-bg:#E5F1EF; --pill-start-line:#AFD0CA; --pill-start-ink:#2F5A54;
+  --pill-done-bg:#E8F0F7; --pill-done-line:#C6D9EC; --pill-done-ink:#2F5678;
   --peach:#FFEFCA; --peach-line:#B3AA99; --peach-edge:#E6D9BE; --peach-ink:#5A4C33;
   --review-bg:#E5F1EF; --review-edge:#C6DEDA; --review-ink:#2F5A54;
   --rose:#F7EBDC; --gray-card:#F3ECDD;
@@ -138,6 +143,8 @@
   --olive-deep:#7DA773; --btn-olive-ink:#2B4A22;
   --accent-text:#46763A; --on-accent:#1E3517;
   --accent2:#7BB0E0; --on-accent2:#17334B; --accent2-text:#3C74A8; --accent2-soft:#BAD9F2; --accent2-wash:#E9F3FC;
+  --pill-start-bg:#EDF6EA; --pill-start-line:#C3DBBC; --pill-start-ink:#2B4A22;
+  --pill-done-bg:#E9F3FC; --pill-done-line:#BAD9F2; --pill-done-ink:#2F6390;
   --peach:#FDEBE7; --peach-line:#FD8B7A; --peach-edge:#F8CBC1; --peach-ink:#7C3A2E;
   --review-bg:#E9F3FC; --review-edge:#C3DCF3; --review-ink:#2F6390;
   --rose:#FDEEEA; --gray-card:#EFF4ED;
@@ -165,6 +172,8 @@
   --olive-deep:#C0AE3E; --btn-olive-ink:#3A3308;
   --accent-text:#6E6412; --on-accent:#2C2814;
   --accent2:#9999CC; --on-accent2:#22224A; --accent2-text:#5B5B9B; --accent2-soft:#CBCBE7; --accent2-wash:#EFEFF8;
+  --pill-start-bg:#FBF4D6; --pill-start-line:#E3D794; --pill-start-ink:#5E5410;
+  --pill-done-bg:#EFEFF8; --pill-done-line:#CBCBE7; --pill-done-ink:#3E3E6B;
   --peach:#EFEFF8; --peach-line:#9999CC; --peach-edge:#D2D2E8; --peach-ink:#3E3E6B;
   --review-bg:#FBF4D6; --review-edge:#E3D794; --review-ink:#6E6412;
   --rose:#F5ECF6; --gray-card:#F4EDD5;
@@ -487,6 +496,11 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
 .entry-error{margin:6px 0 0;font-size:11.5px;font-weight:700;color:#B4574A;letter-spacing:-.01em}
 .entry-error[hidden]{display:none}
 .entry-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:2px}
+.date-row{display:flex;align-items:center;gap:7px}
+.date-row input[type="date"]{flex:1 1 auto;min-width:0;height:38px;border:1px solid var(--field-line);border-radius:10px;background:var(--field-bg);padding:0 10px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.date-row input[type="date"]:focus{border-color:var(--field-focus);box-shadow:0 0 0 3px var(--field-ring);outline:none}
+.date-row .mini-btn{flex:0 0 auto;height:38px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:12px;font-weight:800;color:var(--accent-text);letter-spacing:-.02em}
+.date-row .mini-btn:hover{background:var(--olive-wash)}
 .entry-actions .btn{padding:7px 13px;font-size:12px}
 .entry-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .entry{border:1px solid var(--line-soft);background:var(--panel);border-radius:12px;padding:9px 12px 10px;outline:none;scroll-margin:90px;transition:box-shadow .18s,border-color .18s}
@@ -593,7 +607,15 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
 .hero-title{margin:0 0 5px;font-size:21px;line-height:1.32;font-weight:800;letter-spacing:-.035em;word-break:keep-all}
 .byline{margin:0 0 3px;font-size:12.5px;color:#6B665B;letter-spacing:-.02em}
 .dates{margin:0;font-size:11.5px;color:#9C968A;letter-spacing:-.02em;line-height:1.6}
-.dates span{display:block}
+.dates>span{display:block}
+.date-badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.date-pill{display:inline-flex;align-items:center;border-radius:999px;padding:3px 9px;font-size:10.5px;font-weight:800;letter-spacing:-.02em;line-height:1.5;white-space:nowrap;border:1px solid;font-variant-numeric:tabular-nums}
+.date-pill.start{background:var(--pill-start-bg,#EEF3DA);border-color:var(--pill-start-line,#C8D88A);color:var(--pill-start-ink,#3F5220)}
+.date-pill.done{background:var(--pill-done-bg,#E7F1FA);border-color:var(--pill-done-line,#C3DCF1);color:var(--pill-done-ink,#2E5C81)}
+.date-pill.empty{background:var(--panel);border-color:var(--line-soft);color:var(--muted)}
+.date-pill.sm{padding:2px 7px;font-size:9.5px}
+.dates .date-last{margin-top:4px;font-size:11px;color:#A9A395}
+.cal-hit .ch-dates{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .status-switch{display:inline-flex;gap:3px;background:var(--gray-card);border:1px solid var(--line-soft);border-radius:999px;padding:3px;margin-top:12px}
 .status-switch button{border-radius:999px;padding:5.5px 12px;font-size:12px;font-weight:600;color:var(--seg-ink)}
 /* 상태 변경 바 활성 = 보조색 */
@@ -1166,6 +1188,13 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
           <div class="entry-form" id="entryForm" hidden>
             <p class="entry-form-note" id="entryFormNote" hidden></p>
             <div class="field">
+              <label for="eDate">작성 날짜</label>
+              <div class="date-row">
+                <input id="eDate" type="date" class="date-input" aria-label="기록 작성 날짜">
+                <button type="button" class="mini-btn" data-date-today="eDate">오늘</button>
+              </div>
+            </div>
+            <div class="field">
               <label for="eQuote">인용문</label>
               <textarea id="eQuote" rows="2" placeholder="기억하고 싶은 문장을 그대로 옮겨 적어 보세요"></textarea>
             </div>
@@ -1279,6 +1308,13 @@ body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);o
 
       <div class="section-label" id="firstEntryLabel">첫 기록 <span class="opt">선택</span></div>
       <div class="entry-form m-entry-wrap" id="mEntryForm">
+        <div class="field">
+          <label for="mDate">기록 날짜</label>
+          <div class="date-row">
+            <input id="mDate" type="date" class="date-input" aria-label="첫 기록 작성 날짜">
+            <button type="button" class="mini-btn" data-date-today="mDate">오늘</button>
+          </div>
+        </div>
         <div class="field">
           <label for="mQuote">인용문</label>
           <textarea id="mQuote" rows="2" placeholder="기억하고 싶은 문장을 그대로 옮겨 적어 보세요"></textarea>
@@ -1689,7 +1725,7 @@ function fmtDate(iso){
   if(!iso) return '';
   var m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
   if(!m) return iso;
-  return m[1]+'. '+Number(m[2])+'. '+Number(m[3])+'.';
+  return m[1]+'. '+Number(m[2])+'. '+Number(m[3]);
 }
 function shortDate(iso){
   var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||''));
@@ -2733,7 +2769,7 @@ function saveDB(opts){
 var db=loadDB();
 
 /* ---------------- ui state ---------------- */
-var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',formRating:0,view:'home',calYear:0,calMonth:0,calFocus:'',catAutoValue:'',libQuery:'',entryEditing:null,focusReturn:null,filledId:null};
+var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',formRating:0,view:'home',calYear:0,calMonth:0,calFocus:'',calMonthSet:false,lastBookId:'',lastBookSeen:false,catAutoValue:'',libQuery:'',entryEditing:null,focusReturn:null,filledId:null};
 ui.calYear=new Date().getFullYear();
 ui.calMonth=new Date().getMonth();
 
@@ -3523,7 +3559,7 @@ function renderCalResults(q){
         +'<span class="ch-cover"><img src="'+esc(coverSrc(b))+'" alt=""></span>'
         +'<span class="ch-meta"><span class="ch-title">'+esc(b.title)+'</span>'
         +'<span class="ch-sub">'+esc([b.author,(STATUS[b.status]||STATUS.reading).label].filter(Boolean).join(' · '))+'</span>'
-        +'<span class="ch-dates">'+esc(calBookDates(b))+'</span></span>'
+        +'<span class="ch-dates date-badges">'+datePillsHtml(b,true)+'</span></span>'
         +'<span class="ch-arrow" aria-hidden="true">›</span></button>';
     }).join(''):'<p class="lib-empty">제목이나 저자에 ‘'+esc(q)+'’이(가) 들어간 책이 없어요.</p>');
 }
@@ -3700,13 +3736,42 @@ function openDayNotes(date){
   $('#notesList').innerHTML=html;
   openModal('notesModal');
 }
+function calMonthOfBook(b){
+  var d=String(b&&b.startDate||'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return null;
+  return {y:+d.slice(0,4), m:+d.slice(5,7)-1};
+}
+function calBookById(id){
+  for(var i=0;i<db.books.length;i++){ if(db.books[i].id===id) return db.books[i]; }
+  return null;
+}
+/* 캘린더 탭을 열 때 어느 달부터 볼지:
+   ① 방금 연 책(상세 시트)의 시작일 달 → ② 이미 보던 달 유지 → ③ 가장 최근 시작일 달 → ④ 오늘 */
+function calEnterMonth(){
+  var target=calMonthOfBook(calBookById(ui.currentId));
+  if(!target && ui.lastBookSeen) target=calMonthOfBook(calBookById(ui.lastBookId));
+  ui.lastBookSeen=false;
+  if(target){
+    ui.calYear=target.y; ui.calMonth=target.m; ui.calFocus=''; ui.calMonthSet=true;
+    return;
+  }
+  if(ui.calMonthSet) return;
+  var latest=null;
+  db.books.forEach(function(b){
+    var m=calMonthOfBook(b);
+    if(!m) return;
+    if(!latest || String(b.startDate)>latest.date) latest={y:m.y,m:m.m,date:String(b.startDate)};
+  });
+  if(latest){ ui.calYear=latest.y; ui.calMonth=latest.m; ui.calFocus=''; }
+  ui.calMonthSet=true;
+}
 function setView(v){
   ui.view=(v==='calendar')?'calendar':'home';
   var shelf=$('#shelfView'),cal=$('#calendarView');
   if(shelf) shelf.hidden=(ui.view==='calendar');
   if(cal) cal.hidden=(ui.view!=='calendar');
   $$('#tabbar .tab').forEach(function(b){ b.classList.toggle('active',b.dataset.tab===ui.view); });
-  if(ui.view==='calendar'){ renderCalendar(); renderCalResults($('#calSearch')?$('#calSearch').value:''); }
+  if(ui.view==='calendar'){ calEnterMonth(); renderCalendar(); renderCalResults($('#calSearch')?$('#calSearch').value:''); }
   else renderShelf();
   try{ window.scrollTo(0,0); }catch(e){}
 }
@@ -3967,12 +4032,17 @@ document.addEventListener('error',function(e){
 },true);
 
 /* ---------------- sheet / detail ---------------- */
+/* 시작일·완독일 — 테마별 색이 다른 작은 알약 배지 */
+function datePillsHtml(b,small){
+  var out=[];
+  if(b && b.startDate) out.push('<span class="date-pill start'+(small?' sm':'')+'">시작 '+esc(fmtDate(b.startDate))+'</span>');
+  if(b && b.finishedAt) out.push('<span class="date-pill done'+(small?' sm':'')+'">완독 '+esc(fmtDate(b.finishedAt))+'</span>');
+  if(!out.length) out.push('<span class="date-pill empty'+(small?' sm':'')+'">시작일 없음</span>');
+  return out.join('');
+}
 function datesLine(b){
-  var first=[];
-  if(b.startDate) first.push('시작 '+fmtDate(b.startDate));
-  if(b.finishedAt) first.push('완독 '+fmtDate(b.finishedAt));
-  var second=['마지막 기록 '+(relDate(b.updatedAt)||'—')];
-  return '<span>'+esc(first.join('  ·  ')||'시작일 없음')+'</span><span>'+esc(second.join('  ·  '))+'</span>';
+  var second='마지막 기록 '+(relDate(b.updatedAt)||'—');
+  return '<span class="date-badges">'+datePillsHtml(b)+'</span><span class="date-last">'+esc(second)+'</span>';
 }
 function fillDetail(b){
   var img=$('#dCover');
@@ -4030,6 +4100,8 @@ function openDetail(id,push,opts){
   if(ae && ae!==document.body && !$('#sheetWrap').contains(ae)) ui.focusReturn=ae;
   ui.currentId=id;
   ui.mode='edit';
+  ui.lastBookId=id;
+  if(calMonthOfBook(b)) ui.lastBookSeen=true;
   fillDetail(b);
   $('#sheetWrap').hidden=false;
   document.body.classList.add('locked');
@@ -4111,10 +4183,13 @@ function setPageRange(wrapSel,btnSel,on){
   if(btn) btn.setAttribute('aria-pressed',on?'true':'false');
 }
 function collectEntryInput(pre){
-  var q=$(pre+'Quote'), t=$(pre+'Thought'), s=$(pre+'PageStart'), e=$(pre+'PageEnd'), w=$(pre+'PageEndWrap');
+  var q=$(pre+'Quote'), t=$(pre+'Thought'), s=$(pre+'PageStart'), e=$(pre+'PageEnd'), w=$(pre+'PageEndWrap'), dt=$(pre+'Date');
   var ps=s?parsePage(s.value):0;
   var pe=(w && !w.hidden && e)?parsePage(e.value):0;
+  var date=dt?String(dt.value||''):'';
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date=todayISO();
   return {
+    date:date,
     quote:q?q.value.trim():'',
     thought:t?t.value.trim():'',
     pageStart:ps||null,
@@ -4125,6 +4200,7 @@ function collectEntryInput(pre){
 function showEntryError(pre,on){ var el=$(pre+'Error'); if(el) el.hidden=!on; }
 function resetEntryForm(){
   ['Quote','Thought','PageStart','PageEnd'].forEach(function(k){ var el=$('#e'+k); if(el) el.value=''; });
+  var dt=$('#eDate'); if(dt) dt.value=todayISO();
   setPageRange('#ePageEndWrap','#eRange',false);
   showEntryError('#e',false);
   var note=$('#entryFormNote');
@@ -4156,9 +4232,10 @@ function startEditEntry(e){
   var hasRange=!!(e.pageStart&&e.pageEnd&&e.pageEnd>e.pageStart);
   setPageRange('#ePageEndWrap','#eRange',hasRange);
   if(hasRange) $('#ePageEnd').value=e.pageEnd;
+  var dt=$('#eDate'); if(dt) dt.value=e.date||todayISO();
   showEntryError('#e',false);
   var note=$('#entryFormNote');
-  if(note){ note.hidden=false; note.textContent='기록 수정 · '+fmtDate(e.date)+' 작성 (날짜는 그대로 유지돼요)'; }
+  if(note){ note.hidden=false; note.textContent='기록 수정 · 날짜도 바꿀 수 있어요.'; }
   var form=$('#entryForm');
   if(form && form.scrollIntoView){ try{ form.scrollIntoView({block:'center'}); }catch(err){} }
   setTimeout(function(){ var q=$('#eQuote'); if(q) q.focus(); },50);
@@ -4194,9 +4271,9 @@ function saveDetailEntry(){
   b.entries=bookEntries(b);
   if(wasEdit){
     var e=findEntry(b,ui.entryEditing);
-    if(e){ e.quote=d.quote; e.thought=d.thought; e.pageStart=d.pageStart; e.pageEnd=d.pageEnd; e.updatedAt=now; }
+    if(e){ e.date=d.date; e.quote=d.quote; e.thought=d.thought; e.pageStart=d.pageStart; e.pageEnd=d.pageEnd; e.updatedAt=now; }
   }else{
-    b.entries.push({id:'en_'+now.toString(36)+Math.random().toString(36).slice(2,6),date:todayISO(),createdAt:now,updatedAt:now,quote:d.quote,pageStart:d.pageStart,pageEnd:d.pageEnd,thought:d.thought});
+    b.entries.push({id:'en_'+now.toString(36)+Math.random().toString(36).slice(2,6),date:d.date,createdAt:now,updatedAt:now,quote:d.quote,pageStart:d.pageStart,pageEnd:d.pageEnd,thought:d.thought});
   }
   b.updatedAt=now;
   b.entries.sort(entrySort);
@@ -4337,6 +4414,7 @@ function resetAddForm(){
   var lbl=$('#firstEntryLabel'); if(lbl) lbl.hidden=false;
   var mf=$('#mEntryForm'); if(mf) mf.hidden=false;
   ['Quote','Thought','PageStart','PageEnd'].forEach(function(k){ var el=$('#m'+k); if(el) el.value=''; });
+  var mdt=$('#mDate'); if(mdt) mdt.value=todayISO();
   setPageRange('#mPageEndWrap','#mRange',false);
   showEntryError('#m',false);
   updateCoverPreview();
@@ -4436,7 +4514,7 @@ function saveBookFromForm(){
     createdAt:now,updatedAt:now
   };
   if(md.quote||md.thought){
-    nb.entries.push({id:'en_'+now.toString(36)+Math.random().toString(36).slice(2,6),date:todayISO(),createdAt:now,updatedAt:now,quote:md.quote,pageStart:md.pageStart,pageEnd:md.pageEnd,thought:md.thought});
+    nb.entries.push({id:'en_'+now.toString(36)+Math.random().toString(36).slice(2,6),date:md.date,createdAt:now,updatedAt:now,quote:md.quote,pageStart:md.pageStart,pageEnd:md.pageEnd,thought:md.thought});
   }
   db.books.push(nb);
   saveDB();
@@ -5086,6 +5164,15 @@ $('#notesList').addEventListener('click',function(e){
   }
   var day=e.target.closest('.day-row');
   if(day){ var bid=day.dataset.id; closeModal('notesModal'); openDetail(bid,true); }
+});
+
+/* 기록 날짜 '오늘' 버튼 */
+$$('[data-date-today]').forEach(function(btn){
+  btn.addEventListener('click',function(e){
+    e.preventDefault();
+    var el=$('#'+btn.dataset.dateToday);
+    if(el){ el.value=todayISO(); try{ el.focus(); }catch(_){} }
+  });
 });
 
 /* sheet */
