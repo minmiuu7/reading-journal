@@ -216,13 +216,22 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   .seg-btn{font-size:12.5px;gap:4px;padding:8px 1px 11px}
   .seg-btn::after{max-width:60px;height:3.5px}
 }
-.shelf-bar{display:flex;align-items:center;gap:9px;margin-top:13px}
-.chips-wrap{display:flex;align-items:center;gap:3px;flex:1 1 auto;min-width:0}
-.chips{display:flex;align-items:center;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-behavior:smooth;
-  padding:2px 0;scrollbar-width:none;-ms-overflow-style:none;flex:1 1 auto;min-width:0}
+.shelf-bar{display:flex;align-items:center;justify-content:flex-start;gap:9px;margin-top:13px}
+.chips-wrap{display:flex;align-items:center;justify-content:flex-start;gap:5px;flex:1 1 auto;min-width:0}
+/* 칩은 언제나 왼쪽 끝(첫 칩 = 전체)에서부터 차곡차곡 쌓이고, 넘칠 때만 오른쪽으로 늘어납니다 */
+.chips{display:flex;align-items:center;justify-content:flex-start;align-content:flex-start;gap:8px;direction:ltr;
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+  padding:2px 0;margin:0;scroll-padding-inline:0;scroll-behavior:auto;
+  scrollbar-width:none;-ms-overflow-style:none;flex:1 1 auto;min-width:0}
+.chips>.chip{flex:0 0 auto;margin-inline:0}
 .chips::-webkit-scrollbar{display:none;width:0;height:0}
-.chips.is-scroll{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);
-  mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%)}
+/* 넘칠 때만 오른쪽 끝을 흐리게 — 스크롤이 0이면 왼쪽 끝은 절대 흐려지지 않습니다 */
+.chips.is-scroll{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%)}
+.chips.is-scroll.from-left{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 14px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 14px),transparent 100%)}
+.chips.is-scroll.at-end{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 100%)}
 .chips-nav{flex:0 0 auto;display:none;place-items:center;width:21px;height:21px;padding:0;border-radius:50%;
   background:var(--paper);border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow-sm);
   transition:opacity .15s,background .15s}
@@ -3432,18 +3441,66 @@ function renderSortUI(){
 }
 function curBook(){ for(var i=0;i<db.books.length;i++){ if(db.books[i].id===ui.currentId) return db.books[i]; } return null; }
 
-/* 카테고리 칩 가로 넘김 — 넘칠 때만 양끝 화살표 */
+/* 카테고리 칩 가로 넘김 — 넘칠 때만 양끝 화살표, 칩은 항상 왼쪽 끝에서 시작 */
+function chipsMaxScroll(c){ return Math.max(0, (c.scrollWidth||0) - (c.clientWidth||0)); }
 function updateChipsNav(){
   var chips=$('#categoryChips'), prev=$('#chipsPrev'), next=$('#chipsNext');
   if(!chips || !prev || !next) return;
-  var max=chips.scrollWidth-chips.clientWidth;
+  var max=chipsMaxScroll(chips);
   var on=max>1;
+  if(!on && chips.scrollLeft!==0) chips.scrollLeft=0;
+  var atStart=chips.scrollLeft<=1;
+  var atEnd=!on || chips.scrollLeft>=max-1;
   prev.classList.toggle('show',on);
   next.classList.toggle('show',on);
   chips.classList.toggle('is-scroll',on);
+  chips.classList.toggle('from-left',on && !atStart);
+  chips.classList.toggle('at-end',on && atEnd);
   if(!on) return;
-  prev.disabled=chips.scrollLeft<=1;
-  next.disabled=chips.scrollLeft>=max-1;
+  prev.disabled=atStart;
+  next.disabled=atEnd;
+}
+/* 첫 칩이 왼쪽 끝에 딱 붙어 있는지 확인하고, 어긋나면 스크롤을 0으로 되돌립니다 */
+function healChipsLeft(){
+  var c=$('#categoryChips');
+  if(!c) return;
+  if(c.scrollLeft>1) return;
+  var f=c.querySelector('.chip');
+  if(!f) return;
+  var off=f.getBoundingClientRect().left - c.getBoundingClientRect().left;
+  /* 스크롤은 0인데 첫 칩이 밀려 그려진 경우(모바일 스크롤 레이어 잔상) 한 번 다시 잡아 줍니다 */
+  if(off>1.5 && off<300){
+    c.scrollLeft=1;
+    c.scrollLeft=0;
+  }
+}
+function settleChipsScroll(){
+  var c=$('#categoryChips');
+  if(!c) return;
+  var max=chipsMaxScroll(c), sl=c.scrollLeft;
+  if(max<=1){ if(sl!==0) c.scrollLeft=0; }
+  else if(sl<0) c.scrollLeft=0;
+  else if(sl>max+1) c.scrollLeft=max;
+  if(sl<=1) healChipsLeft();
+  updateChipsNav();
+}
+/* 칩 목록을 다시 그린 뒤: 왼쪽 끝에서 시작 → 선택된 칩이 화면 밖이면 필요한 만큼만 보여 줍니다 */
+function restoreChipsView(){
+  var c=$('#categoryChips');
+  if(!c) return;
+  if(c.scrollLeft!==0) c.scrollLeft=0;
+  var act=c.querySelector('.chip.active');
+  var max=chipsMaxScroll(c);
+  if(act && max>1){
+    var l=act.offsetLeft, r=l+act.offsetWidth, vw=c.clientWidth;
+    if(l-6<0) c.scrollLeft=0;
+    else if(r+6>vw) c.scrollLeft=Math.min(max, r+6-vw);
+  }
+  updateChipsNav();
+  /* 폰트·레이아웃이 늦게 확정되는 경우까지 한 번 더 맞춥니다 */
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(function(){ healChipsLeft(); updateChipsNav(); });
+  }
 }
 function scrollChips(dir){
   var c=$('#categoryChips');
@@ -3545,7 +3602,7 @@ function renderShelf(){
       +esc(c)+' <span class="cnt">'+cats[c]+'</span></button>';
   }).join('');
   $('#categoryChips').innerHTML=chipHtml;
-  updateChipsNav();
+  restoreChipsView();
 
   var list=books.filter(function(b){
     if(ui.status!=='all' && b.status!==ui.status) return false;
@@ -4541,7 +4598,15 @@ $('#categoryChips').addEventListener('click',function(e){
 $('#chipsPrev').addEventListener('click',function(){ scrollChips(-1); });
 $('#chipsNext').addEventListener('click',function(){ scrollChips(1); });
 $('#categoryChips').addEventListener('scroll',updateChipsNav,{passive:true});
-window.addEventListener('resize',function(){ updateChipsNav(); });
+$('#categoryChips').addEventListener('scrollend',settleChipsScroll,{passive:true});
+$('#categoryChips').addEventListener('touchend',function(){ setTimeout(settleChipsScroll,80); },{passive:true});
+window.addEventListener('resize',function(){ updateChipsNav(); settleChipsScroll(); });
+window.addEventListener('orientationchange',function(){ setTimeout(function(){ updateChipsNav(); settleChipsScroll(); },150); });
+window.addEventListener('pageshow',function(){ updateChipsNav(); settleChipsScroll(); });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden){ updateChipsNav(); settleChipsScroll(); } });
+if(document.fonts && document.fonts.ready && document.fonts.ready.then){
+  document.fonts.ready.then(function(){ updateChipsNav(); settleChipsScroll(); }).catch(function(){});
+}
 $('#sortSwitch').addEventListener('click',function(e){
   var btn=e.target.closest('button[data-sort]');
   if(!btn) return;
