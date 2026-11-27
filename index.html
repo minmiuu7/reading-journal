@@ -3772,7 +3772,10 @@ function openDayNotes(date){
   var items=entriesOnDate(date);
   var thoughts=db.books.filter(function(b){ return noteDateOf(b)===date; });
   var started=booksOnDate(date);
-  $('#notesTitle').textContent=(+p[1])+'월 '+(+p[2])+'일 · 기록 '+(items.length+thoughts.length)+'개';
+  var dayBits=[];
+  if(items.length) dayBits.push('기록 '+items.length+'개');
+  if(thoughts.length) dayBits.push('생각 노트 '+thoughts.length+'개');
+  $('#notesTitle').textContent=(+p[1])+'월 '+(+p[2])+'일 · '+(dayBits.length?dayBits.join(' · '):'기록 0개');
   var html=items.map(function(it){
     var e=it.entry, b=it.book, pages=pageLabel(e.pageStart,e.pageEnd);
     return '<button type="button" class="note-row" data-book="'+esc(b.id)+'" data-entry="'+esc(e.id)+'">'
