@@ -392,8 +392,8 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 /* ============ 인용·쪽수·내 생각 기록 ============ */
 .entries-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm);padding:14px 15px 13px;margin-bottom:16px}
 .entries-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.entries-head h3{margin:0;font-size:13px;font-weight:800;letter-spacing:-.02em}
-.entries-head h3 span{font-weight:600;color:#A9A395;font-size:11px;margin-left:5px}
+.entries-head h3,.entries-head h4{margin:0;font-size:13px;font-weight:800;letter-spacing:-.02em}
+.entries-head h3 span,.entries-head h4 span{font-weight:600;color:#A9A395;font-size:11px;margin-left:5px}
 .entries-head .btn{flex:0 0 auto;padding:6px 12px;font-size:11.5px}
 .entry-form{border-top:1px solid #F0ECE1;margin-top:11px;padding-top:12px}
 .entry-form[hidden]{display:none}
@@ -431,10 +431,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .entry-quote .eq-text{white-space:pre-wrap;overflow-wrap:anywhere}
 .entry-quote .eq-page{align-self:flex-end;font-size:10.5px;font-weight:800;color:var(--nc-quote-ink,var(--peach-ink));opacity:.72;letter-spacing:-.01em;line-height:1.2}
 .entry-page{margin:3px 0 0;padding-left:2px;font-size:10.5px;font-weight:800;color:var(--accent-text);letter-spacing:-.01em}
-.entry-thought{position:relative;margin:8px 0 0;padding-left:16px;font-size:13px;line-height:1.7;color:var(--ink-2);letter-spacing:-.02em;white-space:pre-wrap;overflow-wrap:anywhere}
-.entry-thought::before{content:"↳";position:absolute;left:0;top:0;font-size:10.5px;line-height:2.1;color:#B9B2A2}
+.entry-thought{position:relative;margin:8px 0 0;font-size:13px;line-height:1.7;color:var(--ink-2);letter-spacing:-.02em;white-space:pre-wrap;overflow-wrap:anywhere}
 .entry-page+.entry-thought{margin-top:5px}
-.entry-quote+.entry-thought{margin-top:7px}
+/* 인용문 아래의 내 생각은 하위 메모처럼 ↳와 들여쓰기 */
+.entry-quote+.entry-thought{margin-top:7px;padding-left:16px}
+.entry-quote+.entry-thought::before{content:"↳";position:absolute;left:0;top:0;font-size:10.5px;line-height:2.1;color:#B9B2A2}
 .entry-empty{margin:10px 0 0;font-size:11.5px;color:#ADA697;letter-spacing:-.01em;line-height:1.6}
 .entry-empty[hidden]{display:none}
 
@@ -532,20 +533,27 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 
 /* reason card */
 .reason-card{background:var(--peach);border:1px solid var(--peach-edge);border-radius:12px;padding:10px 14px 11px;margin-bottom:16px}
+.hero + .reason-card{margin-top:16px}
 .reason-card label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--peach-ink);opacity:.8;margin-bottom:3px;text-transform:uppercase}
 .reason-card textarea{display:block;width:100%;border:0;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--ink-2);letter-spacing:-.02em;padding:0;min-height:22px;height:22px;overflow:hidden;outline:none}
 .reason-card textarea::placeholder{color:var(--muted);opacity:.85}
 /* 후기 — 읽는 이유와 같은 컴팩트 자동 확장 박스, 테마별 다른 틴트 */
-.review-card{background:var(--review-bg);border:1px solid var(--review-edge);border-radius:12px;padding:10px 14px 11px;margin-bottom:16px}
+.review-card{background:var(--review-bg);border:1px solid var(--review-edge);border-radius:12px;padding:10px 14px 11px;margin-bottom:0}
 .review-card label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--review-ink);opacity:.85;margin-bottom:3px;text-transform:uppercase}
 .review-card textarea{display:block;width:100%;border:0;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--ink-2);letter-spacing:-.02em;padding:0;min-height:22px;height:22px;overflow:hidden;outline:none}
 .review-card textarea::placeholder{color:var(--muted);opacity:.85}
 
+/* 독서 노트 통합 카드 — 인용 기록 + 생각 노트 */
+.notebook-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm);padding:15px 15px 12px;margin-bottom:18px}
+.notebook-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.notebook-head h3{margin:0;font-size:14.5px;font-weight:800;letter-spacing:-.025em}
+.notebook-card .entries-card,.notebook-card .notes-card{background:transparent;border:0;box-shadow:none;padding:0;margin:0}
+.notebook-div{height:1px;background:var(--line-soft);margin:15px 0 14px}
 /* notes */
 .notes-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm);padding:15px 15px 12px;margin-bottom:18px}
 .notes-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.notes-head h3{margin:0;font-size:13px;font-weight:800;letter-spacing:-.02em}
-.notes-head h3 span{font-weight:600;color:#A9A395;font-size:11px;margin-left:5px}
+.notes-head h3,.notes-head h4{margin:0;font-size:13px;font-weight:800;letter-spacing:-.02em}
+.notes-head h3 span,.notes-head h4 span{font-weight:600;color:#A9A395;font-size:11px;margin-left:5px}
 .mode-switch{display:inline-flex;gap:2px;background:var(--gray-card);border-radius:999px;padding:3px}
 .mode-switch button{border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:600;color:#8A8577}
 /* 노트 모드 탭 활성 = 보조색 */
@@ -1032,50 +1040,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
         </div>
       </div>
 
-      <div class="hero-actions">
-        <button class="btn btn-olive" id="btnQuotes">하이라이트 모아보기</button>
-        <button class="btn btn-ghost" id="btnExportMd">↓ .md 내려받기</button>
-        <button class="btn btn-ghost" id="btnEditBook">정보 수정</button>
-      </div>
-
-      <section class="entries-card" id="entriesCard" aria-labelledby="entriesTitle">
-        <div class="entries-head">
-          <h3 id="entriesTitle">인용 · 쪽수 · 내 생각 <span id="entryCount"></span></h3>
-          <button class="btn btn-olive" id="btnNewEntry" type="button">+ 기록 쓰기</button>
-        </div>
-        <div class="entry-form" id="entryForm" hidden>
-          <p class="entry-form-note" id="entryFormNote" hidden></p>
-          <div class="field">
-            <label for="eQuote">인용문</label>
-            <textarea id="eQuote" rows="2" placeholder="기억하고 싶은 문장을 그대로 옮겨 적어 보세요"></textarea>
-          </div>
-          <div class="field">
-            <span class="field-label">쪽수 <span class="opt">선택</span></span>
-            <div class="page-row">
-              <input id="ePageStart" type="number" min="1" step="1" inputmode="numeric" placeholder="42" aria-label="시작 쪽">
-              <span class="page-unit">쪽</span>
-              <button type="button" class="range-btn" id="eRange" aria-pressed="false">범위 입력</button>
-              <span class="page-end" id="ePageEndWrap" hidden>
-                <span class="tilde">~</span>
-                <input id="ePageEnd" type="number" min="1" step="1" inputmode="numeric" placeholder="43" aria-label="끝 쪽">
-                <span class="page-unit">쪽</span>
-              </span>
-            </div>
-            <p class="entry-error" id="eError" hidden>끝 쪽은 시작 쪽과 같거나 커야 해요</p>
-          </div>
-          <div class="field">
-            <label for="eThought">내 생각</label>
-            <textarea id="eThought" rows="2" placeholder="이 문장에서 든 생각을 적어 보세요"></textarea>
-          </div>
-          <div class="entry-actions">
-            <button type="button" class="btn btn-ghost" id="btnEntryCancel">취소</button>
-            <button type="button" class="btn btn-olive" id="btnEntrySave">저장</button>
-          </div>
-        </div>
-        <div class="entry-list" id="entryList"></div>
-        <p class="entry-empty" id="entryEmpty">아직 인용이나 메모를 남기지 않았어요. 인용문만, 내 생각만 적어도 괜찮아요.</p>
-      </section>
-
       <div class="reason-card">
         <label for="dReason">읽는 이유</label>
         <textarea id="dReason" rows="1" placeholder="이 책을 읽는 이유를 적어 두세요"></textarea>
@@ -1086,39 +1050,91 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
         <textarea id="dReview" rows="1" placeholder="다 읽은 뒤의 후기를 적어 두세요"></textarea>
       </div>
 
-      <section class="notes-card">
-        <div class="notes-head">
-          <h3>독서 노트 <span id="fragLabel"></span></h3>
-          <div class="mode-switch" id="modeSwitch">
-            <button data-mode="edit" class="active">편집</button>
-            <button data-mode="preview">미리보기</button>
-            <button data-mode="split" class="desk-only">나란히</button>
+      <div class="hero-actions">
+        <button class="btn btn-olive" id="btnQuotes">하이라이트 모아보기</button>
+        <button class="btn btn-ghost" id="btnExportMd">↓ .md 내려받기</button>
+        <button class="btn btn-ghost" id="btnEditBook">정보 수정</button>
+      </div>
+
+      <section class="notebook-card" aria-labelledby="notebookTitle">
+        <div class="notebook-head">
+          <h3 id="notebookTitle">독서 노트</h3>
+        </div>
+
+        <section class="entries-card" id="entriesCard" aria-labelledby="entriesTitle">
+          <div class="entries-head">
+            <h4 id="entriesTitle">인용 · 쪽수 · 내 생각 <span id="entryCount"></span></h4>
+            <button class="btn btn-olive" id="btnNewEntry" type="button">+ 기록 쓰기</button>
           </div>
-        </div>
-        <div class="toolbar" id="mdToolbar">
-          <button type="button" data-md="h">인덱스</button>
-          <span class="tb-fmt">
-            <button type="button" class="tb-a" id="btnFmt" aria-haspopup="menu" aria-expanded="false" aria-label="글자 꾸미기" title="글자 꾸미기"><b>A</b><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-            <span class="tb-pop" id="fmtPop" role="menu" hidden>
-              <button type="button" role="menuitem" data-md="bold"><b>굵게</b></button>
-              <button type="button" role="menuitem" data-md="italic"><i>기울임</i></button>
+          <div class="entry-form" id="entryForm" hidden>
+            <p class="entry-form-note" id="entryFormNote" hidden></p>
+            <div class="field">
+              <label for="eQuote">인용문</label>
+              <textarea id="eQuote" rows="2" placeholder="기억하고 싶은 문장을 그대로 옮겨 적어 보세요"></textarea>
+            </div>
+            <div class="field">
+              <span class="field-label">쪽수 <span class="opt">선택</span></span>
+              <div class="page-row">
+                <input id="ePageStart" type="number" min="1" step="1" inputmode="numeric" placeholder="42" aria-label="시작 쪽">
+                <span class="page-unit">쪽</span>
+                <button type="button" class="range-btn" id="eRange" aria-pressed="false">범위 입력</button>
+                <span class="page-end" id="ePageEndWrap" hidden>
+                  <span class="tilde">~</span>
+                  <input id="ePageEnd" type="number" min="1" step="1" inputmode="numeric" placeholder="43" aria-label="끝 쪽">
+                  <span class="page-unit">쪽</span>
+                </span>
+              </div>
+              <p class="entry-error" id="eError" hidden>끝 쪽은 시작 쪽과 같거나 커야 해요</p>
+            </div>
+            <div class="field">
+              <label for="eThought">내 생각</label>
+              <textarea id="eThought" rows="2" placeholder="이 문장에서 든 생각을 적어 보세요"></textarea>
+            </div>
+            <div class="entry-actions">
+              <button type="button" class="btn btn-ghost" id="btnEntryCancel">취소</button>
+              <button type="button" class="btn btn-olive" id="btnEntrySave">저장</button>
+            </div>
+          </div>
+          <div class="entry-list" id="entryList"></div>
+          <p class="entry-empty" id="entryEmpty">아직 인용이나 메모를 남기지 않았어요. 인용문만, 내 생각만 적어도 괜찮아요.</p>
+        </section>
+
+        <div class="notebook-div" role="separator" aria-hidden="true"></div>
+
+        <section class="notes-card" aria-labelledby="notesTitle">
+          <div class="notes-head">
+            <h4 class="nb-sub" id="notesTitle">생각 노트 <span id="fragLabel"></span></h4>
+            <div class="mode-switch" id="modeSwitch">
+              <button data-mode="edit" class="active">편집</button>
+              <button data-mode="preview">미리보기</button>
+              <button data-mode="split" class="desk-only">나란히</button>
+            </div>
+          </div>
+          <div class="toolbar" id="mdToolbar">
+            <button type="button" data-md="h">인덱스</button>
+            <span class="tb-fmt">
+              <button type="button" class="tb-a" id="btnFmt" aria-haspopup="menu" aria-expanded="false" aria-label="글자 꾸미기" title="글자 꾸미기"><b>A</b><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+              <span class="tb-pop" id="fmtPop" role="menu" hidden>
+                <button type="button" role="menuitem" data-md="bold"><b>굵게</b></button>
+                <button type="button" role="menuitem" data-md="italic"><i>기울임</i></button>
+              </span>
             </span>
-          </span>
-          <button type="button" data-md="quote">인용구</button>
-          <button type="button" data-md="ul" aria-label="목록" title="목록">•</button>
-          <button type="button" data-md="task">체크</button>
-          <span class="tb-sep"></span>
-          <button type="button" data-md="hr">구분선</button>
-          <button type="button" id="btnNoteColors" class="tb-color" aria-label="노트 색상" title="노트 색상"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-3.6-4-7.5-9-7.5Z"/><circle cx="7.6" cy="11.6" r="1.05" fill="currentColor" stroke="none"/><circle cx="10.1" cy="7.7" r="1.05" fill="currentColor" stroke="none"/><circle cx="14.6" cy="7.7" r="1.05" fill="currentColor" stroke="none"/></svg><span>색상</span></button>
-        </div>
-        <div class="editor" id="editorWrap" data-mode="edit">
-          <textarea id="noteInput" placeholder="# 오늘 읽은 부분&#10;&#10;> 기억하고 싶은 문장을 그대로 옮겨 적어 보세요.&#10;&#10;- [ ] 해 볼 것 하나&#10;- 핵심만 한 줄로"></textarea>
-          <div class="preview md" id="notePreview"></div>
-        </div>
-        <div class="notes-foot">
-          <span class="saving" id="saveState">자동 저장됨</span>
-          <span id="fragCount"></span>
-        </div>
+            <button type="button" data-md="quote">인용구</button>
+            <button type="button" data-md="ul" aria-label="목록" title="목록">•</button>
+            <button type="button" data-md="task">체크</button>
+            <span class="tb-sep"></span>
+            <button type="button" data-md="hr">구분선</button>
+            <button type="button" id="btnNoteColors" class="tb-color" aria-label="노트 색상" title="노트 색상"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-3.6-4-7.5-9-7.5Z"/><circle cx="7.6" cy="11.6" r="1.05" fill="currentColor" stroke="none"/><circle cx="10.1" cy="7.7" r="1.05" fill="currentColor" stroke="none"/><circle cx="14.6" cy="7.7" r="1.05" fill="currentColor" stroke="none"/></svg><span>색상</span></button>
+          </div>
+          <div class="editor" id="editorWrap" data-mode="edit">
+            <textarea id="noteInput" placeholder="# 오늘 읽은 부분&#10;&#10;> 기억하고 싶은 문장을 그대로 옮겨 적어 보세요.&#10;&#10;- [ ] 해 볼 것 하나&#10;- 핵심만 한 줄로"></textarea>
+            <div class="preview md" id="notePreview"></div>
+          </div>
+          <div class="notes-foot">
+            <span class="saving" id="saveState">자동 저장됨</span>
+            <span id="fragCount"></span>
+          </div>
+        </section>
       </section>
 
       <div class="danger-row"><button class="danger-btn" id="btnDelete">이 책 삭제</button></div>
@@ -3420,7 +3436,7 @@ function renderLibResults(q){
   var html='<p class="lib-count">‘'+esc(q)+'’ 검색 결과 '+hits.length+'개</p>';
   html+=hits.map(function(h){
     var pages=h.entry?pageLabel(h.entry.pageStart,h.entry.pageEnd):'';
-    var meta=h.kind==='note'?'독서 노트':h.kind==='review'?'후기':h.kind==='entry'?('기록 · '+fmtDate(h.date)):'책 제목';
+    var meta=h.kind==='note'?'생각 노트':h.kind==='review'?'후기':h.kind==='entry'?('기록 · '+fmtDate(h.date)):'책 제목';
     return '<button type="button" class="lib-hit" data-book="'+esc(h.book.id)+'" data-entry="'+(h.entry?esc(h.entry.id):'')+'" data-kind="'+h.kind+'">'
       +'<span class="lh-top"><span class="lh-title">'+esc(h.book.title)+'</span>'+(pages?'<span class="lh-page">'+esc(pages)+'</span>':'')+'</span>'
       +'<span class="lh-snippet">'+snippetHtml(h.text,q)+'</span>'
