@@ -1585,7 +1585,7 @@ function saveDB(opts){
 var db=loadDB();
 
 /* ---------------- ui state ---------------- */
-var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',view:'home',calYear:0,calMonth:0};
+var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',view:'home',calYear:0,calMonth:0,catAutoValue:''};
 ui.calYear=new Date().getFullYear();
 ui.calMonth=new Date().getMonth();
 
@@ -2521,7 +2521,7 @@ function closeModal(id){
 
 /* ---------------- add / edit book ---------------- */
 function resetAddForm(){
-  ui.editingId=null; ui.cover=''; ui.results=[]; ui.formStatus='reading';
+  ui.editingId=null; ui.cover=''; ui.results=[]; ui.formStatus='reading'; ui.catAutoValue='';
   $('#addTitle').textContent='책 추가';
   $('#btnSaveBook').textContent='서재에 추가';
   $('#searchInput').value='';
@@ -2743,6 +2743,11 @@ function runSearch(){
     fallbackSearch(q,'');
   }
 }
+function josaRo(word){
+  var s=String(word||''), code=s.charCodeAt(s.length-1);
+  if(!s || isNaN(code) || code<0xAC00 || code>0xD7A3) return '로';
+  return ((code-0xAC00)%28)>0 ? '으로' : '로';
+}
 function pickResult(i){
   var r=ui.results[i];
   if(!r) return;
@@ -2750,14 +2755,17 @@ function pickResult(i){
   if(r.author) $('#fAuthor').value=r.author;
   if(r.publisher) $('#fPublisher').value=r.publisher;
   var guessed='';
-  if(!$('#fCat').value.trim()){
+  var catField=$('#fCat');
+  /* 비어 있거나 직전에 자동으로 채운 값일 때만 다시 채운다. 직접 고친 값은 건드리지 않는다. */
+  if(!catField.value.trim() || catField.value===ui.catAutoValue){
     guessed=autoCategory(r);
-    if(guessed) $('#fCat').value=guessed;
+    if(guessed){ catField.value=guessed; ui.catAutoValue=guessed; }
+    else if(catField.value===ui.catAutoValue){ catField.value=''; ui.catAutoValue=''; }
   }
   if(r.cover){ ui.cover=r.cover; $('#fCoverUrl').value=r.cover; }
   updateCoverPreview();
   $$('#searchResults .result').forEach(function(el,j){ el.classList.toggle('selected',j===i) });
-  toast(guessed?'책 정보를 채웠어요. 분야는 ‘'+guessed+'’로 채워 두었으니 필요하면 고쳐 주세요.':'책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
+  toast(guessed?'책 정보를 채웠어요. 분야는 ‘'+guessed+'’'+josaRo(guessed)+' 채워 두었으니 필요하면 고쳐 주세요.':'책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
 }
 /* ---- 분야 자동 분류 ----
    검색 결과의 제목·소개(contents/description)·출판사·API 분야(categories)를 보고
