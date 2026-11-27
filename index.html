@@ -196,7 +196,10 @@ body.locked{overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0;-webkit-tap-highlight-color:transparent}
 input,textarea,select{font:inherit;color:inherit}
 a{color:var(--accent-text)}
-:focus-visible{outline:2px solid var(--olive-soft);outline-offset:2px;border-radius:8px}
+/* 포커스 링은 키보드로 움직였을 때만 — 마우스·터치 클릭(상세 시트 열기/닫기 포함)에는 테두리 없음 */
+:focus:not(:focus-visible){outline:none}
+body.kbd-focus :focus-visible{outline:2px solid var(--olive-soft);outline-offset:2px;border-radius:8px}
+.sheet:focus,.sheet:focus-visible,body.kbd-focus .sheet:focus,body.kbd-focus .sheet:focus-visible{outline:none}
 
 /* ============ top bar ============ */
 .topbar{position:sticky;top:0;z-index:20;background:var(--topbar-bg);backdrop-filter:saturate(1.25) blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--topbar-line)}
@@ -321,11 +324,35 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 }
 
 /* ============ calendar ============ */
-.cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 14px}
+.cal-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px}
 .cal-nav{display:inline-flex;align-items:center;gap:6px}
 .cal-arrow{width:34px;height:34px;border-radius:50%;background:var(--paper);border:1px solid var(--line);color:var(--ink-2);display:grid;place-items:center;box-shadow:var(--shadow-sm);transition:background .15s}
 .cal-arrow:hover{background:#fff}
 .cal-title{font-size:16px;font-weight:800;letter-spacing:-.035em;min-width:112px;text-align:center}
+button.cal-title{display:inline-flex;align-items:center;justify-content:center;gap:4px;background:transparent;border:0;padding:5px 7px;border-radius:10px;font-family:inherit;color:inherit;cursor:pointer;line-height:1.25}
+button.cal-title:hover{background:var(--olive-wash)}
+button.cal-title::after{content:"";width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #B0AA9B;margin-top:2px}
+button.cal-title[aria-expanded="true"]{background:var(--olive-wash)}
+/* 날짜로 이동 */
+.cal-jump{display:flex;align-items:center;gap:6px;margin:-4px 0 12px}
+.cal-jump .cj-field{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:7px;height:34px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);box-shadow:var(--shadow-sm)}
+.cal-jump .cj-field:focus-within{border-color:var(--olive-soft);box-shadow:0 0 0 3px var(--olive-wash)}
+.cal-jump .cj-field svg{flex:0 0 auto;color:#A9A395}
+.cal-jump input#calDateJump{flex:1 1 auto;min-width:0;width:100%;border:0;background:transparent;padding:0;font-family:inherit;font-size:12px;font-weight:800;color:var(--ink-2);letter-spacing:-.01em;outline:none}
+.cal-jump input#calDateJump::-webkit-calendar-picker-indicator{opacity:.55;cursor:pointer}
+.cal-jump .cj-btn{flex:0 0 auto;height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:12px;font-weight:800;color:var(--accent-text);letter-spacing:-.02em;white-space:nowrap;box-shadow:var(--shadow-sm)}
+.cal-jump .cj-btn:hover{background:var(--olive-wash)}
+.cal-jump .cj-btn.ghost{color:#6E6A5E}
+/* 연·월 빠른 선택 */
+.cal-month-pop{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);width:min(294px,88vw);background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 36px rgba(50,44,30,.2);padding:10px;z-index:45}
+.cal-month-pop[hidden]{display:none}
+.cmp-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+.cmp-head button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:15px;font-weight:800;color:var(--ink-2);line-height:1;padding:0 0 2px}
+.cmp-head span{font-size:13px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.cmp-months{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.cmp-months button{height:33px;border-radius:9px;border:1px solid var(--line-soft);background:var(--panel);font-family:inherit;font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
+.cmp-months button:hover{background:#fff}
+.cmp-months button.is-cur{border-color:var(--olive-soft);background:var(--olive-wash);color:var(--accent-text)}
 .cal-count{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--accent-text);background:var(--olive-wash);border:1px solid var(--olive-soft);border-radius:999px;padding:5px 11px;letter-spacing:-.01em;white-space:nowrap}
 .cal-count i{width:6px;height:6px;border-radius:50%;background:var(--olive);display:inline-block}
 .cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:7px}
@@ -343,6 +370,8 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cal-cell.has-book:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(60,52,36,.24)}
 .cal-cell.today{box-shadow:inset 0 0 0 2px var(--cal-ring);background:var(--cal-today-bg);outline:2.5px solid var(--cal-ring);outline-offset:-2.5px}
 .cal-cell.today .cal-day{color:var(--accent-text);font-size:11.5px}
+.cal-cell.is-focus{outline:2.5px solid var(--cal-ring);outline-offset:2px;z-index:5;animation:calfocus .5s ease 2}
+@keyframes calfocus{50%{outline-color:transparent}}
 .cal-cell .cal-more{position:absolute;right:4px;bottom:4px;z-index:2;background:rgba(28,24,18,.72);color:#fff;font-size:9.5px;font-weight:800;border-radius:999px;padding:2px 5px;line-height:1.25;letter-spacing:.01em}
 .cal-cell .cal-title-mini{display:none}
 .cal-hint{margin:14px 0 0;font-size:11px;color:#A29C8E;line-height:1.7;letter-spacing:-.01em}
@@ -360,13 +389,16 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cal-hit .ch-sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cal-hit .ch-dates{font-size:10.5px;font-weight:700;color:var(--accent-text);letter-spacing:-.01em}
 .cal-hit .ch-arrow{color:#B4AE9F;font-size:13px;flex:0 0 auto}
+.cal-hit-date .ch-cal{width:38px;height:38px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-family:inherit;font-size:15px;font-weight:900;color:#2B2923;letter-spacing:-.02em;background:#EFF7D6;border:1px solid #DCE9AE;box-shadow:inset 0 -2px 0 rgba(184,255,0,.55)}
 #calendarView.is-searching .cal-head,
+#calendarView.is-searching .cal-jump,
 #calendarView.is-searching .cal-week,
 #calendarView.is-searching #calGrid,
 #calendarView.is-searching #calHint,
 #calendarView.is-searching .foot{display:none}
 .cal-empty{grid-column:1/-1;text-align:center;padding:26px 12px;color:#A29C8E;font-size:12.5px}
-@media(max-width:420px){ .cal-grid,.cal-week{gap:5px} .cal-cell{border-radius:10px} .cal-title{min-width:96px;font-size:15px} }
+@media(max-width:420px){ .cal-grid,.cal-week{gap:5px} .cal-cell{border-radius:10px} .cal-title{min-width:92px;font-size:15px}
+  .cal-jump .cj-btn{padding:0 10px;font-size:11.5px} .cal-jump{gap:5px} }
 
 /* day picker */
 .day-list{display:flex;flex-direction:column;gap:8px}
@@ -422,6 +454,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .card-cta:hover{background:var(--olive-soft);color:var(--btn-olive-ink)}
 .card-cta.first{display:block;width:100%;text-align:center;padding:4px 6px}
 .book-card:focus-visible{outline:2.5px solid var(--field-focus);outline-offset:4px;border-radius:8px}
+body.kbd-focus .book-card:focus-visible{outline:2.5px solid var(--field-focus);outline-offset:4px;border-radius:8px}
 @media(max-width:420px){ .card-cta{font-size:9.5px;padding:3px 6px} .card-date{font-size:9px} }
 @media(max-width:360px){ .card-foot{gap:2px} .card-cta{font-size:8.5px;padding:3px 4px} .card-date{font-size:8px} .card-last{font-size:9.5px} }
 
@@ -476,9 +509,14 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .entry-empty[hidden]{display:none}
 
 /* 캘린더 기록 점 */
-.cal-cell .cal-dot{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--olive);box-shadow:0 0 0 1.5px rgba(255,255,255,.92);z-index:3;pointer-events:none}
-.cal-cell.has-book .cal-dot{left:7px;transform:none;background:#FFFFFF;box-shadow:0 0 0 2px rgba(28,24,18,.58)}
-.cal-cell.has-notes:not(.has-book){border-color:var(--olive-soft)}
+/* 기록 점 — 왼쪽 위(날짜 숫자와 대칭)에 형광 라임, 흰 칸·어두운 표지 모두에서 또렷하게 */
+.cal-cell .cal-dot{position:absolute;top:5px;left:5px;width:8px;height:8px;border-radius:50%;background:#B8FF00;
+  box-shadow:0 0 0 1.5px rgba(26,30,10,.72),0 0 0 3px rgba(255,255,255,.92),0 0 8px 2px rgba(184,255,0,.8);
+  z-index:4;pointer-events:none}
+.cal-cell.has-book .cal-dot{top:4px;left:4px;width:9px;height:9px;background:#B8FF00;
+  box-shadow:0 0 0 1.5px rgba(26,30,10,.78),0 0 0 3px rgba(255,255,255,.95),0 0 9px 2px rgba(184,255,0,.85)}
+.cal-cell.has-notes:not(.has-book){border-color:#DCE9AE}
+.cal-cell:focus-visible .cal-dot{box-shadow:0 0 0 1.5px rgba(26,30,10,.78),0 0 0 3px rgba(255,255,255,.95),0 0 10px 3px rgba(184,255,0,1)}
 
 /* 날짜별 기록 시트 */
 .note-row{display:flex;flex-direction:column;gap:4px;text-align:left;width:100%;background:var(--paper);border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow-sm);transition:border-color .15s,transform .15s}
@@ -486,6 +524,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .note-row .nr-top{display:flex;align-items:center;gap:8px;width:100%}
 .note-row .nr-title{font-size:12.5px;font-weight:800;letter-spacing:-.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .note-row .nr-page{margin-left:auto;flex:0 0 auto;font-size:10px;font-weight:800;color:var(--accent-text);background:var(--olive-wash);border:1px solid var(--olive-soft);border-radius:999px;padding:1px 6px;letter-spacing:-.01em;white-space:nowrap}
+.note-row .nr-sub{font-size:10.5px;color:var(--muted);letter-spacing:-.01em}
 .note-row .nr-quote{font-size:12px;color:var(--peach-ink);line-height:1.55;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .note-row .nr-thought{font-size:12px;color:var(--ink-2);line-height:1.55;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .note-row .nr-quote+.nr-thought{padding-left:14px}
@@ -1003,7 +1042,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 <main class="shell" id="calendarView" hidden>
   <div class="lib-search cal-search" role="search">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/></svg>
-    <input id="calSearch" type="search" placeholder="내 책 찾기 (제목·저자)" autocomplete="off" enterkeyhint="search" aria-label="캘린더에서 책 찾기">
+    <input id="calSearch" type="search" placeholder="내 책 찾기 (제목·저자·날짜)" autocomplete="off" enterkeyhint="search" aria-label="캘린더에서 책·날짜 찾기">
     <button type="button" class="lib-clear" id="calSearchClear" hidden aria-label="검색어 지우기">✕</button>
   </div>
   <div class="cal-results" id="calResults" hidden></div>
@@ -1012,16 +1051,32 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       <button class="cal-arrow" id="calPrev" type="button" aria-label="이전 달">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
       </button>
-      <span class="cal-title" id="calTitle">—</span>
+      <button class="cal-title" id="calTitle" type="button" aria-haspopup="true" aria-expanded="false" aria-label="연·월 빠르게 고르기">—</button>
       <button class="cal-arrow" id="calNext" type="button" aria-label="다음 달">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
     <span class="cal-count" id="calCount"><i></i>0권</span>
+    <div class="cal-month-pop" id="calMonthPop" hidden role="dialog" aria-label="연·월 빠르게 고르기">
+      <div class="cmp-head">
+        <button type="button" id="cmpYearPrev" aria-label="이전 해">‹</button>
+        <span id="cmpYearLabel">—</span>
+        <button type="button" id="cmpYearNext" aria-label="다음 해">›</button>
+      </div>
+      <div class="cmp-months" id="cmpMonths"></div>
+    </div>
+  </div>
+  <div class="cal-jump">
+    <span class="cj-field">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.6" y="5.2" width="16.8" height="15.2" rx="3"/><path d="M3.6 9.7h16.8M8.4 3.4v3.2M15.6 3.4v3.2"/></svg>
+      <input id="calDateJump" type="date" min="1900-01-01" max="2100-12-31" aria-label="날짜로 이동 (연-월-일)" title="날짜로 이동">
+    </span>
+    <button type="button" class="cj-btn" id="calDateGo">이동</button>
+    <button type="button" class="cj-btn ghost" id="calTodayBtn">오늘</button>
   </div>
   <div class="cal-week" aria-hidden="true"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
   <div class="cal-grid" id="calGrid" role="grid" aria-label="독서 캘린더"></div>
-  <p class="cal-hint" id="calHint">책의 <b>시작일</b>에는 그 책의 표지가 보이고, 문장이나 메모를 남긴 날에는 <b>작은 점</b>이 찍힙니다. 점이 있는 날을 누르면 그날 남긴 기록을 모아서 볼 수 있어요.</p>
+  <p class="cal-hint" id="calHint">책의 <b>시작일</b>에는 그 책의 표지가 보이고, 문장·메모 기록이나 <b>생각 노트</b>를 남긴 날에는 <b>형광 점</b>이 찍힙니다. 점이 있는 날을 누르면 그날 남긴 기록을 모아서 볼 수 있고, 위의 날짜 칸에 날짜를 골라 바로 그날로 이동할 수 있어요.</p>
   <p class="foot">이 달에 시작한 책 <b id="calMonthDays">0일</b> · 달을 옮겨 지난 기록도 볼 수 있어요.</p>
 </main>
 
@@ -1591,6 +1646,23 @@ window.__rjErrors=[];
 window.addEventListener('error',function(e){try{window.__rjErrors.push(String(e.message||e))}catch(_){}});
 window.addEventListener('unhandledrejection',function(e){try{window.__rjErrors.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
 
+/* 포커스 링 표시 규칙: 키보드(Tab·Shift+Tab·Esc·방향키 등)로 움직였을 때만 보이고,
+   마우스·터치로 누른 뒤(상세 시트 열기·닫기로 초점이 카드로 돌아오는 경우 포함)에는 테두리가 생기지 않게 합니다. */
+(function(){
+  function setNav(kbd){
+    try{ document.body.classList.toggle('kbd-focus',!!kbd); }catch(e){}
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    setNav(true);
+  },true);
+  function pointerNav(){ setNav(false); }
+  document.addEventListener('pointerdown',pointerNav,true);
+  document.addEventListener('mousedown',pointerNav,true);
+  document.addEventListener('touchstart',pointerNav,true);
+  setNav(false);
+})();
+
 /* ---------------- constants ---------------- */
 var KEY='reading-journal.v1';
 var STATUS={reading:{label:'읽는 중'},done:{label:'완독'},paused:{label:'중단'}};
@@ -1987,6 +2059,76 @@ function lastEntryOf(b){
   return list.length?list[list.length-1]:null;
 }
 function entryText(e){ return (e&&(e.quote||e.thought))||''; }
+/* ---------------- 생각 노트(book.note) — 작성일(notesDate) ----------------
+   thoughts are free markdown, so they carry no date of their own. We keep
+   book.notesDate (YYYY-MM-DD) updated whenever the note text changes, and fall
+   back to notesUpdatedAt / lastEdited / updatedAt for notes written before this. */
+function noteRaw(b){ return String((b&&b.note)||''); }
+function notePlain(b){
+  var t=noteRaw(b);
+  t=t.replace(/```[\s\S]*?```/g,' ')
+     .replace(/!\[[^\]]*\]\([^)]*\)/g,' ')
+     .replace(/\[([^\]]*)\]\([^)]*\)/g,'$1')
+     .replace(/^\s{0,3}#{1,6}\s*/gm,'')
+     .replace(/^\s{0,3}>\s?/gm,'')
+     .replace(/^\s*[-*+]\s+\[[ xX]\]\s*/gm,'')
+     .replace(/^\s*[-*+]\s+/gm,'')
+     .replace(/^\s*\d+\.\s+/gm,'')
+     .replace(/^\s*([-*_])\s*(?:\1\s*){2,}$/gm,'')
+     .replace(/[*_`~|]/g,' ')
+     .replace(/[ \t]+/g,' ')
+     .replace(/\s+/g,' ').trim();
+  return t;
+}
+function hasThoughtNote(b){ return notePlain(b).length>0; }
+function isoFromTs(ts){
+  var n=Number(ts)||0;
+  if(!n) return '';
+  var d=new Date(n);
+  if(isNaN(d.getTime())) return '';
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function noteDateOf(b){
+  if(!hasThoughtNote(b)) return '';
+  var d=String(b.notesDate||'');
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  var ts=Number(b.notesUpdatedAt)||Number(b.lastEdited)||0;
+  if(ts){ d=isoFromTs(ts); if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d; }
+  /* 날짜 기록 없이 예전에 쓴 노트: 책을 시작한 날(읽은 기간의 시작)에 표시 */
+  d=String(b.startDate||'');
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  d=isoFromTs(Number(b.updatedAt)||Number(b.createdAt)||0);
+  return /^\d{4}-\d{2}-\d{2}$/.test(d)?d:'';
+}
+function touchNoteDate(b){
+  if(!b) return;
+  b.notesDate=hasThoughtNote(b)?todayISO():'';
+  b.notesUpdatedAt=Date.now();
+}
+function notesByDate(){
+  var map={};
+  db.books.forEach(function(b){
+    var d=noteDateOf(b);
+    if(d) (map[d]=map[d]||[]).push(b);
+  });
+  return map;
+}
+function noteExcerpt(b,max){
+  var raw=noteRaw(b).replace(/\r/g,'');
+  var lines=raw.split('\n').map(function(l){
+    return l.replace(/^\s{0,3}#{1,6}\s*/,'')
+      .replace(/^\s{0,3}>\s?/,'')
+      .replace(/^\s*[-*+]\s+\[[ xX]\]\s*/,'')
+      .replace(/^\s*[-*+]\s+/,'')
+      .replace(/^\s*\d+\.\s+/,'')
+      .replace(/[*_`~|]/g,'')
+      .trim();
+  }).filter(function(l){ return l && !/^([-*_])\s*(?:\1\s*){2,}$/.test(l); });
+  var t=lines.join(' · ').replace(/\s+/g,' ').trim();
+  max=Number(max)||120;
+  if(t.length>max) t=t.slice(0,max-1).replace(/\s+$/,'')+'…';
+  return t;
+}
 function entriesByDate(){
   var map={};
   db.books.forEach(function(b){
@@ -2030,6 +2172,12 @@ function fixBook(b){
     finishedAt:String(b.finishedAt||''),
     rating:clampRating(b.rating),
     note:String(b.note||''),
+    notesDate:(function(){
+      var d=String(b.notesDate||'');
+      if(/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      return isoFromTs(Number(b.notesUpdatedAt)||Number(b.lastEdited)||0);
+    })(),
+    notesUpdatedAt:Number(b.notesUpdatedAt)||Number(b.lastEdited)||0,
     entries:sanitizeEntries(b.entries),
     createdAt:Number(b.createdAt)||Date.now(),
     updatedAt:Number(b.updatedAt)||Number(b.createdAt)||Date.now()
@@ -2585,7 +2733,7 @@ function saveDB(opts){
 var db=loadDB();
 
 /* ---------------- ui state ---------------- */
-var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',formRating:0,view:'home',calYear:0,calMonth:0,catAutoValue:'',libQuery:'',entryEditing:null,focusReturn:null,filledId:null};
+var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',formRating:0,view:'home',calYear:0,calMonth:0,calFocus:'',catAutoValue:'',libQuery:'',entryEditing:null,focusReturn:null,filledId:null};
 ui.calYear=new Date().getFullYear();
 ui.calMonth=new Date().getMonth();
 
@@ -2710,7 +2858,7 @@ function booksById(list){
 }
 function canonState(books,deleted){
   var bs=(books||[]).slice().sort(function(a,b){ return String(a.id)<String(b.id)?-1:(String(a.id)>String(b.id)?1:0); }).map(function(b){
-    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.review,b.startDate,b.finishedAt,b.rating,b.note,b.createdAt,b.updatedAt,
+    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.review,b.startDate,b.finishedAt,b.rating,b.note,b.notesDate,Number(b.notesUpdatedAt)||0,b.createdAt,b.updatedAt,
       JSON.stringify(bookEntries(b).map(function(e){ return [e.id,e.date,e.createdAt,e.updatedAt,e.quote,e.pageStart,e.pageEnd,e.thought]; }))];
   });
   var ds=Object.keys(deleted||{}).sort().map(function(k){ return [k,deleted[k]]; });
@@ -3291,7 +3439,8 @@ function renderCalendar(){
   var y=ui.calYear,m=ui.calMonth;
   head.textContent=y+'년 '+(m+1)+'월';
   var map=booksByStartDate();
-  var notesMap=entriesByDate();
+  var recMap=entriesByDate();
+  var thoughtMap=notesByDate();
   var ym=y+'-'+pad(m+1);
   var dayKeys=Object.keys(map).filter(function(d){ return d.slice(0,7)===ym; });
   var monthBooks=dayKeys.reduce(function(n,d){ return n+map[d].length; },0);
@@ -3309,11 +3458,16 @@ function renderCalendar(){
   for(d=1;d<=days;d++){
     var iso=y+'-'+pad(m+1)+'-'+pad(d);
     var list=map[iso]||[];
-    var notes=notesMap[iso]||[];
+    var recs=recMap[iso]||[];
+    var thoughts=thoughtMap[iso]||[];
+    var hasRec=(recs.length+thoughts.length)>0;
     var wd=new Date(y,m,d).getDay();
-    var cls='cal-cell'+(list.length?' has-book':'')+(notes.length?' has-notes':'')+((wd===0||wd===6)?' weekend':'')+(iso===today?' today':'');
-    var dot=notes.length?'<span class="cal-dot" aria-hidden="true"></span>':'';
-    var noteTxt=notes.length?' · 기록 '+notes.length+'개':'';
+    var focus=(iso===String(ui.calFocus||''));
+    var cls='cal-cell'+(list.length?' has-book':'')+(hasRec?' has-notes':'')+((wd===0||wd===6)?' weekend':'')+(iso===today?' today':'')+(focus?' is-focus':'');
+    var dot=hasRec?'<span class="cal-dot" aria-hidden="true"></span>':'';
+    var noteTxt=recs.length?' · 기록 '+recs.length+'개':'';
+    if(thoughts.length) noteTxt+=' · 생각 노트 '+thoughts.length+'개';
+    if(focus) noteTxt+=' · 선택한 날짜';
     if(list.length){
       var ids=list.map(function(b){ return b.id; }).join(',');
       var b0=list[0];
@@ -3325,13 +3479,13 @@ function renderCalendar(){
         inner='<span class="cal-flat" style="background:'+fcol+';color:'+inkOn(fcol)+'">'+esc(b0.title)+'</span>';
       }
       cells.push('<button type="button" class="'+cls+'" data-date="'+esc(iso)+'" data-ids="'+esc(ids)+'" '
-        +'aria-label="'+esc(iso)+' 시작한 책 '+list.length+'권'+esc(noteTxt)+'">'
+        +'aria-label="'+esc(iso)+' 시작한 책 '+list.length+'권'+esc(noteTxt)+'"'+(focus?' aria-current="date"':'')+'>'
         +inner
         +'<span class="cal-day">'+d+'</span>'+dot
         +(list.length>1?'<span class="cal-more">+'+(list.length-1)+'</span>':'')
         +'</button>');
     }else{
-      cells.push('<button type="button" class="'+cls+'" data-date="'+esc(iso)+'" aria-label="'+esc(iso)+esc(noteTxt)+'"><span class="cal-day">'+d+'</span>'+dot+'</button>');
+      cells.push('<button type="button" class="'+cls+'" data-date="'+esc(iso)+'" aria-label="'+esc(iso)+esc(noteTxt)+'"'+(focus?' aria-current="date"':'')+'><span class="cal-day">'+d+'</span>'+dot+'</button>');
     }
   }
   var trail=(7-((lead+days)%7))%7;
@@ -3361,6 +3515,8 @@ function renderCalResults(q){
   }).sort(function(a,b){ return (Number(b.no)||0)-(Number(a.no)||0); });
   view.classList.add('is-searching');
   box.hidden=false;
+  var dq=parseDateQuery(q);
+  if(dq){ box.innerHTML=calJumpCardHtml(dq); return; }
   box.innerHTML='<p class="lib-count">‘'+esc(q)+'’ 검색 결과 '+hits.length+'권</p>'
     +(hits.length?hits.map(function(b){
       return '<button type="button" class="cal-hit" data-id="'+esc(b.id)+'" aria-label="'+esc(b.title)+' · '+esc((STATUS[b.status]||STATUS.reading).label)+' · '+esc(calBookDates(b))+' · 상세 보기">'
@@ -3378,6 +3534,125 @@ function jumpToBookMonth(b){
     ui.calMonth=Number(d.slice(5,7))-1;
   }
 }
+
+/* ---- 캘린더 날짜 검색 · 바로 이동 ---- */
+var CAL_JUMP_MIN=1900, CAL_JUMP_MAX=2100;
+function ymdValid(y,m,d){
+  if(!(y>=CAL_JUMP_MIN&&y<=CAL_JUMP_MAX)) return false;
+  if(!(m>=1&&m<=12)||!(d>=1&&d<=31)) return false;
+  var dt=new Date(y,m-1,d);
+  return dt.getFullYear()===y && dt.getMonth()===m-1 && dt.getDate()===d;
+}
+/* '2023-04-28' '2023.4.28' '2023/4/28' '2023년 4월 28일' '20230428' · '2023-04' '2023.4' '2023년 4월' '202304' */
+function parseDateQuery(q){
+  var s=String(q||'').trim().replace(/\s+/g,'');
+  if(!s) return null;
+  var m;
+  /* 날짜: 2023-04-28 · 2023.4.28 · 2023/4/28 · 2023년 4월 28일 · 20230428 */
+  m=s.match(/^(\d{4})[-./년](\d{1,2})[-./월](\d{1,2})일?$/);
+  if(!m) m=s.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if(m){
+    var y=+m[1],mo=+m[2],d=+m[3];
+    if(ymdValid(y,mo,d)) return {date:y+'-'+pad(mo)+'-'+pad(d),year:y,monthIndex:mo-1,month:y+'-'+pad(mo)};
+    return null;
+  }
+  /* 달: 2023-04 · 2023.4 · 2023/4 · 2023년 4월 · 202304 */
+  m=s.match(/^(\d{4})[-./년](\d{1,2})월?$/);
+  if(!m) m=s.match(/^(\d{4})(\d{2})$/);
+  if(m){
+    var y2=+m[1],mo2=+m[2];
+    if(y2>=CAL_JUMP_MIN&&y2<=CAL_JUMP_MAX&&mo2>=1&&mo2<=12) return {year:y2,monthIndex:mo2-1,month:y2+'-'+pad(mo2)};
+  }
+  return null;
+}
+function calDayCounts(date){
+  var e=entriesOnDate(date).length;
+  var n=db.books.filter(function(b){ return noteDateOf(b)===date; }).length;
+  return {entries:e,notes:n,started:booksOnDate(date).length};
+}
+function calJumpCardHtml(dq){
+  var iso=dq.date||'',label,sub;
+  if(iso){
+    var wd=['일','월','화','수','목','금','토'][new Date(+iso.slice(0,4),+iso.slice(5,7)-1,+iso.slice(8,10)).getDay()];
+    label=(+iso.slice(0,4))+'년 '+(+iso.slice(5,7))+'월 '+(+iso.slice(8,10))+'일 ('+wd+')';
+    var c=calDayCounts(iso),bits=[];
+    if(c.entries) bits.push('기록 '+c.entries+'개');
+    if(c.notes) bits.push('생각 노트 '+c.notes+'개');
+    if(c.started) bits.push('시작한 책 '+c.started+'권');
+    sub=(bits.length?bits.join(' · ')+' · ':'')+'이 날로 이동';
+  }else{
+    label=dq.year+'년 '+(dq.monthIndex+1)+'월';
+    sub='이 달로 이동 · 달력에서 바로 보기';
+  }
+  return '<button type="button" class="cal-hit cal-hit-date" data-jumpdate="'+esc(iso)+'" data-jumpmonth="'+esc(dq.month||'')+'" aria-label="'+esc(label+' · '+sub)+'">'
+    +'<span class="ch-cal" aria-hidden="true">'+esc(String(dq.date?+dq.date.slice(8,10):(dq.monthIndex+1)))+'</span>'
+    +'<span class="ch-meta"><span class="ch-title">'+esc(label)+'</span><span class="ch-sub">'+esc(sub)+'</span></span>'
+    +'<span class="ch-arrow" aria-hidden="true">›</span></button>';
+}
+function calJumpToDate(iso,opts){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(iso||''))) return false;
+  var y=+iso.slice(0,4),m=+iso.slice(5,7)-1;
+  if(!ymdValid(y,m+1,+iso.slice(8,10))) return false;
+  var o=opts||{};
+  ui.calYear=y; ui.calMonth=m; ui.calFocus=iso;
+  closeMonthPop();
+  var s=$('#calSearch'); if(s) s.value='';
+  renderCalResults('');
+  renderCalendar();
+  var dj=$('#calDateJump');
+  if(dj && dj.value!==iso) dj.value=iso;
+  var cell=document.querySelector('#calGrid .cal-cell[data-date="'+iso+'"]');
+  if(cell){
+    try{ cell.scrollIntoView({block:'center'}); }catch(e){}
+    setTimeout(function(){ try{ cell.focus({preventScroll:true}); }catch(e){} },80);
+  }
+  if(o.openSheet!==false){
+    var c=calDayCounts(iso);
+    if(c.entries||c.notes) openDayNotes(iso);
+  }
+  return true;
+}
+function calJumpToMonth(y,m){
+  y=Number(y); m=Number(m);
+  if(!(y>=CAL_JUMP_MIN&&y<=CAL_JUMP_MAX)||!(m>=0&&m<=11)) return false;
+  ui.calYear=y; ui.calMonth=m; ui.calFocus='';
+  closeMonthPop();
+  var s=$('#calSearch'); if(s) s.value='';
+  renderCalResults('');
+  renderCalendar();
+  return true;
+}
+var calJumpYear=null;
+function renderMonthPop(){
+  var lab=$('#cmpYearLabel'), grid=$('#cmpMonths');
+  if(!lab||!grid) return;
+  var y=(calJumpYear==null?ui.calYear:calJumpYear);
+  lab.textContent=y+'년';
+  var html='';
+  for(var i=0;i<12;i++){
+    var cur=(y===ui.calYear && i===ui.calMonth);
+    html+='<button type="button" data-cmpyear="'+y+'" data-cmpmonth="'+i+'" class="'+(cur?'is-cur':'')+'" aria-pressed="'+(cur?'true':'false')+'">'+(i+1)+'월</button>';
+  }
+  grid.innerHTML=html;
+}
+function openMonthPop(){
+  var pop=$('#calMonthPop');
+  if(!pop) return;
+  calJumpYear=ui.calYear;
+  renderMonthPop();
+  pop.hidden=false;
+  var t=$('#calTitle'); if(t) t.setAttribute('aria-expanded','true');
+}
+function closeMonthPop(){
+  var pop=$('#calMonthPop');
+  if(!pop||pop.hidden) return;
+  pop.hidden=true;
+  var t=$('#calTitle'); if(t) t.setAttribute('aria-expanded','false');
+}
+function toggleMonthPop(){
+  var pop=$('#calMonthPop');
+  if(pop&&!pop.hidden) closeMonthPop(); else openMonthPop();
+}
 function dayRowHtml(b){
   var sub=[b.author,(STATUS[b.status]||STATUS.reading).label].filter(Boolean).join(' · ');
   return '<button type="button" class="day-row" data-id="'+esc(b.id)+'">'
@@ -3391,12 +3666,21 @@ function openDayList(date,books){
   $('#dayList').innerHTML=books.map(dayRowHtml).join('');
   openModal('dayModal');
 }
-/* 그날 남긴 기록(인용·내 생각)을 모두 모아 보는 시트 */
+function dayNoteRowHtml(b){
+  var sub=[b.author,(STATUS[b.status]||STATUS.reading).label].filter(Boolean).join(' · ');
+  return '<button type="button" class="note-row nr-note" data-book="'+esc(b.id)+'" aria-label="'+esc(b.title)+' · 생각 노트 · 상세 보기">'
+    +'<span class="nr-top"><span class="nr-title">'+esc(b.title)+'</span><span class="nr-page">생각 노트</span></span>'
+    +(sub?'<span class="nr-sub">'+esc(sub)+'</span>':'')
+    +'<span class="nr-thought">'+esc(noteExcerpt(b,140)||'생각 노트가 있어요.')+'</span>'
+    +'</button>';
+}
+/* 그날 남긴 기록(인용·내 생각)과 생각 노트를 모두 모아 보는 시트 */
 function openDayNotes(date){
   var p=date.split('-');
   var items=entriesOnDate(date);
+  var thoughts=db.books.filter(function(b){ return noteDateOf(b)===date; });
   var started=booksOnDate(date);
-  $('#notesTitle').textContent=(+p[1])+'월 '+(+p[2])+'일 · 기록 '+items.length+'개';
+  $('#notesTitle').textContent=(+p[1])+'월 '+(+p[2])+'일 · 기록 '+(items.length+thoughts.length)+'개';
   var html=items.map(function(it){
     var e=it.entry, b=it.book, pages=pageLabel(e.pageStart,e.pageEnd);
     return '<button type="button" class="note-row" data-book="'+esc(b.id)+'" data-entry="'+esc(e.id)+'">'
@@ -3406,6 +3690,9 @@ function openDayNotes(date){
       +(e.thought?'<span class="nr-thought">'+esc(e.thought)+'</span>':'')
       +'</button>';
   }).join('');
+  if(thoughts.length){
+    html+='<p class="day-sec">생각 노트</p>'+thoughts.map(dayNoteRowHtml).join('');
+  }
   if(started.length){
     html+='<p class="day-sec">이 날 시작한 책</p>'+started.map(dayRowHtml).join('');
   }
@@ -3769,6 +4056,8 @@ function closeDetail(){
   ui.entryEditing=null;
   ui.filledId=null;
   document.body.classList.remove('locked');
+  /* 닫기 버튼으로 닫을 때도 history 상태를 되돌려, 다시 연 뒤 Esc로 닫으면 또 열리는 일이 없게 합니다. */
+  try{ if(history.state && history.state.v==='detail') history.replaceState({v:'home'},''); }catch(e){}
   renderShelf();
   restoreDetailFocus(id);
 }
@@ -4678,13 +4967,58 @@ $('#tabbar').addEventListener('click',function(e){
 $('#calPrev').addEventListener('click',function(){
   ui.calMonth--;
   if(ui.calMonth<0){ ui.calMonth=11; ui.calYear--; }
+  ui.calFocus='';
+  closeMonthPop();
   renderCalendar();
 });
 $('#calNext').addEventListener('click',function(){
   ui.calMonth++;
   if(ui.calMonth>11){ ui.calMonth=0; ui.calYear++; }
+  ui.calFocus='';
+  closeMonthPop();
   renderCalendar();
 });
+/* 날짜로 이동 · 연/월 빠른 선택 */
+$('#calTitle').addEventListener('click',function(e){
+  e.preventDefault();
+  toggleMonthPop();
+});
+$('#calMonthPop').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-cmpyear]');
+  if(!b) return;
+  calJumpToMonth(+b.dataset.cmpyear,+b.dataset.cmpmonth);
+});
+$('#cmpYearPrev').addEventListener('click',function(){
+  calJumpYear=Math.max(CAL_JUMP_MIN,(calJumpYear==null?ui.calYear:calJumpYear)-1);
+  renderMonthPop();
+});
+$('#cmpYearNext').addEventListener('click',function(){
+  calJumpYear=Math.min(CAL_JUMP_MAX,(calJumpYear==null?ui.calYear:calJumpYear)+1);
+  renderMonthPop();
+});
+$('#calDateJump').addEventListener('change',function(){
+  var v=String(this.value||'');
+  if(!v) return;
+  if(!calJumpToDate(v)) toast('그 날짜로는 이동할 수 없어요.');
+});
+$('#calDateGo').addEventListener('click',function(){
+  var v=String($('#calDateJump').value||'');
+  if(v) calJumpToDate(v);
+  else { try{ $('#calDateJump').focus(); }catch(e){} toast('이동할 날짜를 먼저 골라 주세요.'); }
+});
+$('#calTodayBtn').addEventListener('click',function(){
+  calJumpToDate(todayISO(),{openSheet:false});
+});
+document.addEventListener('click',function(e){
+  var pop=$('#calMonthPop');
+  if(!pop||pop.hidden) return;
+  if(pop.contains(e.target)||(e.target.closest&&e.target.closest('#calTitle'))) return;
+  closeMonthPop();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeMonthPop();
+});
+if($('#calDateJump')) $('#calDateJump').value=todayISO();
 $('#calSearch').addEventListener('input',function(){ renderCalResults(this.value); });
 $('#calSearchClear').addEventListener('click',function(e){
   e.preventDefault();
@@ -4699,6 +5033,16 @@ $('#calSearch').addEventListener('keydown',function(e){
   renderCalendar();
 });
 $('#calResults').addEventListener('click',function(e){
+  var dj=e.target.closest('[data-jumpdate],[data-jumpmonth]');
+  if(dj){
+    var d=String(dj.dataset.jumpdate||'');
+    if(d) calJumpToDate(d,{openSheet:true});
+    else {
+      var mo=String(dj.dataset.jumpmonth||'');
+      if(/^\d{4}-\d{2}$/.test(mo)) calJumpToMonth(+mo.slice(0,4),+mo.slice(5,7)-1);
+    }
+    return;
+  }
   var hit=e.target.closest('.cal-hit');
   if(!hit) return;
   var b=null;
@@ -4736,7 +5080,8 @@ $('#notesList').addEventListener('click',function(e){
   if(row){
     var id=row.dataset.book, en=row.dataset.entry;
     closeModal('notesModal');
-    openDetail(id,true,{entryId:en});
+    if(en) openDetail(id,true,{entryId:en});
+    else openDetail(id,true,{note:true});
     return;
   }
   var day=e.target.closest('.day-row');
@@ -4820,7 +5165,10 @@ $('#dReview').addEventListener('input',function(){
 $('#noteInput').addEventListener('input',function(){
   var b=curBook();
   if(!b) return;
-  b.note=this.value;
+  if(b.note!==this.value){
+    b.note=this.value;
+    touchNoteDate(b);
+  }
   schedulePreview();
   queueSave();
 });
@@ -4835,6 +5183,7 @@ $('#notePreview').addEventListener('click',function(e){
   lines[idx]=lines[idx].replace(/^(\s*[-*+]\s+\[)[ xX](\])/,function(m,p1,p2){return p1+(box.checked?'x':' ')+p2});
   b.note=lines.join('\n');
   b.updatedAt=Date.now();
+  touchNoteDate(b);
   saveDB();
   $('#noteInput').value=b.note;
   renderPreview();
