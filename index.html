@@ -40,6 +40,10 @@
   --peach-line:#E7CDB6;
   --peach-edge:#EDD9C4;
   --peach-ink:#66513B;
+  /* 후기 카드 — 읽는 이유(피치)와 구분되는 세이지 틴트 */
+  --review-bg:#EEF3DF;
+  --review-edge:#D5E1BF;
+  --review-ink:#46561F;
   --rose:#F7E9E4;
   --gray-card:#F1F0EA;
   /* 별점 — 금색 별 */
@@ -58,7 +62,7 @@
   --seg-active-bg:#FFFFFF;
   --seg-active-ink:#2B2923;
   --seg-shadow:0 1px 4px rgba(60,52,36,.13);
-  /* 분야 칩 */
+  /* 카테고리 칩 */
   --chip-bg:#FFFFFF;
   --chip-line:#DED9CC;
   --chip-ink:#5D594F;
@@ -99,6 +103,7 @@
   --accent-text:#3B6B64; --on-accent:#0E2A26;
   --accent2:#B3AA99; --on-accent2:#2E2A22; --accent2-text:#7E7462; --accent2-soft:#D9D1C3; --accent2-wash:#F4EFE5;
   --peach:#FFEFCA; --peach-line:#B3AA99; --peach-edge:#E6D9BE; --peach-ink:#5A4C33;
+  --review-bg:#E5F1EF; --review-edge:#C6DEDA; --review-ink:#2F5A54;
   --rose:#F7EBDC; --gray-card:#F3ECDD;
   --topbar-bg:rgba(255,246,225,.85); --topbar-line:rgba(179,170,153,.42);
   --tabbar-bg:rgba(255,250,238,.95); --tabbar-line:rgba(179,170,153,.45);
@@ -125,6 +130,7 @@
   --accent-text:#46763A; --on-accent:#1E3517;
   --accent2:#7BB0E0; --on-accent2:#17334B; --accent2-text:#3C74A8; --accent2-soft:#BAD9F2; --accent2-wash:#E9F3FC;
   --peach:#FDEBE7; --peach-line:#FD8B7A; --peach-edge:#F8CBC1; --peach-ink:#7C3A2E;
+  --review-bg:#E9F3FC; --review-edge:#C3DCF3; --review-ink:#2F6390;
   --rose:#FDEEEA; --gray-card:#EFF4ED;
   --topbar-bg:rgba(247,251,245,.84); --topbar-line:rgba(144,183,135,.35);
   --tabbar-bg:rgba(250,253,249,.95); --tabbar-line:rgba(123,176,224,.35);
@@ -151,6 +157,7 @@
   --accent-text:#6E6412; --on-accent:#2C2814;
   --accent2:#9999CC; --on-accent2:#22224A; --accent2-text:#5B5B9B; --accent2-soft:#CBCBE7; --accent2-wash:#EFEFF8;
   --peach:#EFEFF8; --peach-line:#9999CC; --peach-edge:#D2D2E8; --peach-ink:#3E3E6B;
+  --review-bg:#FBF4D6; --review-edge:#E3D794; --review-ink:#6E6412;
   --rose:#F5ECF6; --gray-card:#F4EDD5;
   --topbar-bg:rgba(255,246,222,.85); --topbar-line:rgba(209,191,78,.35);
   --tabbar-bg:rgba(255,251,236,.95); --tabbar-line:rgba(153,153,204,.32);
@@ -420,9 +427,13 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .entry-btns{display:flex;gap:2px}
 .entry-btns button{font-size:10.5px;font-weight:700;color:#9C968A;padding:2px 7px;border-radius:999px;letter-spacing:-.01em}
 .entry-btns button:hover{background:var(--panel-hover);color:var(--ink-2)}
-.entry-quote{margin:0;padding:8px 11px;background:var(--nc-quote-bg,var(--peach));border:1px solid var(--nc-quote-edge,var(--peach-edge));border-radius:9px;font-size:13.5px;line-height:1.7;color:var(--nc-quote-ink,var(--peach-ink));letter-spacing:-.02em;white-space:pre-wrap;overflow-wrap:anywhere}
-.entry-page{margin:4px 0 0;padding-left:2px;font-size:10.5px;font-weight:800;color:var(--accent-text);letter-spacing:-.01em}
-.entry-thought{margin:6px 0 0;font-size:13px;line-height:1.7;color:var(--ink-2);letter-spacing:-.02em;white-space:pre-wrap;overflow-wrap:anywhere}
+.entry-quote{margin:0;padding:8px 11px;background:var(--nc-quote-bg,var(--peach));border:1px solid var(--nc-quote-edge,var(--peach-edge));border-radius:9px;font-size:13.5px;line-height:1.7;color:var(--nc-quote-ink,var(--peach-ink));letter-spacing:-.02em;display:flex;flex-direction:column;gap:5px}
+.entry-quote .eq-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.entry-quote .eq-page{align-self:flex-end;font-size:10.5px;font-weight:800;color:var(--nc-quote-ink,var(--peach-ink));opacity:.72;letter-spacing:-.01em;line-height:1.2}
+.entry-page{margin:3px 0 0;padding-left:2px;font-size:10.5px;font-weight:800;color:var(--accent-text);letter-spacing:-.01em}
+.entry-thought{position:relative;margin:8px 0 0;padding-left:16px;font-size:13px;line-height:1.7;color:var(--ink-2);letter-spacing:-.02em;white-space:pre-wrap;overflow-wrap:anywhere}
+.entry-thought::before{content:"↳";position:absolute;left:0;top:0;font-size:10.5px;line-height:2.1;color:#B9B2A2}
+.entry-page+.entry-thought{margin-top:5px}
 .entry-quote+.entry-thought{margin-top:7px}
 .entry-empty{margin:10px 0 0;font-size:11.5px;color:#ADA697;letter-spacing:-.01em;line-height:1.6}
 .entry-empty[hidden]{display:none}
@@ -440,6 +451,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .note-row .nr-page{margin-left:auto;flex:0 0 auto;font-size:10px;font-weight:800;color:var(--accent-text);background:var(--olive-wash);border:1px solid var(--olive-soft);border-radius:999px;padding:1px 6px;letter-spacing:-.01em;white-space:nowrap}
 .note-row .nr-quote{font-size:12px;color:var(--peach-ink);line-height:1.55;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .note-row .nr-thought{font-size:12px;color:var(--ink-2);line-height:1.55;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.note-row .nr-quote+.nr-thought{padding-left:14px}
 .day-sec{margin:14px 0 6px;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:.04em}
 
 /* 책 추가 — 바로 기록 · 상세 정보 접기 */
@@ -523,6 +535,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .reason-card label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--peach-ink);opacity:.8;margin-bottom:3px;text-transform:uppercase}
 .reason-card textarea{display:block;width:100%;border:0;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--ink-2);letter-spacing:-.02em;padding:0;min-height:22px;height:22px;overflow:hidden;outline:none}
 .reason-card textarea::placeholder{color:var(--muted);opacity:.85}
+/* 후기 — 읽는 이유와 같은 컴팩트 자동 확장 박스, 테마별 다른 틴트 */
+.review-card{background:var(--review-bg);border:1px solid var(--review-edge);border-radius:12px;padding:10px 14px 11px;margin-bottom:16px}
+.review-card label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--review-ink);opacity:.85;margin-bottom:3px;text-transform:uppercase}
+.review-card textarea{display:block;width:100%;border:0;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--ink-2);letter-spacing:-.02em;padding:0;min-height:22px;height:22px;overflow:hidden;outline:none}
+.review-card textarea::placeholder{color:var(--muted);opacity:.85}
 
 /* notes */
 .notes-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-sm);padding:15px 15px 12px;margin-bottom:18px}
@@ -768,7 +785,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   text-shadow:none;border-radius:6px;padding:1px 4px;font-size:10.5px;box-shadow:0 1px 2px rgba(40,35,25,.16)}
 .cal-cell.has-book .cal-more{background:rgba(255,255,255,.92);color:#2B2923;box-shadow:0 1px 2px rgba(40,35,25,.16)}
 
-/* ============ 분야 색상 ============ */
+/* ============ 카테고리 색상 ============ */
 .chip .cat-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cat,#C9C3B2);
   margin-right:5px;vertical-align:1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
 .chip.has-cat{border-color:var(--cat)}
@@ -783,6 +800,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cat-add button:hover{background:var(--olive-wash)}
 .cat-row{display:flex;align-items:center;gap:6px}
 .cat-row .cat-color-row{flex:1 1 auto;min-width:0}
+.cat-move{flex:0 0 auto;display:flex;flex-direction:column;gap:3px}
+.cat-mv{width:26px;height:16px;border-radius:6px;border:1px solid var(--line);background:var(--paper);
+  color:var(--muted);font-size:9px;font-weight:800;line-height:1;display:grid;place-items:center;padding:0}
+.cat-mv:hover:not(:disabled){background:var(--olive-wash);border-color:var(--olive-soft);color:var(--accent-text)}
+.cat-mv:disabled{opacity:.3;cursor:default}
 .cat-del{flex:0 0 auto;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--paper);
   color:var(--muted);font-size:12px;font-weight:800;display:grid;place-items:center}
 .cat-del:hover{background:#FBEFEA;border-color:#EAD7CE;color:#A2635A}
@@ -793,7 +815,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .cat-color-row .cdot{width:16px;height:16px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(0,0,0,.10)}
 .cat-color-row .cdot.none{background:transparent;border:1px dashed var(--line)}
 .cat-color-row .cn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cat-color-row .cn-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:99px;background:var(--olive-wash);color:var(--accent-text);font-size:9.5px;font-weight:800;letter-spacing:0;vertical-align:1.5px}
 .cat-color-row .cval{flex:0 0 auto;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:0}
 .cat-color-row .chv{flex:0 0 auto;color:var(--muted);font-size:13px}
 
@@ -913,11 +934,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   <div class="segmented" id="statusTabs" role="tablist" aria-label="상태 필터"></div>
   <div class="shelf-bar" id="shelfBar">
     <div class="chips-wrap" id="chipsWrap">
-      <button class="chips-nav" id="chipsPrev" type="button" aria-label="분야 왼쪽으로 넘기기">
+      <button class="chips-nav" id="chipsPrev" type="button" aria-label="카테고리 왼쪽으로 넘기기">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
       </button>
-      <div class="chips" id="categoryChips" aria-label="분야 필터"></div>
-      <button class="chips-nav" id="chipsNext" type="button" aria-label="분야 오른쪽으로 넘기기">
+      <div class="chips" id="categoryChips" aria-label="카테고리 필터"></div>
+      <button class="chips-nav" id="chipsNext" type="button" aria-label="카테고리 오른쪽으로 넘기기">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
@@ -1060,6 +1081,11 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
         <textarea id="dReason" rows="1" placeholder="이 책을 읽는 이유를 적어 두세요"></textarea>
       </div>
 
+      <div class="review-card">
+        <label for="dReview">후기</label>
+        <textarea id="dReview" rows="1" placeholder="다 읽은 뒤의 후기를 적어 두세요"></textarea>
+      </div>
+
       <section class="notes-card">
         <div class="notes-head">
           <h3>독서 노트 <span id="fragLabel"></span></h3>
@@ -1132,6 +1158,12 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
         <label for="fAuthor">저자</label>
         <input id="fAuthor" type="text" placeholder="저자" autocomplete="off">
       </div>
+      <div class="field" id="fCatField">
+        <label for="fCat">카테고리</label>
+        <input id="fCat" type="text" placeholder="예: 마음·습관" autocomplete="off" list="catList">
+        <datalist id="catList"></datalist>
+        <div class="cat-quick" id="catQuick" role="group" aria-label="추천 카테고리"></div>
+      </div>
 
       <div class="section-label" id="firstEntryLabel">첫 기록 <span class="opt">선택</span></div>
       <div class="entry-form m-entry-wrap" id="mEntryForm">
@@ -1179,12 +1211,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       <div class="field">
         <label for="fPublisher">출판사</label>
         <input id="fPublisher" type="text" placeholder="출판사" autocomplete="off">
-      </div>
-      <div class="field">
-        <label for="fCat">분야</label>
-        <input id="fCat" type="text" placeholder="예: 마음·습관" autocomplete="off" list="catList">
-        <datalist id="catList"></datalist>
-        <div class="cat-quick" id="catQuick"></div>
       </div>
       <div class="field-row">
         <div class="field">
@@ -1294,10 +1320,10 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       </div>
 
       <div class="set-block">
-        <h3>분야 색상</h3>
-        <p class="hint">분야를 직접 추가하거나 색을 정할 수 있어요. 분야 칩·책 배지·자동 표지·캘린더에 그 색이 함께 쓰입니다.</p>
+        <h3>카테고리</h3>
+        <p class="hint">카테고리를 직접 추가하거나 색·순서를 정할 수 있어요. ↑↓로 순서를 바꾸면 서재 카테고리 칩과 책 추가·수정의 추천 목록에도 그대로 반영됩니다.</p>
         <div class="cat-add">
-          <input id="newCatInput" type="text" placeholder="새 분야 이름 (예: 에세이, 가드닝)" maxlength="20" autocomplete="off" enterkeyhint="done" aria-label="새 분야 이름">
+          <input id="newCatInput" type="text" placeholder="새 카테고리 이름 (예: 에세이, 가드닝)" maxlength="20" autocomplete="off" enterkeyhint="done" aria-label="새 카테고리 이름">
           <button type="button" id="btnAddCat">+ 추가</button>
         </div>
         <div class="cat-color-list" id="catColorList"></div>
@@ -1385,7 +1411,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
     </div>
     <div class="modal-body">
       <button type="button" class="color-back" id="colorBack" hidden>‹ 색상 목록</button>
-      <p class="color-sub" id="colorSub">분야 색상</p>
+      <p class="color-sub" id="colorSub">카테고리 색상</p>
       <div class="color-list" id="colorPresetList"></div>
       <div class="color-custom" id="colorCustom" hidden>
         <div class="color-tabs" role="tablist" aria-label="색상 고르기">
@@ -1586,7 +1612,7 @@ function wrapTitle(t,max){
   if(cur)lines.push(cur);
   return lines;
 }
-/* 분야 색 — 설정에서 지정, 없으면 기본 단색 */
+/* 카테고리 색 — 설정에서 지정, 없으면 기본 단색 */
 var CAT_COLOR_PRESETS=[
   {name:'빨간색',hex:'#FF3B30'},{name:'주황색',hex:'#FF9500'},{name:'노란색',hex:'#FFCC00'},
   {name:'초록색',hex:'#34C759'},{name:'파란색',hex:'#007AFF'},{name:'보라색',hex:'#AF52DE'},
@@ -1620,7 +1646,7 @@ function sanitizeNoteColors(obj){
   });
   return out;
 }
-/* 내가 추가한 분야 */
+/* 내가 추가한 카테고리 */
 function sanitizeCustomCategories(arr){
   var out=[],seen={};
   if(!Array.isArray(arr)) return out;
@@ -1828,7 +1854,7 @@ function bindRatingInput(boxSel,getValue,setValue){
 /* ---------------- storage ---------------- */
 function seedDB(){
   var now=Date.now(), day=86400000;
-  return {version:2,deleted:{},fontUpdatedAt:0,settings:{aladinKey:'',kakaoKey:'',fontPreset:'gothic',fontScope:'all',customFontName:'',sort:'recent',colorTheme:'default',categoryColors:{},catUpdatedAt:0,noteColors:{},noteColorsUpdatedAt:0,customCategories:[],customCatsUpdatedAt:0},books:[
+  return {version:2,deleted:{},fontUpdatedAt:0,settings:{aladinKey:'',kakaoKey:'',fontPreset:'gothic',fontScope:'all',customFontName:'',sort:'recent',colorTheme:'default',categoryColors:{},catUpdatedAt:0,noteColors:{},noteColorsUpdatedAt:0,customCategories:[],customCatsUpdatedAt:0,hiddenCategories:[],hiddenCatsUpdatedAt:0,categoryOrder:[],catOrderUpdatedAt:0},books:[
     {id:'bk_1',no:1,title:'아주 작은 습관의 힘',author:'제임스 클리어',publisher:'비즈니스북스',category:'마음·습관',status:'done',cover:'',rating:5,
      startDate:'2026-10-03',finishedAt:'2026-11-02',createdAt:now-56*day,updatedAt:now-3*day,
      reason:'매일 1%씩 쌓이는 게 정말 되는지 내 생활로 확인해 보고 싶어서.',
@@ -1940,6 +1966,7 @@ function fixBook(b){
     status:(b.status==='done'||b.status==='paused')?b.status:'reading',
     cover:String(b.cover||''),
     reason:String(b.reason||''),
+    review:String(b.review||''),
     startDate:String(b.startDate||''),
     finishedAt:String(b.finishedAt||''),
     rating:clampRating(b.rating),
@@ -1977,39 +2004,103 @@ function renderThemeUI(){
     card.setAttribute('aria-checked',on?'true':'false');
   });
 }
-/* ---- 분야 색상 설정 ---- */
+/* ---- 카테고리 설정 ---- */
 function customCategories(){ return (db.settings.customCategories||(db.settings.customCategories=[])); }
 function isCustomCategory(c){ return customCategories().indexOf(c)>-1; }
-function categoryListForSettings(){
-  var set={},head=[],mine=[],tail=[];
-  DEFAULT_CATS.forEach(function(c){ if(c&&!set[c]){ set[c]=1; head.push(c); } });
-  customCategories().forEach(function(c){ if(c&&!set[c]){ set[c]=1; mine.push(c); } });
-  db.books.forEach(function(b){ if(b.category && !set[b.category]){ set[b.category]=1; tail.push(b.category); } });
-  Object.keys(db.settings.categoryColors||{}).forEach(function(c){ if(c && !set[c]){ set[c]=1; tail.push(c); } });
-  tail.sort(function(a,b){ return String(a).localeCompare(String(b),'ko'); });
-  return head.concat(mine,tail);
+function hiddenCategories(){ return (db.settings.hiddenCategories||(db.settings.hiddenCategories=[])); }
+function isHiddenCategory(c){ return hiddenCategories().indexOf(c)>-1; }
+function categoryOrder(){ return (db.settings.categoryOrder||(db.settings.categoryOrder=[])); }
+function sanitizeCategoryList(arr){
+  var out=[],seen={};
+  if(!Array.isArray(arr)) return out;
+  arr.forEach(function(c){
+    var name=String(c||'').trim().replace(/\s+/g,' ').slice(0,20);
+    if(!name || seen[name]) return;
+    seen[name]=1; out.push(name);
+  });
+  return out;
 }
+/* 기본 4개 + 직접 추가한 카테고리(숨긴 것 제외) */
+function baseCategories(){
+  var out=[],seen={};
+  DEFAULT_CATS.concat(customCategories()).forEach(function(c){
+    if(c && !seen[c] && !isHiddenCategory(c)){ seen[c]=1; out.push(c); }
+  });
+  return out;
+}
+/* 사용자가 정한 순서(categoryOrder)를 먼저, 그 뒤에 나머지 */
+function allCategories(){
+  var out=[],seen={};
+  categoryOrder().forEach(function(c){ if(c && !seen[c] && !isHiddenCategory(c)){ seen[c]=1; out.push(c); } });
+  baseCategories().forEach(function(c){ if(!seen[c]){ seen[c]=1; out.push(c); } });
+  return out;
+}
+function categoryRank(){ var m={}; allCategories().forEach(function(c,i){ m[c]=i; }); return m; }
+/* 책·색 지정에만 남아 있는 카테고리(allCategories 밖) */
+function extraCategories(){
+  var set={},out=[];
+  allCategories().forEach(function(c){ set[c]=1; });
+  db.books.forEach(function(b){ if(b.category && !set[b.category] && !isHiddenCategory(b.category)){ set[b.category]=1; out.push(b.category); } });
+  Object.keys(db.settings.categoryColors||{}).forEach(function(c){ if(c && !set[c] && !isHiddenCategory(c)){ set[c]=1; out.push(c); } });
+  out.sort(function(a,b){ return String(a).localeCompare(String(b),'ko'); });
+  return out;
+}
+/* 설정 화면·추천 칩에 보여 줄 전체 목록(순서대로) */
+function categoryListForSettings(){ return allCategories().concat(extraCategories()); }
+/* 책 추가·수정의 추천 칩과 자동완성 목록 */
+function categoryPickList(){ return categoryListForSettings(); }
 function renderCatColorList(){
   var box=$('#catColorList');
   if(!box) return;
-  box.innerHTML=categoryListForSettings().map(function(c){
+  var list=categoryListForSettings();
+  box.innerHTML=list.map(function(c,i){
     var col=categoryColor(c);
-    var mine=isCustomCategory(c);
+    var first=i===0, last=i===list.length-1;
     return '<div class="cat-row">'
+      +'<span class="cat-move">'
+      +'<button type="button" class="cat-mv" data-mvcat="'+esc(c)+'" data-dir="-1" aria-label="'+esc(c)+' 카테고리 위로 옮기기" title="위로"'+(first?' disabled':'')+'>↑</button>'
+      +'<button type="button" class="cat-mv" data-mvcat="'+esc(c)+'" data-dir="1" aria-label="'+esc(c)+' 카테고리 아래로 옮기기" title="아래로"'+(last?' disabled':'')+'>↓</button>'
+      +'</span>'
       +'<button type="button" class="cat-color-row" data-cat="'+esc(c)+'">'
       +'<span class="cdot'+(col?'':' none')+'"'+(col?' style="background:'+col+'"':'')+'></span>'
-      +'<span class="cn">'+esc(c)+(mine?'<span class="cn-tag">내 분야</span>':'')+'</span>'
+      +'<span class="cn">'+esc(c)+'</span>'
       +'<span class="cval">'+(col?col:'기본')+'</span>'
       +'<span class="chv" aria-hidden="true">›</span></button>'
-      +(mine?'<button type="button" class="cat-del" data-delcat="'+esc(c)+'" aria-label="'+esc(c)+' 분야 빼기" title="분야 빼기">✕</button>':'')
+      +'<button type="button" class="cat-del" data-delcat="'+esc(c)+'" aria-label="'+esc(c)+' 카테고리 삭제" title="카테고리 삭제">✕</button>'
       +'</div>';
   }).join('');
 }
+function moveCategory(name,dir){
+  var list=categoryListForSettings();
+  var i=list.indexOf(name);
+  if(i<0) return;
+  var j=i+Number(dir);
+  if(j<0 || j>=list.length) return;
+  var tmp=list[i]; list[i]=list[j]; list[j]=tmp;
+  db.settings.categoryOrder=list;
+  db.settings.catOrderUpdatedAt=Date.now();
+  saveDB();
+  renderCatColorList();
+  renderShelf();
+  renderCatQuick();
+}
 function addCustomCategory(name){
   name=String(name||'').trim().replace(/\s+/g,' ').slice(0,20);
-  if(!name){ toast('분야 이름을 입력해 주세요.'); return false; }
-  if(DEFAULT_CATS.indexOf(name)>-1 || customCategories().indexOf(name)>-1 || db.books.some(function(b){ return b.category===name; })){
-    toast('‘'+name+'’ 분야는 이미 있어요.'); return false;
+  if(!name){ toast('카테고리 이름을 입력해 주세요.'); return false; }
+  var hid=hiddenCategories().indexOf(name);
+  if(hid>-1){
+    hiddenCategories().splice(hid,1);
+    db.settings.hiddenCatsUpdatedAt=Date.now();
+    saveDB();
+    renderCatColorList();
+    renderShelf();
+    renderCatQuick();
+    toast('‘'+name+'’ 카테고리를 다시 보이게 했어요.');
+    openColorSheet(name);
+    return true;
+  }
+  if(allCategories().indexOf(name)>-1 || db.books.some(function(b){ return b.category===name; })){
+    toast('‘'+name+'’ 카테고리는 이미 있어요.'); return false;
   }
   customCategories().push(name);
   db.settings.customCatsUpdatedAt=Date.now();
@@ -2017,28 +2108,40 @@ function addCustomCategory(name){
   renderCatColorList();
   renderShelf();
   renderCatQuick();
-  toast('‘'+name+'’ 분야를 추가했어요. 색을 정해 보세요.');
+  toast('‘'+name+'’ 카테고리를 추가했어요. 색을 정해 보세요.');
   openColorSheet(name);
   return true;
 }
-function removeCustomCategory(name){
-  var list=customCategories(), i=list.indexOf(name);
-  if(i<0) return;
-  var used=db.books.some(function(b){ return b.category===name; });
-  var msg='‘'+name+'’ 분야를 목록에서 뻐까요?'+(used?'\n이 분야를 쓰는 책은 그대로 남고, 서재 분야 칩에도 계속 보여요.':'');
+function removeCategory(name){
+  name=String(name||'').trim();
+  if(!name) return;
+  var used=db.books.filter(function(b){ return b.category===name; });
+  var msg='‘'+name+'’ 카테고리를 삭제할까요?';
+  if(used.length) msg+='\n이 카테고리를 쓰는 책 '+used.length+'권은 카테고리 없음으로 바뀝니다.';
   if(!confirm(msg)) return;
-  list.splice(i,1);
-  /* 이 분야를 쓰는 책이 없으면 색 지정도 함께 지웁니다 */
-  if(!used && db.settings.categoryColors && db.settings.categoryColors[name]){
+  var ci=customCategories().indexOf(name);
+  if(ci>-1){ customCategories().splice(ci,1); db.settings.customCatsUpdatedAt=Date.now(); }
+  if(DEFAULT_CATS.indexOf(name)>-1 && !isHiddenCategory(name)){
+    hiddenCategories().push(name);
+    db.settings.hiddenCatsUpdatedAt=Date.now();
+  }
+  var oi=categoryOrder().indexOf(name);
+  if(oi>-1){ categoryOrder().splice(oi,1); db.settings.catOrderUpdatedAt=Date.now(); }
+  if(db.settings.categoryColors && db.settings.categoryColors[name]){
     delete db.settings.categoryColors[name];
     db.settings.catUpdatedAt=Date.now();
   }
-  db.settings.customCatsUpdatedAt=Date.now();
+  var now=Date.now();
+  used.forEach(function(b){ b.category=''; b.updatedAt=now; });
   saveDB();
   renderCatColorList();
   renderShelf();
   renderCatQuick();
-  toast('‘'+name+'’ 분야를 목록에서 뻐어요.');
+  if(ui.currentId){
+    var cur=db.books.filter(function(b){ return b.id===ui.currentId; })[0];
+    if(cur) fillDetail(cur);
+  }
+  toast('‘'+name+'’ 카테고리를 삭제했어요.'+(used.length?' 책 '+used.length+'권은 카테고리 없음으로 바꿨어요.':''));
 }
 var colorUI={mode:'cat',cat:'',noteKey:'',value:'',custom:false,tab:'grid',painting:false};
 function hslToRgb(h,s,l){
@@ -2399,7 +2502,11 @@ function loadDB(){
           noteColors:sanitizeNoteColors(s.noteColors),
           noteColorsUpdatedAt:Number(s.noteColorsUpdatedAt)||0,
           customCategories:sanitizeCustomCategories(s.customCategories),
-          customCatsUpdatedAt:Number(s.customCatsUpdatedAt)||0
+          customCatsUpdatedAt:Number(s.customCatsUpdatedAt)||0,
+          hiddenCategories:sanitizeCategoryList(s.hiddenCategories),
+          hiddenCatsUpdatedAt:Number(s.hiddenCatsUpdatedAt)||0,
+          categoryOrder:sanitizeCategoryList(s.categoryOrder),
+          catOrderUpdatedAt:Number(s.catOrderUpdatedAt)||0
         }};
       }
     }
@@ -2544,7 +2651,7 @@ function booksById(list){
 }
 function canonState(books,deleted){
   var bs=(books||[]).slice().sort(function(a,b){ return String(a.id)<String(b.id)?-1:(String(a.id)>String(b.id)?1:0); }).map(function(b){
-    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.startDate,b.finishedAt,b.rating,b.note,b.createdAt,b.updatedAt,
+    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.review,b.startDate,b.finishedAt,b.rating,b.note,b.createdAt,b.updatedAt,
       JSON.stringify(bookEntries(b).map(function(e){ return [e.id,e.date,e.createdAt,e.updatedAt,e.quote,e.pageStart,e.pageEnd,e.thought]; }))];
   });
   var ds=Object.keys(deleted||{}).sort().map(function(k){ return [k,deleted[k]]; });
@@ -2589,14 +2696,20 @@ function settingsCanon(p){
           Number(st.noteColorsUpdatedAt)||0,
           JSON.stringify(sanitizeNoteColors(st.noteColors)),
           Number(st.customCatsUpdatedAt)||0,
-          JSON.stringify(sanitizeCustomCategories(st.customCategories))].join('|');
+          JSON.stringify(sanitizeCustomCategories(st.customCategories)),
+          Number(st.hiddenCatsUpdatedAt)||0,
+          JSON.stringify(sanitizeCategoryList(st.hiddenCategories)),
+          Number(st.catOrderUpdatedAt)||0,
+          JSON.stringify(sanitizeCategoryList(st.categoryOrder))].join('|');
 }
 function localSettingsCanon(){
   var st={fontPreset:db.settings.fontPreset,fontScope:db.settings.fontScope,colorTheme:db.settings.colorTheme,
           fontUpdatedAt:db.fontUpdatedAt,catUpdatedAt:db.settings.catUpdatedAt,
           categoryColors:db.settings.categoryColors,
           noteColorsUpdatedAt:db.settings.noteColorsUpdatedAt,noteColors:db.settings.noteColors,
-          customCatsUpdatedAt:db.settings.customCatsUpdatedAt,customCategories:db.settings.customCategories};
+          customCatsUpdatedAt:db.settings.customCatsUpdatedAt,customCategories:db.settings.customCategories,
+          hiddenCatsUpdatedAt:db.settings.hiddenCatsUpdatedAt,hiddenCategories:db.settings.hiddenCategories,
+          catOrderUpdatedAt:db.settings.catOrderUpdatedAt,categoryOrder:db.settings.categoryOrder};
   return settingsCanon({settings:st});
 }
 function syncPayload(){
@@ -2612,7 +2725,11 @@ function syncPayload(){
       noteColors:sanitizeNoteColors(db.settings.noteColors),
       noteColorsUpdatedAt:Number(db.settings.noteColorsUpdatedAt)||0,
       customCategories:sanitizeCustomCategories(db.settings.customCategories),
-      customCatsUpdatedAt:Number(db.settings.customCatsUpdatedAt)||0
+      customCatsUpdatedAt:Number(db.settings.customCatsUpdatedAt)||0,
+      hiddenCategories:sanitizeCategoryList(db.settings.hiddenCategories),
+      hiddenCatsUpdatedAt:Number(db.settings.hiddenCatsUpdatedAt)||0,
+      categoryOrder:sanitizeCategoryList(db.settings.categoryOrder),
+      catOrderUpdatedAt:Number(db.settings.catOrderUpdatedAt)||0
     },
     books:db.books.map(function(b){ return b; }),
     deleted:sanitizeDeleted(db.deleted)
@@ -2651,6 +2768,18 @@ function pullRemoteFont(p){
   if(ccUpdated>(Number(db.settings.customCatsUpdatedAt)||0)){
     db.settings.customCategories=sanitizeCustomCategories(st.customCategories);
     db.settings.customCatsUpdatedAt=ccUpdated;
+    changed=true;
+  }
+  var hcUpdated=Number(st.hiddenCatsUpdatedAt)||0;
+  if(hcUpdated>(Number(db.settings.hiddenCatsUpdatedAt)||0)){
+    db.settings.hiddenCategories=sanitizeCategoryList(st.hiddenCategories);
+    db.settings.hiddenCatsUpdatedAt=hcUpdated;
+    changed=true;
+  }
+  var coUpdated=Number(st.catOrderUpdatedAt)||0;
+  if(coUpdated>(Number(db.settings.catOrderUpdatedAt)||0)){
+    db.settings.categoryOrder=sanitizeCategoryList(st.categoryOrder);
+    db.settings.catOrderUpdatedAt=coUpdated;
     changed=true;
   }
   return changed;
@@ -2772,7 +2901,7 @@ function applySyncState(res){
   renderShelf();
   if(!$('#sheetWrap').hidden){
     var ae=document.activeElement;
-    if(!(ae && (ae.id==='noteInput' || ae.id==='dReason'))){
+    if(!(ae && (ae.id==='noteInput' || ae.id==='dReason' || ae.id==='dReview'))){
       var b=curBook();
       if(b) fillDetail(b); else closeDetail();
     }
@@ -3222,7 +3351,7 @@ function renderSortUI(){
 }
 function curBook(){ for(var i=0;i<db.books.length;i++){ if(db.books[i].id===ui.currentId) return db.books[i]; } return null; }
 
-/* 분야 칩 가로 넘김 — 넘칠 때만 양끝 화살표 */
+/* 카테고리 칩 가로 넘김 — 넘칠 때만 양끝 화살표 */
 function updateChipsNav(){
   var chips=$('#categoryChips'), prev=$('#chipsPrev'), next=$('#chipsNext');
   if(!chips || !prev || !next) return;
@@ -3269,6 +3398,9 @@ function libSearchHits(q){
     if(b.note && String(b.note).toLowerCase().indexOf(ql)>-1){
       out.push({weight:2,book:b,kind:'note',text:b.note,date:'',order:out.length});
     }
+    if(b.review && String(b.review).toLowerCase().indexOf(ql)>-1){
+      out.push({weight:2,book:b,kind:'review',text:b.review,date:'',order:out.length});
+    }
   });
   out.sort(function(a,c){
     if(a.weight!==c.weight) return a.weight-c.weight;
@@ -3288,7 +3420,7 @@ function renderLibResults(q){
   var html='<p class="lib-count">‘'+esc(q)+'’ 검색 결과 '+hits.length+'개</p>';
   html+=hits.map(function(h){
     var pages=h.entry?pageLabel(h.entry.pageStart,h.entry.pageEnd):'';
-    var meta=h.kind==='note'?'독서 노트':h.kind==='entry'?('기록 · '+fmtDate(h.date)):'책 제목';
+    var meta=h.kind==='note'?'독서 노트':h.kind==='review'?'후기':h.kind==='entry'?('기록 · '+fmtDate(h.date)):'책 제목';
     return '<button type="button" class="lib-hit" data-book="'+esc(h.book.id)+'" data-entry="'+(h.entry?esc(h.entry.id):'')+'" data-kind="'+h.kind+'">'
       +'<span class="lh-top"><span class="lh-title">'+esc(h.book.title)+'</span>'+(pages?'<span class="lh-page">'+esc(pages)+'</span>':'')+'</span>'
       +'<span class="lh-snippet">'+snippetHtml(h.text,q)+'</span>'
@@ -3310,9 +3442,16 @@ function renderShelf(){
 
   var cats={};
   books.forEach(function(b){ if(b.category) cats[b.category]=(cats[b.category]||0)+1; });
-  /* 직접 추가한 분야는 책이 0권이어도 칩에 남깁니다 */
+  /* 직접 추가한 카테고리는 책이 0권이어도 칩에 남깁니다 */
   customCategories().forEach(function(c){ if(!(c in cats)) cats[c]=0; });
-  var catKeys=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a]});
+  var catKeys=Object.keys(cats).filter(function(c){ return !isHiddenCategory(c); });
+  /* 사용자가 정한 카테고리 순서를 먼저 따릅니다 */
+  var catRankMap=categoryRank();
+  catKeys.sort(function(a,b){
+    var ra=(a in catRankMap)?catRankMap[a]:1e6, rb=(b in catRankMap)?catRankMap[b]:1e6;
+    if(ra!==rb) return ra-rb;
+    return (cats[b]||0)-(cats[a]||0) || String(a).localeCompare(String(b),'ko');
+  });
   if(ui.cat!=='all' && catKeys.indexOf(ui.cat)===-1) ui.cat='all';
 
   var chipHtml='<button class="chip'+(ui.cat==='all'?' active':'')+'" data-cat="all">전체 <span class="cnt">'+books.length+'</span></button>';
@@ -3376,7 +3515,7 @@ function renderShelf(){
 
   var datalist=$('#catList');
   if(datalist){
-    datalist.innerHTML=DEFAULT_CATS.concat(customCategories(),catKeys.filter(function(c){return DEFAULT_CATS.indexOf(c)===-1&&customCategories().indexOf(c)===-1}))
+    datalist.innerHTML=categoryPickList()
       .map(function(c){return '<option value="'+esc(c)+'"></option>'}).join('');
   }
   if(ui.view==='calendar') renderCalendar();
@@ -3410,7 +3549,7 @@ function fillDetail(b){
   img.alt=b.title+' 표지';
   $('#dTitle').textContent=b.title;
   $('#dByline').textContent=[b.author,b.publisher].filter(Boolean).join(' · ')||'저자 미상';
-  $('#dCat').textContent=b.category||'분야 없음';
+  $('#dCat').textContent=b.category||'카테고리 없음';
   $('#dCat').hidden=!b.category;
   var dcol=categoryColor(b.category);
   if(dcol){
@@ -3436,6 +3575,9 @@ function fillDetail(b){
   var reason=$('#dReason');
   reason.value=b.reason||'';
   autoGrow(reason);
+
+  var review=$('#dReview');
+  if(review){ review.value=b.review||''; autoGrow(review); }
 
   var note=$('#noteInput');
   note.value=b.note||'';
@@ -3470,6 +3612,7 @@ function openDetail(id,push,opts){
     if(o.compose) openEntryComposer();
     else if(o.entryId) focusEntryCard(o.entryId);
     else if(o.note) focusNotes();
+    else if(o.review) focusReview();
   },60);
 }
 function closeDetail(){
@@ -3497,13 +3640,20 @@ function restoreDetailFocus(bookId){
 /* ---------------- 인용·쪽수·내 생각 기록 ---------------- */
 function entryCardHtml(e){
   var pages=pageLabel(e.pageStart,e.pageEnd);
+  /* 인용문이 있으면 쪽수는 인용 박스 안쪽 하단 오른편에 함께 묶고, 인용문이 없으면 내 생각 위에 둡니다. */
+  var bodyHtml='';
+  if(e.quote){
+    bodyHtml='<blockquote class="entry-quote"><span class="eq-text">'+esc(e.quote)+'</span>'
+      +(pages?'<span class="eq-page">'+esc(pages)+'</span>':'')+'</blockquote>';
+  }else if(pages){
+    bodyHtml='<p class="entry-page">'+esc(pages)+'</p>';
+  }
+  if(e.thought) bodyHtml+='<p class="entry-thought">'+esc(e.thought)+'</p>';
   return '<article class="entry" data-entry-id="'+esc(e.id)+'" tabindex="-1" aria-label="'+esc(fmtDate(e.date))+' 기록">'
     +'<div class="entry-top"><span class="entry-date">'+esc(fmtDate(e.date))+'</span>'
     +'<span class="entry-btns"><button type="button" data-edit="'+esc(e.id)+'" aria-label="이 기록 수정">수정</button>'
     +'<button type="button" data-del="'+esc(e.id)+'" aria-label="이 기록 삭제">삭제</button></span></div>'
-    +(e.quote?'<blockquote class="entry-quote">'+esc(e.quote)+'</blockquote>':'')
-    +(pages?'<p class="entry-page">'+esc(pages)+'</p>':'')
-    +(e.thought?'<p class="entry-thought">'+esc(e.thought)+'</p>':'')
+    +bodyHtml
     +'</article>';
 }
 function renderEntryList(b){
@@ -3591,6 +3741,12 @@ function focusNotes(){
   if(!n) return;
   try{ n.scrollIntoView({block:'center'}); }catch(e){}
   setTimeout(function(){ try{ n.focus({preventScroll:true}); }catch(e){} },30);
+}
+function focusReview(){
+  var v=$('#dReview');
+  if(!v) return;
+  try{ v.scrollIntoView({block:'center'}); }catch(e){}
+  setTimeout(function(){ try{ v.focus({preventScroll:true}); }catch(e){} },30);
 }
 function saveDetailEntry(){
   var b=curBook();
@@ -3759,9 +3915,7 @@ function setFormStatus(s){
   $$('#stPick button').forEach(function(b){ b.classList.toggle('active',b.dataset.status===s) });
 }
 function renderCatQuick(){
-  var cats={};
-  db.books.forEach(function(b){ if(b.category) cats[b.category]=1 });
-  var list=DEFAULT_CATS.concat(customCategories(),Object.keys(cats).filter(function(c){return DEFAULT_CATS.indexOf(c)===-1&&customCategories().indexOf(c)===-1}));
+  var list=categoryPickList();
   $('#catQuick').innerHTML=list.map(function(c){
     return '<button type="button" data-cat="'+esc(c)+'">'+esc(c)+'</button>';
   }).join('');
@@ -3840,7 +3994,7 @@ function saveBookFromForm(){
     id:'bk_'+now.toString(36)+Math.random().toString(36).slice(2,5),
     no:maxNo+1,
     title:payload.title,author:payload.author,publisher:payload.publisher,
-    category:payload.category,status:status,cover:payload.cover,reason:payload.reason,
+    category:payload.category,status:status,cover:payload.cover,reason:payload.reason,review:'',
     startDate:payload.startDate,
     finishedAt:status==='done'?todayISO():'',
     rating:payload.rating,
@@ -4014,7 +4168,7 @@ function pickResult(i){
   var adv=$('#advDetails'); if(adv) adv.open=true;
   $('#quickAdd').hidden=true;
   $$('#searchResults .result').forEach(function(el,j){ el.classList.toggle('selected',j===i) });
-  toast(guessed?'책 정보를 채웠어요. 분야는 ‘'+guessed+'’'+josaRo(guessed)+' 채워 두었으니 필요하면 고쳐 주세요.':'책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
+  toast(guessed?'책 정보를 채웠어요. 카테고리는 ‘'+guessed+'’'+josaRo(guessed)+' 채워 두었으니 필요하면 고쳐 주세요.':'책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
 }
 /* 검색 결과가 없을 때: 검색어를 제목으로 넣고 첫 기록 입력칸을 바로 연다 */
 function quickRecordFromSearch(){
@@ -4032,9 +4186,9 @@ function quickRecordFromSearch(){
   setTimeout(function(){ var el=$('#mQuote'); if(el) el.focus(); },60);
   toast('제목을 채웠어요. 인용·내 생각을 바로 적어 보세요.');
 }
-/* ---- 분야 자동 분류 ----
-   검색 결과의 제목·소개(contents/description)·출판사·API 분야(categories)를 보고
-   앱에서 쓰는 분야 중 가장 알맞은 곳을 고른다. 매칭이 없으면 빈칸으로 둔다. */
+/* ---- 카테고리 자동 분류 ----
+   검색 결과의 제목·소개(contents/description)·출판사·API 카테고리(categories)를 보고
+   앱에서 쓰는 카테고리 중 가장 알맞은 곳을 고른다. 매칭이 없으면 빈칸으로 둔다. */
 var CAT_KEYWORDS={
   '마음·습관':['마음','심리','심리학','습관','행복','불안','감정','명상','자존감','위로','힐링','치유','관계','상담','우울','스트레스','마인드풀니스','정신건강','기질','애착','자기돌봄'],
   '마케팅·브랜딩':['마케팅','브랜드','브랜딩','광고','카피','카피라이팅','소비자','고객','시장','판매','콘텐츠','인스타그램','퍼널','전환율'],
@@ -4059,8 +4213,7 @@ function categoryCandidates(){
     c=String(c||'').trim();
     if(c && !set[c]){ set[c]=1; list.push(c); }
   }
-  DEFAULT_CATS.forEach(add);
-  customCategories().forEach(add);
+  allCategories().forEach(add);
   (db.books||[]).forEach(function(b){ add(b.category); });
   Object.keys((db.settings&&db.settings.categoryColors)||{}).forEach(add);
   return list;
@@ -4091,7 +4244,7 @@ function autoCategory(r){
       var bodyHits=catKeywordHits(body,kws)-strongHits;
       scores[c]+=titleHits*3 + Math.min(strongHits,2)*3 + Math.min(bodyHits,2);
     }else if(c && hay.indexOf(c.toLowerCase())>-1){
-      scores[c]+=4; /* 사용자가 만든 분야는 이름이 본문에 나오면 가점 */
+      scores[c]+=4; /* 사용자가 만든 카테고리는 이름이 본문에 나오면 가점 */
     }
   });
   var best='', bestScore=2; /* 2점 이하는 우연한 단어 하나 수준이라 비워 둔다 */
@@ -4117,6 +4270,7 @@ function bookMarkdown(b){
   var meta=[b.author,b.publisher,b.category].filter(Boolean).join(' · ');
   if(meta) lines.push(meta,'');
   if(b.reason){ lines.push('## 읽는 이유','',b.reason,''); }
+  if(b.review){ lines.push('## 후기','',b.review,''); }
   var ents=bookEntries(b).slice().sort(entrySort);
   if(ents.length){
     lines.push('## 인용 · 내 생각','');
@@ -4330,7 +4484,7 @@ $('#libSearchClear').addEventListener('click',function(e){
 $('#libResults').addEventListener('click',function(e){
   var hit=e.target.closest('.lib-hit');
   if(!hit) return;
-  openDetail(hit.dataset.book,true,{entryId:hit.dataset.entry||'',note:hit.dataset.kind==='note'});
+  openDetail(hit.dataset.book,true,{entryId:hit.dataset.entry||'',note:hit.dataset.kind==='note',review:hit.dataset.kind==='review'});
 });
 $('#grid').addEventListener('click',function(e){
   var cont=e.target.closest('[data-continue]');
@@ -4476,6 +4630,13 @@ $('#dReason').addEventListener('input',function(){
   var b=curBook();
   if(!b) return;
   b.reason=this.value;
+  autoGrow(this);
+  queueSave();
+});
+$('#dReview').addEventListener('input',function(){
+  var b=curBook();
+  if(!b) return;
+  b.review=this.value;
   autoGrow(this);
   queueSave();
 });
@@ -4664,10 +4825,12 @@ $('#themeGrid').addEventListener('click',function(e){
   toast('‘'+(COLOR_THEMES[t]||{label:'기본'}).label+'’ 테마를 적용했어요.');
 });
 
-/* 분야 색상 */
+/* 카테고리 색상 */
 $('#catColorList').addEventListener('click',function(e){
+  var mv=e.target.closest('[data-mvcat]');
+  if(mv){ moveCategory(mv.dataset.mvcat, mv.dataset.dir); return; }
   var del=e.target.closest('[data-delcat]');
-  if(del){ removeCustomCategory(del.dataset.delcat); return; }
+  if(del){ removeCategory(del.dataset.delcat); return; }
   var row=e.target.closest('.cat-color-row');
   if(!row) return;
   openColorSheet(row.dataset.cat);
