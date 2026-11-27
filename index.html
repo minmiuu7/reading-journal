@@ -209,9 +209,20 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   .seg-btn{font-size:12.5px;gap:4px;padding:8px 1px 11px}
   .seg-btn::after{max-width:60px;height:3.5px}
 }
-.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none;flex:1 1 auto;min-width:0}
-.shelf-bar{display:flex;align-items:flex-start;gap:8px}
-.sort-switch{flex:0 0 auto;display:inline-flex;gap:2px;background:var(--gray-card);border-radius:999px;padding:3px;margin-top:8px}
+.shelf-bar{display:flex;align-items:center;gap:9px;margin-top:13px}
+.chips-wrap{display:flex;align-items:center;gap:3px;flex:1 1 auto;min-width:0}
+.chips{display:flex;align-items:center;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-behavior:smooth;
+  padding:2px 0;scrollbar-width:none;-ms-overflow-style:none;flex:1 1 auto;min-width:0}
+.chips::-webkit-scrollbar{display:none;width:0;height:0}
+.chips.is-scroll{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%)}}
+.chips-nav{flex:0 0 auto;display:none;place-items:center;width:21px;height:21px;padding:0;border-radius:50%;
+  background:var(--paper);border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow-sm);
+  transition:opacity .15s,background .15s}
+.chips-nav.show{display:grid}
+.chips-nav:hover{background:var(--panel);border-color:var(--olive-soft);color:var(--accent-text)}
+.chips-nav:disabled{opacity:.32;box-shadow:none;cursor:default}
+.sort-switch{flex:0 0 auto;display:inline-flex;gap:2px;background:var(--gray-card);border-radius:999px;padding:3px;margin-top:0}
 .sort-switch button{border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--seg-ink);letter-spacing:-.02em;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s}
 .sort-switch button.active{background:var(--paper);color:var(--accent-text);font-weight:800;box-shadow:0 1px 3px rgba(60,52,36,.14)}
 .chips::-webkit-scrollbar{display:none}
@@ -266,9 +277,12 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 /* 설정 모달 맨 아래 안내 */
 .foot-note{margin:16px 0 2px;padding-top:13px;border-top:1px solid var(--line-soft)}
 @media(max-width:600px){
-  .shelf-bar{flex-wrap:wrap}
-  .sort-switch{order:1;margin-left:auto;margin-top:0;margin-bottom:1px}
-  .chips{order:2;flex:1 1 100%;padding-top:7px}
+  .chips{gap:6px}
+}
+@media(max-width:360px){
+  .shelf-bar{gap:6px}
+  .chips-nav{width:19px;height:19px}
+  .sort-switch button{padding:5px 7px;font-size:10.5px}
 }
 @media(max-width:430px){
   .topbar-inner{padding:12px 16px 10px;gap:10px}
@@ -276,9 +290,9 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   .btn-add{padding:8px 12px;font-size:13px}
   .icon-btn{width:34px;height:34px}
   .sync-badge{height:34px;padding:0 9px;font-size:10.5px}
-  .sort-switch{padding:2px;margin-top:8px}
+  .sort-switch{padding:2px}
   .sort-switch button{padding:5px 8px;font-size:11px}
-  .chips{gap:6px;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%)}
+  .chips{gap:6px}
 }
 
 /* ============ calendar ============ */
@@ -785,7 +799,15 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 <main class="shell" id="shelfView">
   <div class="segmented" id="statusTabs" role="tablist" aria-label="상태 필터"></div>
   <div class="shelf-bar">
-    <div class="chips" id="categoryChips" aria-label="분야 필터"></div>
+    <div class="chips-wrap" id="chipsWrap">
+      <button class="chips-nav" id="chipsPrev" type="button" aria-label="분야 왼쪽으로 넘기기">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="chips" id="categoryChips" aria-label="분야 필터"></div>
+      <button class="chips-nav" id="chipsNext" type="button" aria-label="분야 오른쪽으로 넘기기">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
     <div class="sort-switch" id="sortSwitch" role="group" aria-label="정렬 방식">
       <button type="button" data-sort="recent" aria-pressed="true" title="최근에 담은 책부터">등록순</button>
       <button type="button" data-sort="title" aria-pressed="false" title="제목 가나다순">가나다순</button>
@@ -2813,6 +2835,27 @@ function renderSortUI(){
 }
 function curBook(){ for(var i=0;i<db.books.length;i++){ if(db.books[i].id===ui.currentId) return db.books[i]; } return null; }
 
+/* 분야 칩 가로 넘김 — 넘칠 때만 양끝 화살표 */
+function updateChipsNav(){
+  var chips=$('#categoryChips'), prev=$('#chipsPrev'), next=$('#chipsNext');
+  if(!chips || !prev || !next) return;
+  var max=chips.scrollWidth-chips.clientWidth;
+  var on=max>1;
+  prev.classList.toggle('show',on);
+  next.classList.toggle('show',on);
+  chips.classList.toggle('is-scroll',on);
+  if(!on) return;
+  prev.disabled=chips.scrollLeft<=1;
+  next.disabled=chips.scrollLeft>=max-1;
+}
+function scrollChips(dir){
+  var c=$('#categoryChips');
+  if(!c) return;
+  var step=Math.max(120,Math.round(c.clientWidth*0.7));
+  if(typeof c.scrollBy==='function') c.scrollBy({left:dir*step,behavior:'smooth'});
+  else c.scrollLeft+=dir*step;
+}
+
 function renderShelf(){
   var books=sortBooks();
   var counts={all:books.length,reading:0,done:0,paused:0};
@@ -2840,6 +2883,7 @@ function renderShelf(){
       +esc(c)+' <span class="cnt">'+cats[c]+'</span></button>';
   }).join('');
   $('#categoryChips').innerHTML=chipHtml;
+  updateChipsNav();
 
   var list=books.filter(function(b){
     if(ui.status!=='all' && b.status!==ui.status) return false;
@@ -3571,6 +3615,10 @@ $('#categoryChips').addEventListener('click',function(e){
   ui.cat=btn.dataset.cat;
   renderShelf();
 });
+$('#chipsPrev').addEventListener('click',function(){ scrollChips(-1); });
+$('#chipsNext').addEventListener('click',function(){ scrollChips(1); });
+$('#categoryChips').addEventListener('scroll',updateChipsNav,{passive:true});
+window.addEventListener('resize',function(){ updateChipsNav(); });
 $('#sortSwitch').addEventListener('click',function(e){
   var btn=e.target.closest('button[data-sort]');
   if(!btn) return;
