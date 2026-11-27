@@ -433,7 +433,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .md ul,.md ol{margin:0 0 12px;padding-left:19px}
 .md ul>li::marker{color:var(--nc-dot,currentColor)}
 .md li{margin:4px 0}
-.md ul.tasklist{list-style:none;padding:12px 15px;margin:10px 0 14px;background:var(--rose);border-radius:11px}
+.md ul.tasklist{list-style:none;padding:12px 15px;margin:10px 0 14px;background:var(--nc-check-bg,var(--rose));border:1px solid var(--nc-check-edge,transparent);border-radius:11px}
 .md ul.tasklist li{display:flex;gap:8px;align-items:flex-start;margin:5px 0;font-size:13.5px;line-height:1.6}
 .md ul.tasklist input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:15px;height:15px;margin:3px 0 0;border:1.5px solid var(--nc-check,#CFA9A0);border-radius:4px;background:#fff;flex:0 0 auto;cursor:pointer;display:grid;place-items:center}
 .md ul.tasklist input[type="checkbox"]:checked{background:var(--nc-check,#B9736A);border-color:var(--nc-check,#B9736A)}
@@ -1191,7 +1191,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       </button>
     </div>
     <div class="modal-body">
-      <p class="hint" style="margin:0 0 12px">항목을 눌러 색을 고르세요. 정한 색은 <b>미리보기·하이라이트 모아보기·편집 화면</b>에 함께 적용되고, GitHub 동기화로 다른 기기에도 이어집니다.</p>
+      <p class="hint" style="margin:0 0 12px">항목을 눌러 색을 고르세요. 정한 색은 <b>미리보기·하이라이트 모아보기·편집 화면</b>에 함께 적용되고, GitHub 동기화로 다른 기기에도 이어집니다.<br><b>체크리스트 박스(- [ ])</b> 색은 항목들을 감싸는 <b>박스 전체의 은은한 배경과 테두리</b>에 칠해집니다.</p>
       <div class="nc-list" id="ncList"></div>
       <button type="button" class="nc-reset" id="btnResetNoteColors">기본값으로 초기화</button>
     </div>
@@ -1855,7 +1855,7 @@ var NOTE_COLOR_ITEMS=[
   {key:'text',name:'일반 텍스트',demo:'가나'},
   {key:'quote',name:'인용구 (>)',demo:'“ ”'},
   {key:'dot',name:'점 (• 목록)',demo:'••'},
-  {key:'check',name:'체크박스 (- [ ])',demo:'☑'},
+  {key:'check',name:'체크리스트 박스 (- [ ])',demo:'☑ ☐'},
   {key:'checkText',name:'체크박스 내 텍스트',demo:'할 일'}
 ];
 function noteSeedHex(key){
@@ -1868,7 +1868,7 @@ function noteSeedHex(key){
   if(key==='check') return '#B9736A';
   return '#3B382F';
 }
-var NOTE_COLOR_LABEL={index:'인덱스',text:'일반 텍스트',quote:'인용구',dot:'점',check:'체크박스',checkText:'체크박스 내 텍스트'};
+var NOTE_COLOR_LABEL={index:'인덱스',text:'일반 텍스트',quote:'인용구',dot:'점',check:'체크리스트 박스',checkText:'체크박스 내 텍스트'};
 function noteColors(){ return db.settings.noteColors||(db.settings.noteColors={}); }
 function noteColor(k){ return fixHex((db.settings.noteColors||{})[k])||''; }
 function noteColorsEmpty(){
@@ -1885,6 +1885,9 @@ function applyNoteColors(){
   setv('--nc-dot',dot);
   setv('--nc-check',chk);
   setv('--nc-check-text',ctxt);
+  /* 체크리스트 박스: 고른 색의 은은한 틴트 배경 + 옅은 테두리 */
+  setv('--nc-check-bg',chk?mixHex(chk,'#FFFFFF',0.83):'');
+  setv('--nc-check-edge',chk?mixHex(chk,'#FFFFFF',0.62):'');
   setv('--nc-check-ink',chk?(inkOn(chk)==='#FFFFFF'?'#FFFFFF':mixHex(chk,'#FFFFFF',0.72)):'');
   setv('--nc-check-text-done',ctxt?mixHex(ctxt,'#FFFFFF',0.45):'');
   if(q){
@@ -1926,8 +1929,8 @@ function noteDemoStyle(key,c){
     return 'background:'+bg+';color:'+readableOn(bg,c)+';box-shadow:inset 0 0 0 1px '+mixHex(c,'#FFFFFF',0.52);
   }
   if(key==='check'){
-    if(!c) return 'background:#fff;color:#B9736A;box-shadow:inset 0 0 0 1.5px #CFA9A0';
-    return 'background:'+c+';color:'+(inkOn(c)==='#FFFFFF'?'#FFFFFF':mixHex(c,'#FFFFFF',0.72))+';box-shadow:inset 0 0 0 1.5px '+c;
+    var cc=c||'#B9736A';
+    return 'background:'+mixHex(cc,'#FFFFFF',0.83)+';color:'+cc+';box-shadow:inset 0 0 0 1px '+mixHex(cc,'#FFFFFF',0.62);
   }
   if(c) return 'color:'+c;
   return '';
