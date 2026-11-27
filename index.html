@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FAF8F3">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="조각서재">
-<meta name="application-name" content="조각서재">
-<meta name="description" content="조각서재 — 읽은 책·읽는 책을 모으는 무료 개인용 독서 기록장">
-<title>조각서재 · 읽은 책 읽는 책</title>
+<meta name="apple-mobile-web-app-title" content="페이지로그">
+<meta name="application-name" content="페이지로그">
+<meta name="description" content="페이지로그 — 읽은 책·읽는 책을 모으는 무료 개인용 독서 기록장">
+<title>페이지로그</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FAF8F3'/%3E%3Cpath d='M16 18h14a4 4 0 0 1 4 4v26a4 4 0 0 0-4-4H16z' fill='%23C8D88A'/%3E%3Cpath d='M48 18H34a4 4 0 0 0-4 4v26a4 4 0 0 1 4-4h14z' fill='%234F6228'/%3E%3C/svg%3E">
 <style>
 /* ============ tokens ============ */
@@ -42,6 +42,11 @@
   --peach-ink:#66513B;
   --rose:#F7E9E4;
   --gray-card:#F1F0EA;
+  /* 별점 — 금색 별 */
+  --star-on:#D99F33;
+  --star-on-deep:#C08A22;
+  --star-off:#D2CAB5;
+  --star-num:#8B7A54;
   /* 표면 */
   --topbar-bg:rgba(250,248,243,.86);
   --topbar-line:rgba(232,227,215,.55);
@@ -180,12 +185,9 @@ a{color:var(--accent-text)}
 /* ============ top bar ============ */
 .topbar{position:sticky;top:0;z-index:20;background:var(--topbar-bg);backdrop-filter:saturate(1.25) blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--topbar-line)}
 .topbar-inner{max-width:1180px;margin:0 auto;padding:16px 24px 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
-.eyebrow{margin:0 0 2px;font-size:11.5px;letter-spacing:.02em;color:var(--muted);font-weight:500}
 h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spacing:-.035em}
 .top-actions{display:flex;align-items:center;gap:8px;padding-bottom:3px;flex:0 0 auto}
 .brand{min-width:0}
-.eyebrow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary{margin:0;font-size:12px;color:var(--muted);white-space:nowrap;letter-spacing:-.01em}
 .btn-add{display:inline-flex;align-items:center;gap:5px;background:var(--olive);color:var(--on-accent);border-radius:999px;padding:9px 15px;font-size:13.5px;font-weight:800;letter-spacing:-.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),var(--btn-shadow);transition:transform .15s,box-shadow .15s,background .15s;white-space:nowrap;flex:0 0 auto}
 .btn-add:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),var(--btn-shadow-hover)}
 .icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--paper);border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow-sm);transition:background .15s}
@@ -231,6 +233,29 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .book-card:hover .cover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(64,55,38,.22)}
 .no-badge{display:none}
 .book-title{margin:0;font-size:12.5px;line-height:1.38;font-weight:600;letter-spacing:-.02em;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* ---- 별점 ---- */
+.stars{display:inline-flex;gap:2px;line-height:0;vertical-align:middle}
+.rstar{position:relative;display:inline-block;width:1em;height:1em;line-height:0;flex:0 0 auto}
+.rstar svg{display:block;width:100%;height:100%;fill:var(--star-off);stroke:none}
+.rstar-fill{position:absolute;left:0;top:0;height:100%;overflow:hidden;pointer-events:none}
+.rstar-fill svg{width:1em;height:1em;fill:var(--star-on)}
+/* 서재 표지 아래 별점 */
+.book-rating{display:flex;align-items:center;font-size:10.5px;height:1em;margin:-1px 0 -1px;color:var(--star-on)}
+.book-rating.is-empty{visibility:hidden}
+@media(min-width:768px){ .book-rating{font-size:11.5px} }
+/* 별점 입력 (상세 시트 · 책 추가/수정 모달) */
+.rating-input{display:inline-flex;align-items:center;gap:7px;padding:3px 2px;border-radius:10px;cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.rating-input .stars{font-size:17px}
+.rating-input:focus-visible{box-shadow:0 0 0 3px var(--field-ring)}
+.rating-input .rstar svg{fill:var(--star-off)}
+.rating-input .rstar.on .rstar-fill svg{fill:var(--star-on)}
+.rating-num{min-width:2.1em;font-size:11.5px;font-weight:800;color:var(--star-num);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.rating-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px}
+.rating-cap{font-size:10.5px;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+.rating-hint{margin:5px 0 0;font-size:11px;color:var(--muted);letter-spacing:-.01em;line-height:1.5}
+.rating-input-lg .stars{font-size:22px}
+.rating-input-lg .rating-num{font-size:12.5px}
 .empty{grid-column:1/-1;text-align:center;padding:54px 20px 48px;background:var(--panel);border:1px dashed var(--line);border-radius:var(--r-lg);margin-top:10px}
 .empty .em{font-size:28px;display:block;margin-bottom:10px}
 .empty p{margin:0 0 4px;font-size:14.5px;font-weight:600}
@@ -238,6 +263,8 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .empty button{margin-top:16px}
 .foot{margin:34px 0 0;text-align:center;font-size:10.5px;color:#B0AA9C;line-height:1.75;letter-spacing:-.01em}
 .foot b{font-weight:600;color:#948E7F}
+/* 설정 모달 맨 아래 안내 */
+.foot-note{margin:16px 0 2px;padding-top:13px;border-top:1px solid var(--line-soft)}
 @media(max-width:600px){
   .shelf-bar{flex-wrap:wrap}
   .sort-switch{order:1;margin-left:auto;margin-top:0;margin-bottom:1px}
@@ -245,7 +272,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 }
 @media(max-width:430px){
   .topbar-inner{padding:12px 16px 10px;gap:10px}
-  .summary{display:none}
   .top-actions{gap:6px}
   .btn-add{padding:8px 12px;font-size:13px}
   .icon-btn{width:34px;height:34px}
@@ -254,7 +280,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
   .sort-switch button{padding:5px 8px;font-size:11px}
   .chips{gap:6px;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 14px),transparent 100%)}
 }
-@media(max-width:359px){ .summary{display:none} }
 
 /* ============ calendar ============ */
 .cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 14px}
@@ -740,11 +765,9 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <p class="eyebrow">읽은 책 · 읽는 책</p>
-      <h1 class="app-title">조각서재</h1>
+      <h1 class="app-title">페이지로그</h1>
     </div>
     <div class="top-actions">
-      <p class="summary" id="summary">0권 · 조각 0장</p>
       <button class="btn-add" id="btnAdd">+ 책 추가</button>
       <button class="sync-badge" id="syncBadge" hidden title="GitHub 동기화" aria-label="GitHub 동기화 상태 · 누르면 지금 동기화">
         <span class="dot"></span><span class="label">동기화됨</span>
@@ -775,7 +798,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
     <span id="emptyDesc">읽고 있는 책을 한 권 담아 보세요.</span><br>
     <button class="btn-add" id="btnAddEmpty">+ 책 추가</button>
   </div>
-  <p class="foot"><b>조각서재</b> · 무료 개인용 독서 기록장 · 책·노트는 이 브라우저(localStorage), 폰트는 IndexedDB에 저장됩니다.<br>⚙️ 설정의 GitHub 동기화를 켜면 폰·맥 서재가 자동으로 맞춰지고, JSON 백업으로도 옮길 수 있어요.</p>
 </main>
 
 <main class="shell" id="calendarView" hidden>
@@ -843,6 +865,13 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
             <button data-status="reading">읽는 중</button>
             <button data-status="done">완독</button>
             <button data-status="paused">중단</button>
+          </div>
+          <div class="rating-row">
+            <span class="rating-cap">내 별점</span>
+            <div class="rating-input" id="dRating" role="slider" tabindex="0" aria-label="내 별점" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="별점 없음">
+              <span class="stars" id="dRatingStars"></span>
+              <span class="rating-num" id="dRatingNum"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -957,6 +986,14 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
           </div>
         </div>
         <div class="field"><label for="fStart">시작일</label><input id="fStart" type="date"></div>
+      </div>
+      <div class="field">
+        <span class="field-label">내 별점 <span style="font-weight:600;color:var(--muted)">선택</span></span>
+        <div class="rating-input rating-input-lg" id="fRating" role="slider" tabindex="0" aria-label="내 별점" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="별점 없음">
+          <span class="stars" id="fRatingStars"></span>
+          <span class="rating-num" id="fRatingNum"></span>
+        </div>
+        <p class="rating-hint">별의 <b>왼쪽</b>은 0.5점, <b>오른쪽</b>은 1점.<br>같은 자리를 한 번 더 누르면 별점이 지워져요.</p>
       </div>
       <div class="field">
         <label for="fReason">읽는 이유</label>
@@ -1116,6 +1153,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
         <p class="appinfo" id="setStats">—</p>
         <p class="appinfo" style="margin-top:6px">무료 개인용 웹앱 · 빌드나 서버 없이 이 파일 하나로 동작합니다. 책·노트는 이 브라우저의 localStorage에, 올린 폰트 파일은 IndexedDB에만 남습니다. GitHub 동기화를 켜면 책·노트가 내 비공개 저장소로만 오갑니다(폰트 파일은 기기별 유지).</p>
       </div>
+      <p class="foot foot-note"><b>페이지로그</b> · 무료 개인용 독서 기록장 · 책·노트는 이 브라우저(localStorage), 폰트는 IndexedDB에 저장됩니다.<br>위 <b>GitHub 동기화</b>를 켜면 폰·맥 서재가 자동으로 맞춰지고, JSON 백업으로도 옮길 수 있어요.</p>
     </div>
     <div class="modal-foot">
       <button class="btn-primary" data-close="settingsModal">닫기</button>
@@ -1491,19 +1529,81 @@ function fragmentCount(md){
   return n;
 }
 
+/* ---------------- 별점 (0~5, 0.5 단위) ---------------- */
+var STAR_PATH='M12 2.85l2.87 5.82 6.42.94-4.65 4.52 1.1 6.4L12 17.52l-5.74 3.01 1.1-6.4L2.71 9.61l6.42-.94z';
+function clampRating(v){
+  var n=Number(v);
+  if(!isFinite(n) || n<=0) return 0;
+  return Math.min(5,Math.round(n*2)/2);
+}
+function fmtRating(v){
+  return (Math.round((Number(v)||0)*10)/10).toFixed(1).replace(/\.0$/,'');
+}
+function starSvg(){ return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="'+STAR_PATH+'"/></svg>'; }
+function ratingStarsHtml(v){
+  v=clampRating(v);
+  var out='',i,part;
+  for(i=1;i<=5;i++){
+    part=(v>=i-0.001)?1:(v>=i-0.501?0.5:0);
+    out+='<span class="rstar'+(part?' on':'')+'">'+starSvg()
+      +(part?'<span class="rstar-fill" style="width:'+(part*100)+'%">'+starSvg()+'</span>':'')
+      +'</span>';
+  }
+  return out;
+}
+function paintRating(boxSel,starsSel,numSel,value){
+  var v=clampRating(value);
+  var stars=$(starsSel), num=$(numSel), box=$(boxSel);
+  if(stars) stars.innerHTML=ratingStarsHtml(v);
+  if(num) num.textContent=v>0?fmtRating(v):'';
+  if(box){
+    box.setAttribute('aria-valuenow',String(v));
+    box.setAttribute('aria-valuetext',v>0?('별점 '+fmtRating(v)+'점'):'별점 없음');
+  }
+}
+function ratingFromPointer(box,ev){
+  var stars=box.querySelector('.stars');
+  if(!stars) return 0;
+  var rect=stars.getBoundingClientRect();
+  if(!rect.width) return 0;
+  var x=(ev.clientX-rect.left)/rect.width*5;
+  if(x<0) x=0;
+  if(x>5) x=5;
+  var i=Math.min(5,Math.floor(x)+1);
+  return ((x-(i-1))<0.5)?(i-0.5):i;
+}
+function bindRatingInput(boxSel,getValue,setValue){
+  var box=$(boxSel);
+  if(!box) return;
+  box.addEventListener('click',function(ev){
+    var v=ratingFromPointer(box,ev);
+    setValue(v===clampRating(getValue())?0:v);   /* 같은 값을 한 번 더 누르면 별점 없음 */
+  });
+  box.addEventListener('keydown',function(ev){
+    var cur=clampRating(getValue()), v=null;
+    if(ev.key==='ArrowRight'||ev.key==='ArrowUp') v=Math.min(5,cur+0.5);
+    else if(ev.key==='ArrowLeft'||ev.key==='ArrowDown') v=Math.max(0,cur-0.5);
+    else if(ev.key==='Delete'||ev.key==='Backspace'||ev.key==='Home') v=0;
+    else if(ev.key==='End') v=5;
+    if(v===null) return;
+    ev.preventDefault(); ev.stopPropagation();
+    setValue(v);
+  });
+}
+
 /* ---------------- storage ---------------- */
 function seedDB(){
   var now=Date.now(), day=86400000;
   return {version:2,deleted:{},fontUpdatedAt:0,settings:{aladinKey:'',kakaoKey:'',fontPreset:'gothic',fontScope:'all',customFontName:'',sort:'recent',colorTheme:'default',categoryColors:{},catUpdatedAt:0,noteColors:{},noteColorsUpdatedAt:0,customCategories:[],customCatsUpdatedAt:0},books:[
-    {id:'bk_1',no:1,title:'아주 작은 습관의 힘',author:'제임스 클리어',publisher:'비즈니스북스',category:'마음·습관',status:'done',cover:'',
+    {id:'bk_1',no:1,title:'아주 작은 습관의 힘',author:'제임스 클리어',publisher:'비즈니스북스',category:'마음·습관',status:'done',cover:'',rating:5,
      startDate:'2026-10-03',finishedAt:'2026-11-02',createdAt:now-56*day,updatedAt:now-3*day,
      reason:'매일 1%씩 쌓이는 게 정말 되는지 내 생활로 확인해 보고 싶어서.',
      note:'# 1장 · 놀라운 변화의 힘\n\n> 매일 1%씩 나아진다면 1년 뒤에는 37배 성장한다. 습관은 복리의 이자와 같다.\n\n## 기억할 문장\n\n- 정체성이 습관을 만든다. "나는 운동하는 사람이다"라고 말하는 순간 행동이 따라온다.\n- 목표보다 **시스템**에 집중할 것.\n\n---\n\n## 실전해 볼 것 3\n\n- [x] 아침 물 한 잔을 습관으로 만들기\n- [x] 러닝화를 현관에 두기\n- [ ] 자기 전에 폰을 거실에 두기\n\n1. 습관을 2분짜리로 줄이기\n2. 기존 습관에 새 습관 붙이기\n3. 매주 토요일 한 번 점검하기'},
-    {id:'bk_2',no:2,title:'도둑맞은 집중력',author:'요한 하리',publisher:'어크로스',category:'마음·습관',status:'reading',cover:'',
+    {id:'bk_2',no:2,title:'도둑맞은 집중력',author:'요한 하리',publisher:'어크로스',category:'마음·습관',status:'reading',cover:'',rating:0,
      startDate:'2026-11-20',finishedAt:'',createdAt:now-7*day,updatedAt:now-1*day,
      reason:'휴대폰을 내려놓고 책 읽는 시간을 되찾고 싶어서.',
      note:'# 읽는 중 · 3장\n\n> 집중력은 개인의 의지가 아니라 환경의 문제다.\n\n- [ ] 하루 한 번 30분 딥워크\n- [ ] SNS 앱 알림 끄기\n\n집중이 안 되는 게 내가 게을러서라고만 생각했는데, 환경 설계 쪽이 더 크다는 대목에서 멈춰 읽었다.'},
-    {id:'bk_3',no:3,title:'아몬드',author:'손원평',publisher:'창비',category:'문학·언어·예술',status:'paused',cover:'',
+    {id:'bk_3',no:3,title:'아몬드',author:'손원평',publisher:'창비',category:'문학·언어·예술',status:'paused',cover:'',rating:3.5,
      startDate:'2026-11-05',finishedAt:'',createdAt:now-21*day,updatedAt:now-12*day,
      reason:'문장이 좋다는 얘기를 자주 들어서, 잠깐 내려두고 다시 읽어 보려고.',
      note:'> 괴물이 되지 않으려면, 계속 느껴야 한다.\n\n초반 문체에 적응이 안 돼서 잠시 멈춤. 겨울에 다시 펼쳐 볼 예정.'}
@@ -1523,6 +1623,7 @@ function fixBook(b){
     reason:String(b.reason||''),
     startDate:String(b.startDate||''),
     finishedAt:String(b.finishedAt||''),
+    rating:clampRating(b.rating),
     note:String(b.note||''),
     createdAt:Number(b.createdAt)||Date.now(),
     updatedAt:Number(b.updatedAt)||Number(b.createdAt)||Date.now()
@@ -1998,7 +2099,7 @@ function saveDB(opts){
 var db=loadDB();
 
 /* ---------------- ui state ---------------- */
-var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',view:'home',calYear:0,calMonth:0,catAutoValue:''};
+var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',formRating:0,view:'home',calYear:0,calMonth:0,catAutoValue:''};
 ui.calYear=new Date().getFullYear();
 ui.calMonth=new Date().getMonth();
 
@@ -2102,7 +2203,7 @@ function booksById(list){
 }
 function canonState(books,deleted){
   var bs=(books||[]).slice().sort(function(a,b){ return String(a.id)<String(b.id)?-1:(String(a.id)>String(b.id)?1:0); }).map(function(b){
-    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.startDate,b.finishedAt,b.note,b.createdAt,b.updatedAt];
+    return [b.id,b.no,b.title,b.author,b.publisher,b.category,b.status,b.cover,b.reason,b.startDate,b.finishedAt,b.rating,b.note,b.createdAt,b.updatedAt];
   });
   var ds=Object.keys(deleted||{}).sort().map(function(k){ return [k,deleted[k]]; });
   return JSON.stringify({books:bs,deleted:ds});
@@ -2746,13 +2847,13 @@ function renderShelf(){
     return true;
   });
 
-  var frags=books.reduce(function(n,b){return n+fragmentCount(b.note)},0);
-  $('#summary').textContent=books.length+'권 · 조각 '+frags+'장';
   renderSortUI();
 
   $('#grid').innerHTML=list.map(function(b){
-    return '<button class="book-card" data-id="'+esc(b.id)+'" aria-label="'+esc(b.title)+' 상세 보기">'
+    var rv=clampRating(b.rating);
+    return '<button class="book-card" data-id="'+esc(b.id)+'" aria-label="'+esc(b.title)+(rv>0?' · 별점 '+fmtRating(rv)+'점':'')+' · 상세 보기">'
       +'<div class="cover">'+(b.status==='done'?'<span class="cover-ribbon" aria-hidden="true">완독</span>':'')+'<img src="'+esc(coverSrc(b))+'" alt="'+esc(b.title)+' 표지" loading="lazy" data-fallback="1"></div>'
+      +'<div class="book-rating'+(rv>0?'':' is-empty')+'" aria-hidden="true">'+ratingStarsHtml(rv)+'</div>'
       +'<p class="book-title">'+esc(b.title)+'</p>'
       +'</button>';
   }).join('');
@@ -2820,6 +2921,7 @@ function fillDetail(b){
   tag.className='tag '+(b.status==='done'?'st-done':b.status==='paused'?'st-paused':'st-reading');
   $('#dDates').innerHTML=datesLine(b);
   $$('#statusSwitch button').forEach(function(btn){ btn.classList.toggle('active',btn.dataset.status===b.status) });
+  paintRating('#dRating','#dRatingStars','#dRatingNum',b.rating);
 
   var reason=$('#dReason');
   reason.value=b.reason||'';
@@ -2960,7 +3062,7 @@ function closeModal(id){
 
 /* ---------------- add / edit book ---------------- */
 function resetAddForm(){
-  ui.editingId=null; ui.cover=''; ui.results=[]; ui.formStatus='reading'; ui.catAutoValue='';
+  ui.editingId=null; ui.cover=''; ui.results=[]; ui.formStatus='reading'; ui.formRating=0; ui.catAutoValue='';
   $('#addTitle').textContent='책 추가';
   $('#btnSaveBook').textContent='서재에 추가';
   $('#searchInput').value='';
@@ -2968,6 +3070,7 @@ function resetAddForm(){
   $('#fTitle').value=''; $('#fAuthor').value=''; $('#fPublisher').value='';
   $('#fCat').value=''; $('#fStart').value=todayISO(); $('#fReason').value=''; $('#fCoverUrl').value='';
   setFormStatus('reading');
+  paintRating('#fRating','#fRatingStars','#fRatingNum',0);
   updateCoverPreview();
   renderCatQuick();
 }
@@ -3004,6 +3107,8 @@ function openAddModal(book){
     $('#fReason').value=book.reason||'';
     $('#fCoverUrl').value=/^https?:\/\//i.test(book.cover||'')?book.cover:'';
     setFormStatus(book.status||'reading');
+    ui.formRating=clampRating(book.rating);
+    paintRating('#fRating','#fRatingStars','#fRatingNum',ui.formRating);
     updateCoverPreview();
   }
   openModal('addModal');
@@ -3020,6 +3125,7 @@ function saveBookFromForm(){
     category:$('#fCat').value.trim(),
     status:status,
     startDate:$('#fStart').value||'',
+    rating:clampRating(ui.formRating),
     reason:$('#fReason').value.trim(),
     cover:ui.cover||''
   };
@@ -3048,6 +3154,7 @@ function saveBookFromForm(){
       category:payload.category,status:status,cover:payload.cover,reason:payload.reason,
       startDate:payload.startDate,
       finishedAt:status==='done'?todayISO():'',
+      rating:payload.rating,
       note:'',
       createdAt:Date.now(),updatedAt:Date.now()
     };
@@ -3285,6 +3392,7 @@ function bookMarkdown(b){
   lines.push('status: '+(STATUS[b.status]||STATUS.reading).label);
   if(b.startDate) lines.push('started: '+b.startDate);
   if(b.finishedAt) lines.push('finished: '+b.finishedAt);
+  if(clampRating(b.rating)>0) lines.push('rating: '+fmtRating(b.rating));
   lines.push('---','');
   lines.push('# '+b.title,'');
   var meta=[b.author,b.publisher,b.category].filter(Boolean).join(' · ');
@@ -3550,6 +3658,22 @@ $('#statusSwitch').addEventListener('click',function(e){
   saveDB();
   fillDetail(b);
   toast('상태를 ‘'+STATUS[b.status].label+'(으)로 바꿨어요.');
+});
+
+/* 별점 입력 — 상세 시트 */
+bindRatingInput('#dRating',function(){ var b=curBook(); return b?b.rating:0; },function(v){
+  var b=curBook();
+  if(!b) return;
+  b.rating=clampRating(v);
+  b.updatedAt=Date.now();
+  paintRating('#dRating','#dRatingStars','#dRatingNum',b.rating);
+  saveDB();
+  renderShelf();
+});
+/* 별점 입력 — 책 추가·정보 수정 모달 */
+bindRatingInput('#fRating',function(){ return ui.formRating; },function(v){
+  ui.formRating=clampRating(v);
+  paintRating('#fRating','#fRatingStars','#fRatingNum',ui.formRating);
 });
 
 $('#dReason').addEventListener('input',function(){
