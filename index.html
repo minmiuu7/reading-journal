@@ -471,9 +471,6 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
 .search-row input:focus{border-color:var(--field-focus);background:var(--field-bg);box-shadow:0 0 0 3px var(--field-ring)}
 .search-btn{background:var(--ink);color:#fff;border-radius:10px;padding:0 16px;font-size:13px;font-weight:700;white-space:nowrap}
 .search-btn:hover{background:#3D392F}
-.src-chips{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
-.src-chips button{border:1px solid var(--field-line);border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:600;color:var(--seg-ink);background:var(--panel)}
-.src-chips button.active{background:var(--olive-wash);border-color:var(--olive);color:var(--accent-text);font-weight:800}
 .hint{margin:7px 0 0;font-size:11.5px;color:var(--muted);line-height:1.55}
 .hint.warn{color:#B07A63}
 .hint .link-btn{color:var(--accent-text);font-weight:700;text-decoration:underline;text-underline-offset:2px}
@@ -846,13 +843,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
           <input id="searchInput" type="search" placeholder="책 제목이나 저자를 검색" autocomplete="off" enterkeyhint="search">
           <button class="search-btn" id="btnSearch">검색</button>
         </div>
-        <div class="src-chips" id="sourceChips">
-          <button data-src="google" class="active">Google Books</button>
-          <button data-src="openlib">Open Library</button>
-          <button data-src="aladin">알라딘</button>
-          <button data-src="kakao">카카오</button>
-        </div>
-        <p class="hint" id="sourceHint">제목을 검색하면 표지·저자·출판사가 자동으로 채워집니다. (Google Books는 키 없이 바로 됩니다)</p>
+        <p class="hint" id="sourceHint">제목을 검색하면 표지·저자·출판사가 자동으로 채워집니다.</p>
         <div class="results" id="searchResults"></div>
       </div>
 
@@ -868,7 +859,7 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
             <input id="fCoverFile" type="file" accept="image/*" hidden>
           </label>
           <p class="cover-paste-hint" id="coverPasteHint"><b>표지 이미지 붙여넣기 (Cmd+V)</b> 또는 파일 선택
-            <span>알라딘 등에서 표지를 복사해 와도 되고, 휴대폰은 입력칸을 길게 눌러 붙여넣으세요.</span></p>
+            <span>인터넷 서점에서 표지를 복사해 와도 되고, 휴대폰은 입력칸을 길게 눌러 붙여넣으세요.</span></p>
         </div>
       </div>
       <div class="field">
@@ -989,20 +980,14 @@ h1.app-title{margin:0;font-size:33px;line-height:1.05;font-weight:800;letter-spa
       </div>
 
       <div class="set-block">
-        <h3>도서 검색 API 키 <span style="font-weight:600;color:#ADA697;font-size:11px">(선택)</span></h3>
-        <p class="hint">키가 없어도 <b>Google Books · Open Library</b>로 바로 검색됩니다. 알라딘·카카오를 쓰려면 무료 키를 넣어 주세요. 키는 이 브라우저에만 저장됩니다.</p>
-        <label class="field-label" for="sAladin">알라딘 TTBKey</label>
-        <div class="key-row">
-          <input id="sAladin" type="text" placeholder="ttbkey를 붙여넣기" autocomplete="off" spellcheck="false">
-          <button id="btnSaveAladin">저장</button>
-        </div>
-        <p class="hint">알라딘 Open API에서 무료 발급 · JSONP 방식이라 서버 없이 브라우저에서 바로 호출됩니다.</p>
-        <label class="field-label" for="sKakao" style="margin-top:12px">카카오 REST API 키</label>
+        <h3>카카오 책 검색 API 키 <span style="font-weight:600;color:#ADA697;font-size:11px">(선택)</span></h3>
+        <p class="hint">키를 넣으면 카카오 책 검색에서 찾습니다. 없으면 <b>Google Books · Open Library</b>로 검색됩니다. 키는 이 브라우저에만 저장됩니다.</p>
+        <label class="field-label" for="sKakao">카카오 REST API 키</label>
         <div class="key-row">
           <input id="sKakao" type="text" placeholder="REST API 키" autocomplete="off" spellcheck="false">
           <button id="btnSaveKakao">저장</button>
         </div>
-        <p class="hint">developers.kakao.com → 내 애플리케이션 → REST API 키</p>
+        <p class="hint">developers.kakao.com → 앱 설정 > 일반 > 플랫폼 키</p>
       </div>
 
       <div class="set-block" id="syncBlock">
@@ -1572,7 +1557,7 @@ function loadDB(){
         var s=(d.settings&&typeof d.settings==='object')?d.settings:{};
         var del=sanitizeDeleted(d.deleted);
         return {version:2,books:books,deleted:del,fontUpdatedAt:Number(d.fontUpdatedAt)||0,settings:{
-          aladinKey:String(s.aladinKey||''),
+          aladinKey:String(s.aladinKey||''), /* 예전 저장본과의 호환용으로만 보관(설정 UI에서는 제거됨) */
           kakaoKey:String(s.kakaoKey||''),
           fontPreset:fixFontPreset(s.fontPreset),
           fontScope:s.fontScope==='note'?'note':'all',
@@ -1600,7 +1585,7 @@ function saveDB(opts){
 var db=loadDB();
 
 /* ---------------- ui state ---------------- */
-var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,src:'google',results:[],editingId:null,cover:'',formStatus:'reading',view:'home',calYear:0,calMonth:0};
+var ui={status:'all',cat:'all',mode:'edit',currentId:null,saving:null,results:[],editingId:null,cover:'',formStatus:'reading',view:'home',calYear:0,calMonth:0};
 ui.calYear=new Date().getFullYear();
 ui.calMonth=new Date().getMonth();
 
@@ -2642,15 +2627,8 @@ function setHint(html,warn){
   el.className='hint'+(warn?' warn':'');
 }
 function currentSourceHint(){
-  if(ui.src==='google') setHint('Google Books는 키 없이 바로 검색됩니다. 한도가 찼을 때는 Open Library로 자동 전환돼요.',false);
-  else if(ui.src==='openlib') setHint('Open Library(openlibrary.org)는 키 없이 무료로 검색됩니다.',false);
-  else if(ui.src==='aladin'){
-    if(db.settings.aladinKey) setHint('알라딘 Open API로 검색합니다. (JSONP · 브라우저 직접 호출)',false);
-    else setHint('알라딘 TTBKey가 아직 없어요. <button class="link-btn" data-open-settings="1" type="button">설정에서 키 넣기</button>',true);
-  }else if(ui.src==='kakao'){
-    if(db.settings.kakaoKey) setHint('카카오 책 검색 API로 검색합니다.',false);
-    else setHint('카카오 REST API 키가 아직 없어요. <button class="link-btn" data-open-settings="1" type="button">설정에서 키 넣기</button>',true);
-  }
+  if(db.settings.kakaoKey) setHint('카카오 책 검색으로 찾습니다.',false);
+  else setHint('카카오 키가 없어 <b>Google Books · Open Library</b>로 검색합니다. <button class="link-btn" data-open-settings="1" type="button">설정에서 키 넣기</button>',false);
 }
 function setResultsLoading(){
   $('#searchResults').innerHTML='<p class="hint" style="padding:8px 4px">검색 중…</p>';
@@ -2667,7 +2645,8 @@ function searchGoogle(q){
       img=img.replace(/^http:\/\//,'https://').replace(/&zoom=1/,'&zoom=2');
       return {
         title:v.title||'', subtitle:v.subtitle||'', author:(v.authors||[]).join(', '),
-        publisher:v.publisher||'', date:v.publishedDate||'', cover:img, source:'google'
+        publisher:v.publisher||'', date:v.publishedDate||'', cover:img, source:'google',
+        contents:v.description||'', categories:v.categories||[]
       };
     }).filter(function(x){return x.title});
   });
@@ -2681,12 +2660,12 @@ function searchKakao(q){
     return r.json();
   }).then(function(data){
     return (data.documents||[]).map(function(d){
-      return {title:d.title||'',author:(d.authors||[]).join(', '),publisher:d.publisher||'',date:d.datetime||'',cover:d.thumbnail||'',source:'kakao'};
+      return {title:d.title||'',author:(d.authors||[]).join(', '),publisher:d.publisher||'',date:d.datetime||'',cover:d.thumbnail||'',source:'kakao',contents:d.contents||'',categories:[]};
     }).filter(function(x){return x.title});
   });
 }
 function searchOpenLib(q){
-  var url='https://openlibrary.org/search.json?limit=12&fields=title,author_name,publisher,first_publish_year,cover_i,isbn&q='+encodeURIComponent(q);
+  var url='https://openlibrary.org/search.json?limit=12&fields=title,author_name,publisher,first_publish_year,cover_i,isbn,subject&q='+encodeURIComponent(q);
   return fetch(url).then(function(r){
     if(!r.ok) throw new Error('Open Library 응답 오류 ('+r.status+')');
     return r.json();
@@ -2699,39 +2678,11 @@ function searchOpenLib(q){
         publisher:pubs.slice(0,2).join(', '),
         date:d.first_publish_year?String(d.first_publish_year):'',
         cover:d.cover_i?('https://covers.openlibrary.org/b/id/'+d.cover_i+'-L.jpg'):'',
-        source:'openlib'
+        source:'openlib',
+        contents:'',
+        categories:(d.subject||[]).slice(0,10)
       };
     }).filter(function(x){return x.title});
-  });
-}
-function searchAladin(q){
-  return new Promise(function(resolve,reject){
-    var key=db.settings.aladinKey;
-    if(!key){ reject(new Error('알라딘 TTBKey가 없습니다.')); return; }
-    var cb='aladinCb_'+Date.now().toString(36)+Math.floor(Math.random()*1000);
-    var script=document.createElement('script');
-    var finished=false;
-    var timer=setTimeout(function(){ cleanup(); reject(new Error('알라딘 응답이 없어요. 키를 확인해 주세요.')); },12000);
-    function cleanup(){
-      finished=true;
-      clearTimeout(timer);
-      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
-      if(script.parentNode) script.parentNode.removeChild(script);
-    }
-    window[cb]=function(data){
-      if(finished) return;
-      cleanup();
-      var items=(data&&data.item)||[];
-      resolve(items.map(function(it){
-        var cover=String(it.cover||'').replace(/^http:\/\//,'https://').replace(/coversum/,'cover500');
-        return {title:it.title||'',author:it.author||'',publisher:it.publisher||'',date:it.pubDate||'',cover:cover,source:'aladin'};
-      }).filter(function(x){return x.title}));
-    };
-    script.onerror=function(){ cleanup(); reject(new Error('알라딘 API를 불러오지 못했어요.')); };
-    script.src='https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey='+encodeURIComponent(key)
-      +'&Query='+encodeURIComponent(q)+'&QueryType=Keyword&MaxResults=12&start=1&SearchTarget=Book'
-      +'&output=JS&Version=20131101&callback='+cb;
-    document.head.appendChild(script);
   });
 }
 function renderResults(items){
@@ -2751,31 +2702,46 @@ function renderResults(items){
 function searchErrorText(msg){
   return '<p class="hint warn" style="padding:8px 4px">'+esc(msg)+'<br>네트워크를 확인하거나 아래에 직접 입력해 주세요.</p>';
 }
+/* 카카오 키가 없거나 카카오 검색이 실패하면 Google Books → Open Library 순서로 찾습니다. */
+function fallbackSearch(q,why){
+  var prefix=why?why+' ':'';
+  searchGoogle(q).then(function(items){
+    renderResults(items);
+    if(items.length){
+      if(why) setHint(prefix+'Google Books로 대신 검색했어요.',true);
+      return;
+    }
+    setHint(prefix+'Google Books에서 결과가 없어 Open Library로 다시 찾았어요.',true);
+    return searchOpenLib(q).then(function(items2){
+      renderResults(items2);
+      if(!items2.length) setHint(prefix+'검색 결과가 없어요. 다른 검색어를 쓰거나 아래에 직접 입력해 주세요.',true);
+    });
+  }).catch(function(err){
+    var gwhy=/429/.test(String(err&&err.message||''))?'Google Books의 무료 검색 한도가 찼어요(429).':'Google Books에 연결하지 못했어요.';
+    setHint(prefix+gwhy+' Open Library로 대신 검색했어요.',true);
+    searchOpenLib(q).then(function(items){
+      renderResults(items);
+      if(!items.length) setHint(prefix+gwhy+' Open Library에서도 결과를 찾지 못했어요. 직접 입력해 주세요.',true);
+    }).catch(function(){
+      $('#searchResults').innerHTML=searchErrorText(prefix+gwhy+' Open Library도 응답하지 않았어요.');
+    });
+  });
+}
 function runSearch(){
   var q=$('#searchInput').value.trim();
   if(!q){ toast('검색어를 입력해 주세요.'); $('#searchInput').focus(); return; }
-  if(ui.src==='aladin' && !db.settings.aladinKey){ currentSourceHint(); toast('알라딘 키를 먼저 넣어 주세요.'); return; }
-  if(ui.src==='kakao' && !db.settings.kakaoKey){ currentSourceHint(); toast('카카오 키를 먼저 넣어 주세요.'); return; }
   setResultsLoading();
-  var src=ui.src;
-  var p = src==='google'?searchGoogle(q):src==='kakao'?searchKakao(q):src==='aladin'?searchAladin(q):searchOpenLib(q);
-  p.then(function(items){
-    renderResults(items);
-  }).catch(function(err){
-    var msg=String(err&&err.message||'');
-    if(src==='google'){
-      var why=/429/.test(msg)?'Google Books의 무료 검색 한도가 찼어요(429).':'Google Books에 연결하지 못했어요.';
-      setHint(why+' Open Library로 대신 검색했어요.',true);
-      searchOpenLib(q).then(function(items){
-        renderResults(items);
-        if(!items.length) setHint(why+' Open Library에서도 결과를 찾지 못했어요. 직접 입력해 주세요.',true);
-      }).catch(function(e2){
-        $('#searchResults').innerHTML=searchErrorText(why+' Open Library도 응답하지 않았어요.');
-      });
-      return;
-    }
-    $('#searchResults').innerHTML=searchErrorText(msg||'검색에 실패했어요.');
-  });
+  if(db.settings.kakaoKey){
+    searchKakao(q).then(function(items){
+      renderResults(items);
+    }).catch(function(err){
+      var msg=String(err&&err.message||'');
+      var why=/401|403/.test(msg)?'카카오 키를 확인해 주세요('+msg+').':'카카오 검색에 연결하지 못했어요.';
+      fallbackSearch(q,why);
+    });
+  }else{
+    fallbackSearch(q,'');
+  }
 }
 function pickResult(i){
   var r=ui.results[i];
@@ -2783,19 +2749,83 @@ function pickResult(i){
   $('#fTitle').value=r.title||'';
   if(r.author) $('#fAuthor').value=r.author;
   if(r.publisher) $('#fPublisher').value=r.publisher;
-  if(!$('#fCat').value.trim()) $('#fCat').value=guessCategory(r.title||'');
+  var guessed='';
+  if(!$('#fCat').value.trim()){
+    guessed=autoCategory(r);
+    if(guessed) $('#fCat').value=guessed;
+  }
   if(r.cover){ ui.cover=r.cover; $('#fCoverUrl').value=r.cover; }
   updateCoverPreview();
   $$('#searchResults .result').forEach(function(el,j){ el.classList.toggle('selected',j===i) });
-  toast('책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
+  toast(guessed?'책 정보를 채웠어요. 분야는 ‘'+guessed+'’로 채워 두었으니 필요하면 고쳐 주세요.':'책 정보를 채웠어요. 필요하면 고쳐서 저장하세요.');
+}
+/* ---- 분야 자동 분류 ----
+   검색 결과의 제목·소개(contents/description)·출판사·API 분야(categories)를 보고
+   앱에서 쓰는 분야 중 가장 알맞은 곳을 고른다. 매칭이 없으면 빈칸으로 둔다. */
+var CAT_KEYWORDS={
+  '마음·습관':['마음','심리','심리학','습관','행복','불안','감정','명상','자존감','위로','힐링','치유','관계','상담','우울','스트레스','마인드풀니스','정신건강','기질','애착','자기돌봄'],
+  '마케팅·브랜딩':['마케팅','브랜드','브랜딩','광고','카피','카피라이팅','소비자','고객','시장','판매','콘텐츠','인스타그램','퍼널','전환율'],
+  '일·커리어':['커리어','직장','면접','리더십','리더','회사','생산성','업무','일의','조직','경영','이직','자기계발','시간관리','협업','회의','프로젝트','재테크','투자','경제','창업','부업','노트법'],
+  '문학·언어·예술':['소설','시집','시인','문학','에세이','산문','언어','예술','그림','미술','음악','영화','드라마','디자인','건축','사진','글쓰기','번역','고전','판타지','추리','만화','웹툰','시나리오']
+};
+var CAT_STRONG={
+  '마음·습관':['심리학','심리','습관','명상','자존감','정신건강','마인드풀니스','상담','힐링','불안','우울','애착'],
+  '마케팅·브랜딩':['마케팅','브랜딩','브랜드','광고','카피라이팅','소비자심리','퍼널'],
+  '일·커리어':['커리어','리더십','생산성','자기계발','재테크','이직','면접','경영','창업','업무','투자'],
+  '문학·언어·예술':['소설','시집','에세이','문학','예술','미술','음악','영화','디자인','번역','글쓰기','판타지','추리소설','만화']
+};
+var CAT_EN_MAP=[
+  [/marketing|advertis|sales promotion|brand/i,'마케팅·브랜딩'],
+  [/business|economics|management|leadership|career|office|productivity|entrepreneur|invest|finance/i,'일·커리어'],
+  [/psychology|self-help|personal growth|body, mind|mind & spirit|family & relationships|emotion|happiness|habit|meditation/i,'마음·습관'],
+  [/fiction|poetry|literary|drama|comics|graphic novel|\bart\b|\barts\b|music|language arts|photograph|design|architecture|performing arts/i,'문학·언어·예술']
+];
+function categoryCandidates(){
+  var set={}, list=[];
+  function add(c){
+    c=String(c||'').trim();
+    if(c && !set[c]){ set[c]=1; list.push(c); }
+  }
+  DEFAULT_CATS.forEach(add);
+  (db.books||[]).forEach(function(b){ add(b.category); });
+  Object.keys((db.settings&&db.settings.categoryColors)||{}).forEach(add);
+  return list;
+}
+function catKeywordHits(hay,kws){
+  var n=0;
+  (kws||[]).forEach(function(k){ if(k && hay.indexOf(k)>-1) n++; });
+  return n;
+}
+function autoCategory(r){
+  if(!r) return '';
+  var title=String(r.title||'').toLowerCase();
+  var body=(String(r.contents||r.description||'')+' '+String(r.publisher||'')).toLowerCase();
+  var rawCats=[].concat(r.categories||[], r.subjects||[]).map(function(c){return String(c||'')}).join(' ').toLowerCase();
+  var hay=title+' '+body+' '+rawCats;
+  var cands=categoryCandidates(), scores={};
+  cands.forEach(function(c){ scores[c]=0; });
+  if(rawCats){
+    CAT_EN_MAP.forEach(function(rule){
+      if(rule[0].test(rawCats) && scores.hasOwnProperty(rule[1])) scores[rule[1]]+=6;
+    });
+  }
+  cands.forEach(function(c){
+    var kws=CAT_KEYWORDS[c], strong=CAT_STRONG[c];
+    if(kws){
+      var titleHits=catKeywordHits(title,kws);
+      var strongHits=catKeywordHits(body,strong);
+      var bodyHits=catKeywordHits(body,kws)-strongHits;
+      scores[c]+=titleHits*3 + Math.min(strongHits,2)*3 + Math.min(bodyHits,2);
+    }else if(c && hay.indexOf(c.toLowerCase())>-1){
+      scores[c]+=4; /* 사용자가 만든 분야는 이름이 본문에 나오면 가점 */
+    }
+  });
+  var best='', bestScore=2; /* 2점 이하는 우연한 단어 하나 수준이라 비워 둔다 */
+  cands.forEach(function(c){ if(scores[c]>bestScore){ best=c; bestScore=scores[c]; } });
+  return best;
 }
 function guessCategory(title){
-  var t=String(title||'');
-  if(/마케팅|브랜드|브랜딩|광고|카피/.test(t)) return '마케팅·브랜딩';
-  if(/습관|마음|심리|집중|불안|행복|감정|명상/.test(t)) return '마음·습관';
-  if(/커리어|일의|직장|면접|리더|회사|생산성/.test(t)) return '일·커리어';
-  if(/소설|시집|문학|언어|예술|그림|음악/.test(t)) return '문학·언어·예술';
-  return '';
+  return autoCategory({title:String(title||'')});
 }
 
 /* ---------------- export / import ---------------- */
@@ -3181,14 +3211,6 @@ $('#btnDelete').addEventListener('click',function(){
 /* add modal */
 $('#searchInput').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); runSearch(); } });
 $('#btnSearch').addEventListener('click',runSearch);
-$('#sourceChips').addEventListener('click',function(e){
-  var btn=e.target.closest('button[data-src]');
-  if(!btn) return;
-  ui.src=btn.dataset.src;
-  $$('#sourceChips button').forEach(function(b){ b.classList.toggle('active',b===btn) });
-  currentSourceHint();
-  $('#searchResults').innerHTML='';
-});
 $('#searchResults').addEventListener('click',function(e){
   var row=e.target.closest('.result');
   if(!row) return;
@@ -3231,7 +3253,6 @@ setMode('edit');
 
 /* settings */
 function fillSettings(){
-  $('#sAladin').value=db.settings.aladinKey||'';
   $('#sKakao').value=db.settings.kakaoKey||'';
   var frags=db.books.reduce(function(n,b){return n+fragmentCount(b.note)},0);
   $('#setStats').textContent=db.books.length+'권 · 조각 '+frags+'장 · 이 브라우저에 저장됨';
@@ -3242,12 +3263,6 @@ function fillSettings(){
   if($('#syncToken')) $('#syncToken').value=syncCfg.token||'';
   renderSyncUI();
 }
-$('#btnSaveAladin').addEventListener('click',function(){
-  db.settings.aladinKey=$('#sAladin').value.trim();
-  saveDB();
-  toast(db.settings.aladinKey?'알라딘 키를 저장했어요.':'알라딘 키를 지웠어요.');
-  if($('#addModal').hidden===false) currentSourceHint();
-});
 $('#btnSaveKakao').addEventListener('click',function(){
   db.settings.kakaoKey=$('#sKakao').value.trim();
   saveDB();
