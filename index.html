@@ -1744,6 +1744,21 @@ function mergeSync(localBooks,localDeleted,remoteBooks,remoteDeleted){
   var changed=canonState(localBooks,localDeleted)!==canonState(books,del);
   return {books:books,deleted:del,changed:changed};
 }
+function settingsCanon(p){
+  var st=(p&&p.settings)||{};
+  return [fixFontPreset(st.fontPreset),
+          st.fontScope==='note'?'note':'all',
+          fixTheme(st.colorTheme),
+          Number(st.fontUpdatedAt)||0,
+          Number(st.catUpdatedAt)||0,
+          JSON.stringify(sanitizeCategoryColors(st.categoryColors))].join('|');
+}
+function localSettingsCanon(){
+  var st={fontPreset:db.settings.fontPreset,fontScope:db.settings.fontScope,colorTheme:db.settings.colorTheme,
+          fontUpdatedAt:db.fontUpdatedAt,catUpdatedAt:db.settings.catUpdatedAt,
+          categoryColors:db.settings.categoryColors};
+  return settingsCanon({settings:st});
+}
 function syncPayload(){
   return {
     app:'reading-journal',version:2,savedAt:new Date().toISOString(),
@@ -1922,11 +1937,13 @@ async function syncRun(mode,opts){
     if(fontMoved){
       saveDB({silent:true});
       applyFontSettings(); renderFontUI(); applyColorTheme(); renderThemeUI(); loadFullFont(db.settings.fontPreset);
+      renderShelf(); renderCatColorList();
     }
     var localCanon=canonState(db.books,db.deleted||{});
     var rCanon=remote.payload?canonState(rBooks,sanitizeDeleted(rp.deleted)):'';
+    var settingsDiffer=localSettingsCanon()!==settingsCanon(rp);
     var pushed=false;
-    if(!remote.sha || localCanon!==rCanon){
+    if(!remote.sha || localCanon!==rCanon || settingsDiffer){
       try{
         await ghWriteFile(repo,JSON.stringify(syncPayload()),remote.sha);
         pushed=true;
@@ -1937,7 +1954,7 @@ async function syncRun(mode,opts){
         var rp2=again.payload||{};
         var rBooks2=Array.isArray(rp2.books)?rp2.books.map(fixBook).filter(Boolean):[];
         applySyncState(mergeSync(db.books,db.deleted||{},rBooks2,sanitizeDeleted(rp2.deleted)));
-        pullRemoteFont(rp2);
+        if(pullRemoteFont(rp2)){ applyColorTheme(); renderThemeUI(); renderShelf(); renderCatColorList(); }
         await ghWriteFile(repo,JSON.stringify(syncPayload()),again.sha);
         pushed=true;
       }
